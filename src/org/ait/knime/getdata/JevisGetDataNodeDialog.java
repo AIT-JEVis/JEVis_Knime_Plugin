@@ -31,7 +31,7 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
     			new SettingsModelInteger(
     					JevisGetDataNodeModel.CFGKEY_nodeID, JevisGetDataNodeModel.nodeID),
     			"NodeID",
-    			0));
+    			494));
 			
 		
     }

@@ -56,7 +56,7 @@ public class JevisGetDataNodeModel extends NodeModel {
             .getLogger("GetDataLogger");
 	
 	//Dialog information
-	static final int nodeID = 50;
+	static final int nodeID = 494;
 	static final String CFGKEY_nodeID = "Node ID";
 
 	//Jevis Connection information
@@ -115,16 +115,16 @@ public class JevisGetDataNodeModel extends NodeModel {
     		JEVisObject my_Object = jevis.getObject((long) m_nodeID.getIntValue()) ;				
     		logger.info("ObjectName: " + my_Object.getName());
     		pushFlowVariableString("sensorname", my_Object.getParents().get(0).getName());
-    		pushFlowVariableDouble("DataNodeID", my_Object.getID());
+    		pushFlowVariableDouble("DataNodeID",my_Object.getID());
     		
             List<JEVisSample> valueList = my_Object.getAttribute("Value").getAllSamples();  
             for (JEVisSample value : valueList) {
             //Getting the data of value for input in table
-            	logger.info("Value: "+ value.getValueAsString());              	
+            	              	
                 DateTime timestampString = value.getTimestamp();
                 DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
                 String timestamp = formatter.print(timestampString);
-                logger.info("Timestamp: "+ timestamp);                     
+                logger.info("Working on Timestamp: "+ timestamp);                     
                 //Filling the rows of the table
                 DataCell[]cells = new DataCell[result.getNumColumns()];
                 cells[0] = new StringCell(timestamp);
