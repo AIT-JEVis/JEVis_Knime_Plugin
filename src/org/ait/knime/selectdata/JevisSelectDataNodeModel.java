@@ -41,11 +41,11 @@ public class JevisSelectDataNodeModel extends NodeModel {
     
     
   //Jevis Connection information
-  	public static String host = "jevis3.ait.ac.at";
-   	public static String port = "3306";
-   	public static String sqlSchema = "jevis";
-   	public static String sqlUser = "jevis";
-   	public static String sqlPW = "vu5eS1ma";
+  	public static String host = "Hostaddress";
+   	public static String port = "Port";
+   	public static String sqlSchema = "Schema";
+   	public static String sqlUser = "User";
+   	public static String sqlPW = "Password";
    	
    	public static String jevisUser = "BerhnardM";
    	public static String jevisPW = "testpass01593";

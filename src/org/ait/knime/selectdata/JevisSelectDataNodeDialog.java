@@ -1,8 +1,11 @@
 package org.ait.knime.selectdata;
 
+import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+
+import javafx.scene.Group;
 
 /**
  * <code>NodeDialog</code> for the "JevisSelectData" Node.
@@ -21,17 +24,18 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
      * New pane for configuring the JevisSelectData node.
      */
     protected JevisSelectDataNodeDialog() {
-    	createNewTab("Configure Connection");
+    	createNewTabAt("Configure Connection",0);
+    	createNewGroup("Database Connection Settings");
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
-        		JevisSelectDataNodeModel.host, ""), "Hostaddress"));
+        		JevisSelectDataNodeModel.host, "jevis3.ait.ac.at"), "Hostaddress"));
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
-        		JevisSelectDataNodeModel.port, ""), "Port"));
+        		JevisSelectDataNodeModel.port, "3306"), "Port"));
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
-        		JevisSelectDataNodeModel.sqlSchema, ""), "SqlSchema"));
+        		JevisSelectDataNodeModel.sqlSchema, "jevis"), "SqlSchema"));
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
-        		JevisSelectDataNodeModel.sqlUser, ""), "SqlUser"));
+        		JevisSelectDataNodeModel.sqlUser, "jevis"), "SqlUser"));
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
-        		JevisSelectDataNodeModel.sqlPW, ""), "SqlPassword"));
+        		JevisSelectDataNodeModel.sqlPW, "vu5eS1ma"), "SqlPassword"));
     }
 }
 
