@@ -1,11 +1,8 @@
 package org.ait.knime.selectdata;
 
-import org.apache.commons.net.nntp.NewGroupsOrNewsQuery;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-
-import javafx.scene.Group;
 
 /**
  * <code>NodeDialog</code> for the "JevisSelectData" Node.
