@@ -33,6 +33,11 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
         		JevisSelectDataNodeModel.sqlUser, "jevis"), "SqlUser"));
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
         		JevisSelectDataNodeModel.sqlPW, "vu5eS1ma"), "SqlPassword"));
+    	createNewGroup("Jevis User Information");
+    	addDialogComponent(new DialogComponentString(new SettingsModelString(
+    			JevisSelectDataNodeModel.jevisUser,"BerhnardM"), "JevisUser Name"));
+    	addDialogComponent(new DialogComponentString(new SettingsModelString(
+    			JevisSelectDataNodeModel.jevisPW,"testpass01593"), "Jevis Password"));
     }
 }
 

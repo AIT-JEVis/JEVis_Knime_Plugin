@@ -112,28 +112,14 @@ public class JevisGetDataNodeModel extends NodeModel {
     		buf = exec.createDataContainer(result); 
     		
     		//TODO: Insert table data here
-    		JEVisObject my_Object = jevis.getObject((long) m_nodeID.getIntValue()) ;				
-    		logger.info("ObjectName: " + my_Object.getName());
-    		pushFlowVariableString("sensorname", my_Object.getParents().get(0).getName());
-    		pushFlowVariableDouble("DataNodeID",my_Object.getID());
+    		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;				
+    		logger.info("ObjectName: " + jObject.getName());
+    		pushFlowVariableString("sensorname", jObject.getParents().get(0).getName());
+    		pushFlowVariableDouble("DataNodeID",jObject.getID());
     		
-            List<JEVisSample> valueList = my_Object.getAttribute("Value").getAllSamples();  
-            for (JEVisSample value : valueList) {
-            //Getting the data of value for input in table
-            	              	
-                DateTime timestampString = value.getTimestamp();
-                DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
-                String timestamp = formatter.print(timestampString);
-                logger.info("Working on Timestamp: "+ timestamp);                     
-                //Filling the rows of the table
-                DataCell[]cells = new DataCell[result.getNumColumns()];
-                cells[0] = new StringCell(timestamp);
-                cells[1] = new DoubleCell(value.getValueAsDouble());
-                cells[2] = new StringCell("");
-                counter++;
-                DataRow row = new DefaultRow("Row"+ counter, cells);
-                buf.addRowToTable(row);              
-            }
+    		jObject.getAttribute("Value").getType();
+            fillingTable(jObject, result);
+            
     	}else{
     		logger.error("Jevis connection error!");
     	}
@@ -167,6 +153,34 @@ public class JevisGetDataNodeModel extends NodeModel {
     		logger.error("Connection error! Check Jevis settings and try again!");
     	}
     	
+    }
+    
+    private void fillingTable(JEVisObject my_Object, DataTableSpec result){
+    	
+        List<JEVisSample> valueList;
+		try {
+			valueList = my_Object.getAttribute("Value").getAllSamples();
+
+	        for (JEVisSample value : valueList) {
+	        //Getting the data of value for input in table
+	        	              	
+	            DateTime timestampString = value.getTimestamp();
+	            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
+	            String timestamp = formatter.print(timestampString);
+	            logger.info("Working on Timestamp: "+ timestamp);                     
+	            //Filling the rows of the table
+	            DataCell[]cells = new DataCell[result.getNumColumns()];
+	            cells[0] = new StringCell(timestamp);
+	            cells[1] = new DoubleCell(value.getValueAsDouble());
+	            cells[2] = new StringCell("");
+	            counter++;
+	            DataRow row = new DefaultRow("Row"+ counter, cells);
+	            buf.addRowToTable(row); 
+	        }
+		} catch (JEVisException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
     }
     
     /**

@@ -2,9 +2,11 @@ package org.ait.knime.selectdata;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.ait.knime.getdata.JevisGetDataNodeModel;
 import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataContainer;
@@ -50,6 +52,9 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static String jevisUser = "BerhnardM";
    	public static String jevisPW = "testpass01593";
  
+   	public static String m_NodeID = "NodeID";
+   	public static int DEFAULT_NODEID = 483;
+   	
    	private JEVisDataSourceSQL jevis;
    	//Processing variables
 	private BufferedDataContainer buf;
@@ -65,6 +70,14 @@ public class JevisSelectDataNodeModel extends NodeModel {
    			JevisSelectDataNodeModel.sqlUser, "jevis");
    	private final SettingsModelString jPW = new SettingsModelString(
    			JevisSelectDataNodeModel.sqlPW, "vu5eS1ma");
+   	
+   	private final SettingsModelString jevUser = new SettingsModelString(
+   			JevisSelectDataNodeModel.jevisUser, "BerhnardM");
+   	private final SettingsModelString jevPW = new SettingsModelString(
+   			JevisSelectDataNodeModel.jevisPW,"testpass01593");
+   	
+   	private final SettingsModelInteger m_nodeID = new SettingsModelInteger(m_NodeID, DEFAULT_NODEID);
+   	
     /**
      * {@inheritDoc}
      */
@@ -72,9 +85,23 @@ public class JevisSelectDataNodeModel extends NodeModel {
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
     	
+    	logger.setLevel(NodeLogger.LEVEL.INFO);
+    	
     	connectingtojevis();
     	DataTableSpec spec = new DataTableSpec();
     	buf = exec.createDataContainer(spec);
+    	
+    	if(jevis.isConnectionAlive()){
+    		
+    		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;
+    		//logger.info(jObject.getJEVisClass().getType("Value").getPrimitiveType());
+    		//logger.info(jObject.getAttribute("Value").getType().toString());
+    		List<JEVisObject> list_Children = jObject.getChildren();
+    		for(JEVisObject child : list_Children){
+    			logger.info(child.getName());
+    		}
+    	}
+    	
     	
     	buf.close();
     	BufferedDataTable out = buf.getTable();
