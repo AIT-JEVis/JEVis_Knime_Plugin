@@ -14,9 +14,9 @@
    -->
    
    <extension point="org.knime.workbench.repository.nodes">
-      <node category-path="/" factory-class="org.ait.knime.getdata.JevisGetDataNodeFactory" id="org.ait.knime.getdata.JevisGetDataNodeFactory"/>
-   <node category-path="/" factory-class="org.ait.knime.selectdata.JevisSelectDataNodeFactory" id="org.ait.knime.selectdata.JevisSelectDataNodeFactory"/>
-<node category-path="/" factory-class="org.ait.knime.writedata.JevisWriteDataNodeFactory" id="org.ait.knime.writedata.JevisWriteDataNodeFactory"/>
+      <node category-path="/" factory-class="org.ait.knimejevisplugin.getdata.JevisGetDataNodeFactory" id="org.ait.knime.getdata.JevisGetDataNodeFactory"/>
+   <node category-path="/" factory-class="org.ait.knimejevisplugin.selectdata.JevisSelectDataNodeFactory" id="org.ait.knime.selectdata.JevisSelectDataNodeFactory"/>
+<node category-path="/" factory-class="org.ait.knimejevisplugin.writedata.JevisWriteDataNodeFactory" id="org.ait.knime.writedata.JevisWriteDataNodeFactory"/>
 </extension>
    
 </plugin>
