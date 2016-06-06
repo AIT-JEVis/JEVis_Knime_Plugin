@@ -111,9 +111,11 @@ public class JevisGetDataNodeModel extends NodeModel {
     		DataTableSpec result = new DataTableSpec(colSpec1,colSpec2,colSpec3);
     		buf = exec.createDataContainer(result); 
     		
-    		//TODO: Insert table data here
+    		//TODO: Insert table data here 
     		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;				
     		logger.info("ObjectName: " + jObject.getName());
+    		
+    		//Pushing basic information of table into flow variables
     		pushFlowVariableString("sensorname", jObject.getParents().get(0).getName());
     		pushFlowVariableDouble("DataNodeID",jObject.getID());
     		
