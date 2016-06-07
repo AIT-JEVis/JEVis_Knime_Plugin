@@ -27,8 +27,10 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
@@ -87,6 +89,7 @@ public class JevisGetDataNodeModel extends NodeModel {
  	 private JEVisDataSourceSQL jevis; 
      private BufferedDataContainer buf;
      private int counter = 0;
+     private String attributeName = "LocationCode";
     /**
      * Constructor for the node model.
      */
@@ -121,20 +124,48 @@ public class JevisGetDataNodeModel extends NodeModel {
     	connectingtojevis();
     	if(jevis.isConnectionAlive()){
     			
+    		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;				
+    		logger.info("ObjectName: " + jObject.getName());
+    		
+    		for(JEVisAttribute att : jObject.getAttributes()){
+    			logger.info("Attribute Name: " + att.getName());
+    			logger.info("Attribute Type: " + att.getPrimitiveType() + " " +att.getType().toString());
+    			
+    		}
+    		
     		//Specifying outport TableSpec
-    		DataColumnSpec colSpec1 = new DataColumnSpecCreator(
+    		DataColumnSpec tsCol = new DataColumnSpecCreator(
     				"Timestamp", StringCell.TYPE).createSpec();
-    		DataColumnSpec colSpec2 = new DataColumnSpecCreator(
-    				"Value", DoubleCell.TYPE).createSpec();
-    		DataColumnSpec colSpec3 = new DataColumnSpecCreator(
+    		DataColumnSpec valueCol;
+    		//setting type of Value Column as type of value in Jevis.
+    		if(jObject.getAttribute(attributeName).getPrimitiveType() == 0){
+    			valueCol = new DataColumnSpecCreator(
+    					"Value", StringCell.TYPE).createSpec();
+    		}
+    		else if(jObject.getAttribute(attributeName).getPrimitiveType() == 1){
+    			valueCol = new DataColumnSpecCreator(
+    					"Value", DoubleCell.TYPE).createSpec();
+    		}
+    		else if(jObject.getAttribute(attributeName).getPrimitiveType() == 2){
+    			valueCol = new DataColumnSpecCreator(
+    					"Value", LongCell.TYPE).createSpec();
+    		}
+    		else if(jObject.getAttribute(attributeName).getPrimitiveType() == 4){
+    			valueCol = new DataColumnSpecCreator(
+    					"Value", BooleanCell.TYPE).createSpec();
+    		}else{
+    			valueCol = new DataColumnSpecCreator(
+    					"Value", DoubleCell.TYPE).createSpec();
+    		}
+    		
+    		DataColumnSpec commentCol = new DataColumnSpecCreator(
     				"Comment", StringCell.TYPE).createSpec();
     		
-    		DataTableSpec result = new DataTableSpec(colSpec1,colSpec2,colSpec3);
+    		DataTableSpec result = new DataTableSpec(tsCol,valueCol,commentCol);
     		buf = exec.createDataContainer(result); 
     		
     		//TODO: Insert table data here 
-    		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;				
-    		logger.info("ObjectName: " + jObject.getName());
+    		
     		
     		//Pushing basic information of table into flow variables
     		pushFlowVariableString("sensorname", jObject.getParents().get(0).getName());
@@ -143,13 +174,9 @@ public class JevisGetDataNodeModel extends NodeModel {
     			logger.info("Values found!");
     			fillingTable(jObject, result);
     			exec.checkCanceled();
-    		}
-    		else {
-    			logger.info("Node is not of specified class");
-    		}
-    		
-    		
-            
+    		}else{
+    			logger.info("Node is not of specified class");    		
+    		}      
     	}else{
     		logger.error("Jevis connection error!");
     	}
@@ -189,7 +216,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     	
         List<JEVisSample> valueList;
 		try {
-			valueList = my_Object.getAttribute("Value").getAllSamples();
+			valueList = my_Object.getAttribute(attributeName).getAllSamples();
             DateTime firstTimestamp = valueList.get(0).getTimestamp();
             DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
             startTime =  formatter.print(firstTimestamp);
