@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -69,11 +70,11 @@ public class JevisGetDataNodeModel extends NodeModel {
 	static final int nodeID = 494;
 	static final String CFGKEY_nodeID = "Node ID";
 
-	static final String nodeClass = "Data";
-	
-	static String startTime = "2016-01-20 ";
-	static String endTime = "2016-01-22 ";
-	
+	static final String nodeClass = "NodeClass";
+	//Timeformat yyyy-MM-dd HH:mm:ss.s
+	static final String startTime = "startTime" ;// "2016-01-20 00:00:00.0";
+	static final String endTime = "endTime"; // "2016-01-22 00:00:00.0";
+
 	//Jevis Connection information
 	public static String host = "jevis3.ait.ac.at";
  	public static String port = "3306";
@@ -90,6 +91,8 @@ public class JevisGetDataNodeModel extends NodeModel {
      private BufferedDataContainer buf;
      private int counter = 0;
      private String attributeName = "Value";
+     
+     private ArrayList<JEVisSample> list_timefilvalue = new ArrayList<JEVisSample>();
     /**
      * Constructor for the node model.
      */
@@ -103,13 +106,13 @@ public class JevisGetDataNodeModel extends NodeModel {
     		JevisGetDataNodeModel.CFGKEY_nodeID, JevisGetDataNodeModel.nodeID);
     
     private final SettingsModelString m_nodeClass = new SettingsModelString(
-    		JevisGetDataNodeModel.nodeClass, nodeClass);
+    		JevisGetDataNodeModel.nodeClass,"Data");
     
     private final SettingsModelString m_startTime = new SettingsModelString(
-    		JevisGetDataNodeModel.startTime, startTime);
+    		JevisGetDataNodeModel.startTime, "2016-01-20 00:00:00.0");
     
     private final SettingsModelString m_endTime = new SettingsModelString(
-    		JevisGetDataNodeModel.endTime, endTime);
+    		JevisGetDataNodeModel.endTime, "2016-01-22 00:00:00.0");
     /**
      * {@inheritDoc}
      */
@@ -170,7 +173,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     		//Pushing basic information of table into flow variables
     		pushFlowVariableString("sensorname", jObject.getParents().get(0).getName());
     		pushFlowVariableDouble("DataNodeID",jObject.getID());
-			if(jObject.getJEVisClass().getName().equals(nodeClass)){
+			if(jObject.getJEVisClass().getName().equals(m_nodeClass.getStringValue())){
     			logger.info("Values found!");
     			fillingTable(jObject, result);
     			exec.checkCanceled();
@@ -217,18 +220,17 @@ public class JevisGetDataNodeModel extends NodeModel {
         List<JEVisSample> valueList;
 		try {
 			valueList = my_Object.getAttribute(attributeName).getAllSamples();
-            DateTime firstTimestamp = valueList.get(0).getTimestamp();
-            DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
-            startTime =  formatter.print(firstTimestamp);
-            DateTime lastTimestamp = valueList.get(valueList.size()-1).getTimestamp();
-            endTime = formatter.print(lastTimestamp);
-			
+
 	        for (JEVisSample value : valueList) {
 	        //Getting the data of value for input in table
-	        	filterDate(value);              	
+	        	filterDate(value);
+	        }
+	        for(JEVisSample value : list_timefilvalue){
+	        	
 	            DateTime timestampString = value.getTimestamp();
-	            String timestamp = formatter.print(timestampString);
-	            logger.info("Working on Timestamp: "+ timestamp);                     
+	            DateTimeFormatter mformatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
+	            String timestamp = mformatter.print(timestampString);
+	            //logger.info("Working on Timestamp: "+ timestamp);                     
 	            //Filling the rows of the table
 	            DataCell[]cells = new DataCell[result.getNumColumns()];
 	            cells[0] = new StringCell(timestamp);
@@ -239,6 +241,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 	            buf.addRowToTable(row); 
 	            
 	        }
+
 		} catch (JEVisException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -253,13 +256,11 @@ public class JevisGetDataNodeModel extends NodeModel {
 	        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
 	        String timestamp = formatter.print(timestampString);
 	        
-	        
-	 
 	        DateTime start_Time = formatter.parseDateTime(m_startTime.getStringValue());
 	        DateTime end_Time = formatter.parseDateTime(m_endTime.getStringValue());
 	    	if(start_Time.isBefore(timestampString) && end_Time.isAfter(timestampString)){
 	    		logger.info("time: " + timestamp);
-	    		
+	    		list_timefilvalue.add(value);
 	    	}
 		} catch (JEVisException e) {
 			// TODO Auto-generated catch block
@@ -296,6 +297,9 @@ public class JevisGetDataNodeModel extends NodeModel {
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
     	m_nodeID.saveSettingsTo(settings);
+    	m_nodeClass.saveSettingsTo(settings);
+    	m_startTime.saveSettingsTo(settings);
+    	m_endTime.saveSettingsTo(settings);
     }
 
     /**
@@ -306,6 +310,9 @@ public class JevisGetDataNodeModel extends NodeModel {
             throws InvalidSettingsException {
         // TODO: generated method stub
     	m_nodeID.loadSettingsFrom(settings);
+    	m_nodeClass.loadSettingsFrom(settings);
+    	m_startTime.loadSettingsFrom(settings);
+    	m_endTime.loadSettingsFrom(settings);
     }
 
     /**
@@ -316,6 +323,9 @@ public class JevisGetDataNodeModel extends NodeModel {
             throws InvalidSettingsException {
         // TODO: generated method stub
     	m_nodeID.validateSettings(settings);
+    	m_nodeClass.validateSettings(settings);
+    	m_startTime.validateSettings(settings);
+    	m_endTime.validateSettings(settings);
     }
     
     /**

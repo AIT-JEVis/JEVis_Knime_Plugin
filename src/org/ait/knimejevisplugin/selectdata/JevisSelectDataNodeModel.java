@@ -76,7 +76,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	private final SettingsModelString jevPW = new SettingsModelString(
    			JevisSelectDataNodeModel.jevisPW,"testpass01593");
    	
-   	private final SettingsModelInteger m_nodeID = new SettingsModelInteger(m_NodeID, DEFAULT_NODEID);
+   	private final SettingsModelInteger m_nodeID = new SettingsModelInteger(
+   			m_NodeID, DEFAULT_NODEID);
    	
     /**
      * {@inheritDoc}

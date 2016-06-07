@@ -35,15 +35,15 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
     			"NodeID",
     			494));
     	addDialogComponent(new DialogComponentString(
-    			new SettingsModelString(JevisGetDataNodeModel.nodeClass, JevisGetDataNodeModel.nodeClass),
+    			new SettingsModelString(JevisGetDataNodeModel.nodeClass, "Data"),
     			"Classtype of Node with Attribute Value"));
 			
     	addDialogComponent(new DialogComponentString(
-    			new SettingsModelString(JevisGetDataNodeModel.startTime, JevisGetDataNodeModel.startTime),
+    			new SettingsModelString(JevisGetDataNodeModel.startTime, "2016-01-20 00:00:00.0"),
     			"Put in the first Date (\"yyyy-mm-dd\")"));
     	
     	addDialogComponent(new DialogComponentString(
-    			new SettingsModelString(JevisGetDataNodeModel.endTime, JevisGetDataNodeModel.endTime),
+    			new SettingsModelString(JevisGetDataNodeModel.endTime, "2016-01-22 00:00:00.0"),
     			"Put in the last Date (\"yyyy-mm-dd\")"));
 		
     }
