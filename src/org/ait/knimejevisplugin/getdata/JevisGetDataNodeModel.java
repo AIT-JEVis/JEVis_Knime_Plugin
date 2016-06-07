@@ -89,7 +89,7 @@ public class JevisGetDataNodeModel extends NodeModel {
  	 private JEVisDataSourceSQL jevis; 
      private BufferedDataContainer buf;
      private int counter = 0;
-     private String attributeName = "LocationCode";
+     private String attributeName = "Value";
     /**
      * Constructor for the node model.
      */
