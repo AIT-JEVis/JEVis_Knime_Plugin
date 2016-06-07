@@ -130,11 +130,8 @@ public class JevisGetDataNodeModel extends NodeModel {
     		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;				
     		logger.info("ObjectName: " + jObject.getName());
     		
-    		for(JEVisAttribute att : jObject.getAttributes()){
-    			logger.info("Attribute Name: " + att.getName());
-    			logger.info("Attribute Type: " + att.getPrimitiveType() + " " +att.getType().toString());
+    		if(jObject.getAttribute("Value") != null){
     			
-    		}
     		
     		//Specifying outport TableSpec
     		DataColumnSpec tsCol = new DataColumnSpecCreator(
@@ -179,7 +176,9 @@ public class JevisGetDataNodeModel extends NodeModel {
     			exec.checkCanceled();
     		}else{
     			logger.info("Node is not of specified class");    		
-    		}      
+    		}   
+    		}
+    		
     	}else{
     		logger.error("Jevis connection error!");
     	}

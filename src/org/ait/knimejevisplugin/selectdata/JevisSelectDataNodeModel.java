@@ -172,6 +172,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	jSchema.saveSettingsTo(settings);
     	jUser.saveSettingsTo(settings);
     	jPW.saveSettingsTo(settings);
+    	jevUser.saveSettingsTo(settings);
+    	jevPW.saveSettingsTo(settings);
     }
 
     /**
@@ -186,6 +188,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	jSchema.loadSettingsFrom(settings);
     	jUser.loadSettingsFrom(settings);
     	jPW.loadSettingsFrom(settings);
+    	jevUser.loadSettingsFrom(settings);
+    	jevPW.loadSettingsFrom(settings);
     }
 
     /**
@@ -200,6 +204,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	jSchema.validateSettings(settings);
     	jUser.validateSettings(settings);
     	jPW.validateSettings(settings);
+    	jevUser.validateSettings(settings);
+    	jevPW.validateSettings(settings);
     	
     }
     
