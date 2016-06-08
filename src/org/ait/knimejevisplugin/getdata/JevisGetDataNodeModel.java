@@ -129,8 +129,9 @@ public class JevisGetDataNodeModel extends NodeModel {
     		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;				
     		logger.info("ObjectName: " + jObject.getName());
     		
-    		if(jObject.getAttribute("Value") != null){
-    				    		
+    		if(jObject.getAttribute(attributeName) != null){
+    			
+    			
 	    		//Specifying outport TableSpec
 	    		DataColumnSpec tsCol = new DataColumnSpecCreator(
 	    				"Timestamp", StringCell.TYPE).createSpec();
