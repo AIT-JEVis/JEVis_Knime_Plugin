@@ -93,7 +93,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	buf = exec.createDataContainer(spec);
     	
     	if(jevis.isConnectionAlive()){
-    		
+    		logger.info("Connection Alive!");
     		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;
     		//logger.info(jObject.getJEVisClass().getType("Value").getPrimitiveType());
     		//logger.info(jObject.getAttribute("Value").getType().toString());
@@ -130,6 +130,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	//Connecting to Jevis with connection information
     	jevis = new JEVisDataSourceSQL(jhost.getStringValue(), jport.getStringValue(), jSchema.getStringValue(), jUser.getStringValue(), jPW.getStringValue());
     	jevis.connect(jevisUser, jevisPW);
+    	
     	pushFlowVariableString("host", jhost.getStringValue());
     	pushFlowVariableString("port", jport.getStringValue());
     	pushFlowVariableString("sqlSchema", jSchema.getStringValue());

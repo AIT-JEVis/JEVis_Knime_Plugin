@@ -34,9 +34,6 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
     					JevisGetDataNodeModel.CFGKEY_nodeID, JevisGetDataNodeModel.nodeID),
     			"NodeID",
     			494));
-    	addDialogComponent(new DialogComponentString(
-    			new SettingsModelString(JevisGetDataNodeModel.nodeClass, "Data"),
-    			"Classtype of Node with Attribute Value"));
 			
     	addDialogComponent(new DialogComponentString(
     			new SettingsModelString(JevisGetDataNodeModel.startTime, "2016-01-20 00:00:00.0"),

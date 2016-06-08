@@ -28,6 +28,7 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.container.RearrangeColumnsTable;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
@@ -70,7 +71,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 	static final int nodeID = 494;
 	static final String CFGKEY_nodeID = "Node ID";
 
-	static final String nodeClass = "NodeClass";
+
 	//Timeformat yyyy-MM-dd HH:mm:ss.s
 	static final String startTime = "startTime" ;// "2016-01-20 00:00:00.0";
 	static final String endTime = "endTime"; // "2016-01-22 00:00:00.0";
@@ -105,9 +106,6 @@ public class JevisGetDataNodeModel extends NodeModel {
     private final SettingsModelInteger m_nodeID = new SettingsModelInteger(
     		JevisGetDataNodeModel.CFGKEY_nodeID, JevisGetDataNodeModel.nodeID);
     
-    private final SettingsModelString m_nodeClass = new SettingsModelString(
-    		JevisGetDataNodeModel.nodeClass,"Data");
-    
     private final SettingsModelString m_startTime = new SettingsModelString(
     		JevisGetDataNodeModel.startTime, "2016-01-20 00:00:00.0");
     
@@ -123,7 +121,8 @@ public class JevisGetDataNodeModel extends NodeModel {
     	//setting up Logger
     	logger.setLevel(NodeLogger.LEVEL.INFO);
     	logger.info("JevisDataInformation");
-    	
+    	DataTableSpec result = new DataTableSpec();
+    	buf= exec.createDataContainer(result);
     	connectingtojevis();
     	if(jevis.isConnectionAlive()){
     			
@@ -131,52 +130,49 @@ public class JevisGetDataNodeModel extends NodeModel {
     		logger.info("ObjectName: " + jObject.getName());
     		
     		if(jObject.getAttribute("Value") != null){
+    				    		
+	    		//Specifying outport TableSpec
+	    		DataColumnSpec tsCol = new DataColumnSpecCreator(
+	    				"Timestamp", StringCell.TYPE).createSpec();
+	    		DataColumnSpec valueCol;
+	    		//setting type of Value Column as type of value in Jevis.
+	    		if(jObject.getAttribute(attributeName).getPrimitiveType() == 0){
+	    			valueCol = new DataColumnSpecCreator(
+	    					"Value", StringCell.TYPE).createSpec();
+	    		}
+	    		else if(jObject.getAttribute(attributeName).getPrimitiveType() == 1){
+	    			valueCol = new DataColumnSpecCreator(
+	    					"Value", DoubleCell.TYPE).createSpec();
+	    		}
+	    		else if(jObject.getAttribute(attributeName).getPrimitiveType() == 2){
+	    			valueCol = new DataColumnSpecCreator(
+	    					"Value", LongCell.TYPE).createSpec();
+	    		}
+	    		else if(jObject.getAttribute(attributeName).getPrimitiveType() == 4){
+	    			valueCol = new DataColumnSpecCreator(
+	    					"Value", BooleanCell.TYPE).createSpec();
+	    		}else{
+	    			valueCol = new DataColumnSpecCreator(
+	    					"Value", DoubleCell.TYPE).createSpec();
+	    		}	    		
+	    		DataColumnSpec commentCol = new DataColumnSpecCreator(
+	    				"Comment", StringCell.TYPE).createSpec();
+	    		
+	    		result = new DataTableSpec(tsCol,valueCol,commentCol);
+	    		buf = exec.createDataContainer(result);
+	    		
+	    		//Pushing basic information of table into flow variables
+	    		pushFlowVariableString("sensorname", jObject.getParents().get(0).getName());
+	    		pushFlowVariableDouble("DataNodeID",jObject.getID());
+		
+					//filling Table with data
+	    			logger.info("Values found!");
+	    			fillingTable(jObject, result);
+	    			exec.checkCanceled();
+    		}else{
+    			logger.error("Check NodeID! NodeID don't has an attribute called Value! "
+    					+ " Or node doesn't exist.");
     			
-    		
-    		//Specifying outport TableSpec
-    		DataColumnSpec tsCol = new DataColumnSpecCreator(
-    				"Timestamp", StringCell.TYPE).createSpec();
-    		DataColumnSpec valueCol;
-    		//setting type of Value Column as type of value in Jevis.
-    		if(jObject.getAttribute(attributeName).getPrimitiveType() == 0){
-    			valueCol = new DataColumnSpecCreator(
-    					"Value", StringCell.TYPE).createSpec();
-    		}
-    		else if(jObject.getAttribute(attributeName).getPrimitiveType() == 1){
-    			valueCol = new DataColumnSpecCreator(
-    					"Value", DoubleCell.TYPE).createSpec();
-    		}
-    		else if(jObject.getAttribute(attributeName).getPrimitiveType() == 2){
-    			valueCol = new DataColumnSpecCreator(
-    					"Value", LongCell.TYPE).createSpec();
-    		}
-    		else if(jObject.getAttribute(attributeName).getPrimitiveType() == 4){
-    			valueCol = new DataColumnSpecCreator(
-    					"Value", BooleanCell.TYPE).createSpec();
-    		}else{
-    			valueCol = new DataColumnSpecCreator(
-    					"Value", DoubleCell.TYPE).createSpec();
-    		}
-    		
-    		DataColumnSpec commentCol = new DataColumnSpecCreator(
-    				"Comment", StringCell.TYPE).createSpec();
-    		
-    		DataTableSpec result = new DataTableSpec(tsCol,valueCol,commentCol);
-    		buf = exec.createDataContainer(result); 
-    		
-    		//TODO: Insert table data here 
-    		
-    		
-    		//Pushing basic information of table into flow variables
-    		pushFlowVariableString("sensorname", jObject.getParents().get(0).getName());
-    		pushFlowVariableDouble("DataNodeID",jObject.getID());
-			if(jObject.getJEVisClass().getName().equals(m_nodeClass.getStringValue())){
-    			logger.info("Values found!");
-    			fillingTable(jObject, result);
-    			exec.checkCanceled();
-    		}else{
-    			logger.info("Node is not of specified class");    		
-    		}   
     		}
     		
     	}else{
@@ -190,17 +186,18 @@ public class JevisGetDataNodeModel extends NodeModel {
 
     public void connectingtojevis(){
     	
+    	//getting Connection information from selection node if existing
     	if(getAvailableFlowVariables().containsKey("host")
     			&& getAvailableFlowVariables().containsKey("port")
     			&& getAvailableFlowVariables().containsKey("sqlSchema")
     			&& getAvailableFlowVariables().containsKey("sqlUser")
     			&& getAvailableFlowVariables().containsKey("sqlPW")){
-    	//getting Connection information from first node
-    	host = peekFlowVariableString("host");
-    	port = peekFlowVariableString("port");
-    	sqlSchema = peekFlowVariableString("sqlSchema");
-    	sqlUser = peekFlowVariableString("sqlUser");
-    	sqlPW = peekFlowVariableString("sqlPW");
+	    	
+	    	host = peekFlowVariableString("host");
+	    	port = peekFlowVariableString("port");
+	    	sqlSchema = peekFlowVariableString("sqlSchema");
+	    	sqlUser = peekFlowVariableString("sqlUser");
+	    	sqlPW = peekFlowVariableString("sqlPW");
     	}
     	
     	try{
@@ -265,8 +262,6 @@ public class JevisGetDataNodeModel extends NodeModel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-    	
     	
     }
     
@@ -296,7 +291,6 @@ public class JevisGetDataNodeModel extends NodeModel {
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
     	m_nodeID.saveSettingsTo(settings);
-    	m_nodeClass.saveSettingsTo(settings);
     	m_startTime.saveSettingsTo(settings);
     	m_endTime.saveSettingsTo(settings);
     }
@@ -309,7 +303,6 @@ public class JevisGetDataNodeModel extends NodeModel {
             throws InvalidSettingsException {
         // TODO: generated method stub
     	m_nodeID.loadSettingsFrom(settings);
-    	m_nodeClass.loadSettingsFrom(settings);
     	m_startTime.loadSettingsFrom(settings);
     	m_endTime.loadSettingsFrom(settings);
     }
@@ -322,7 +315,6 @@ public class JevisGetDataNodeModel extends NodeModel {
             throws InvalidSettingsException {
         // TODO: generated method stub
     	m_nodeID.validateSettings(settings);
-    	m_nodeClass.validateSettings(settings);
     	m_startTime.validateSettings(settings);
     	m_endTime.validateSettings(settings);
     }
