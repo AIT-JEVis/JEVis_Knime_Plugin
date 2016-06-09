@@ -131,6 +131,12 @@ public class JevisGetDataNodeModel extends NodeModel {
     		
     		if(jObject.getAttribute(attributeName) != null){
     			
+    			if(m_startTime.getStringValue().matches(
+    					"\\d\\d\\d\\d-\\d\\d-\\d\\d\\s\\d\\d:\\d\\d:\\d\\d.\\d")
+    					&&m_endTime.getStringValue().matches(
+    					"\\d\\d\\d\\d-\\d\\d-\\d\\d\\s\\d\\d:\\d\\d:\\d\\d.\\d")){
+    				//yyyy-MM-dd HH:mm:ss.s"
+    				logger.info("Matching");
     			
 	    		//Specifying outport TableSpec
 	    		DataColumnSpec tsCol = new DataColumnSpecCreator(
@@ -170,11 +176,15 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    			logger.info("Values found!");
 	    			fillingTable(jObject, result);
 	    			exec.checkCanceled();
+    			}else{
+    				logger.error("Time not matches Type");
+    			}    			
     		}else{
     			logger.error("Check NodeID! NodeID don't has an attribute called Value! "
     					+ " Or node doesn't exist.");
     			
     		}
+    		
     		
     	}else{
     		logger.error("Jevis connection error!");
@@ -247,7 +257,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     
     private void filterDate(JEVisSample value){
     	
-    	 DateTime timestampString;
+    	DateTime timestampString;
 		try {
 			timestampString = value.getTimestamp();
 	        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
@@ -255,10 +265,12 @@ public class JevisGetDataNodeModel extends NodeModel {
 	        
 	        DateTime start_Time = formatter.parseDateTime(m_startTime.getStringValue());
 	        DateTime end_Time = formatter.parseDateTime(m_endTime.getStringValue());
-	    	if(start_Time.isBefore(timestampString) && end_Time.isAfter(timestampString)){
-	    		logger.info("time: " + timestamp);
-	    		list_timefilvalue.add(value);
-	    	}
+		    if(start_Time.isBefore(timestampString) && end_Time.isAfter(timestampString)){
+		    	//logger.info("time: " + timestamp);
+		    	list_timefilvalue.add(value);
+		    }
+
+	        
 		} catch (JEVisException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

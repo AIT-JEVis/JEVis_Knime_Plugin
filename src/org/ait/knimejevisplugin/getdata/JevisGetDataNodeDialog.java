@@ -33,8 +33,7 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
     			new SettingsModelInteger(
     					JevisGetDataNodeModel.CFGKEY_nodeID, JevisGetDataNodeModel.nodeID),
     			"NodeID",
-    			494));
-			
+    			494));			
     	addDialogComponent(new DialogComponentString(
     			new SettingsModelString(JevisGetDataNodeModel.startTime, "2016-01-20 00:00:00.0"),
     			"Put in the first Date (\"yyyy-mm-dd\")"));
