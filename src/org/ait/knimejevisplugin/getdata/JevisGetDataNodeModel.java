@@ -21,6 +21,7 @@ import org.jevis.api.JEVisSample;
 import org.jevis.api.JEVisType;
 import org.jevis.api.sql.JEVisDataSourceSQL;
 import org.joda.time.DateTime;
+import org.joda.time.Months;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.knime.core.data.DataCell;
@@ -62,7 +63,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 	static final int IN_PORT = 0;
 	
 	//Creating logger
-	private static final NodeLogger logger = NodeLogger
+	protected static final NodeLogger logger = NodeLogger
             .getLogger("GetDataLogger");
 	
 	private JEVisObject jObject;
@@ -73,9 +74,26 @@ public class JevisGetDataNodeModel extends NodeModel {
 
 
 	//Timeformat yyyy-MM-dd HH:mm:ss.s
-	static final String startTime = "startTime" ;// "2016-01-20 00:00:00.0";
-	static final String endTime = "endTime"; // "2016-01-22 00:00:00.0";
-
+	String startTime = "startTime" ;// "2016-01-20 00:00:00.0";
+	String endTime = "endTime"; // "2016-01-22 00:00:00.0";
+	static final String startDate = "startDate"; //"2016-01-20"
+	static final String endDate = "endDate"; //"2016-01-22"
+	static final String startDateyear = "start year";
+	static final String startDateMonth = "start month";
+	static final String startDateDay = "start day"; 
+	
+	static final String startHour = "Hour";
+	static final String startMinute = "Minute";
+	static final String startSecond = "Second";
+	
+	static final String endDateyear = "end year";
+	static final String endDateMonth = "end month";
+	static final String endDateDay = "end day"; 
+	
+	static final String endHour = "endHour";
+	static final String endMinute = "endMinute";
+	static final String endSecond = "endSecond";
+	
 	//Jevis Connection information
 	public static String host = "jevis3.ait.ac.at";
  	public static String port = "3306";
@@ -102,16 +120,48 @@ public class JevisGetDataNodeModel extends NodeModel {
         super(1, 1);
     }
 
+
+    
     //setting up the settingsmodel 
     private final SettingsModelInteger m_nodeID = new SettingsModelInteger(
     		JevisGetDataNodeModel.CFGKEY_nodeID, JevisGetDataNodeModel.nodeID);
     
-    private final SettingsModelString m_startTime = new SettingsModelString(
-    		JevisGetDataNodeModel.startTime, "2016-01-20 00:00:00.0");
+    //private final SettingsModelString m_startTime = new SettingsModelString(
+    //		JevisGetDataNodeModel.startTime, "2016-01-20 00:00:00.0");
     
-    private final SettingsModelString m_endTime = new SettingsModelString(
-    		JevisGetDataNodeModel.endTime, "2016-01-22 00:00:00.0");
+    //private final SettingsModelString m_endTime = new SettingsModelString(
+    //		JevisGetDataNodeModel.endTime, "2016-01-22 00:00:00.0");
+    private final SettingsModelString m_startDate = new SettingsModelString(
+    		JevisGetDataNodeModel.startDate, "2016-01-20");
+    private final SettingsModelString m_endDate = new SettingsModelString(
+    		JevisGetDataNodeModel.endDate, "2016-01-22");
+    private final SettingsModelString m_startDateYear = new SettingsModelString(
+    		JevisGetDataNodeModel.startDateyear, "2016");
+    private final SettingsModelString m_startDateMonth = new SettingsModelString(
+    		JevisGetDataNodeModel.startDateMonth, "01");
+    private final SettingsModelString m_startDateDay = new SettingsModelString(
+    		JevisGetDataNodeModel.startDateDay, "01");
+    private final SettingsModelString m_startHour= new SettingsModelString(
+    		JevisGetDataNodeModel.startHour, "0");
+    private final SettingsModelString m_startMinute= new SettingsModelString(
+    		JevisGetDataNodeModel.startMinute, "0");		
+    private final SettingsModelString m_startSeconds= new SettingsModelString(
+    		JevisGetDataNodeModel.startSecond, "0");
+    
+    private final SettingsModelString m_endDateYear = new SettingsModelString(
+    		JevisGetDataNodeModel.endDateyear, "2016");
+    private final SettingsModelString m_endDateMonth = new SettingsModelString(
+    		JevisGetDataNodeModel.endDateMonth, "01");
+    private final SettingsModelString m_endDateDay = new SettingsModelString(
+    		JevisGetDataNodeModel.endDateDay, "01");
+    private final SettingsModelString m_endHour= new SettingsModelString(
+    		JevisGetDataNodeModel.endHour, "0");
+    private final SettingsModelString m_endMinute= new SettingsModelString(
+    		JevisGetDataNodeModel.endMinute, "0");		
+    private final SettingsModelString m_endSeconds= new SettingsModelString(
+    		JevisGetDataNodeModel.endSecond, "0");
     /**
+     * 
      * {@inheritDoc}
      */
     @Override
@@ -131,9 +181,57 @@ public class JevisGetDataNodeModel extends NodeModel {
     		
     		if(jObject.getAttribute(attributeName) != null){
     			
-    			if(m_startTime.getStringValue().matches(
+    			if(!m_startDateMonth.getStringValue().matches("\\d\\d")){
+    				m_startDateMonth.setStringValue("0"+ m_startDateMonth.getStringValue());
+    			}
+    			if(!m_startDateDay.getStringValue().matches("\\d\\d")){
+    				m_startDateDay.setStringValue("0"+ m_startDateDay.getStringValue());
+    			}
+    			if(!m_startHour.getStringValue().matches("\\d\\d")){
+    				m_startHour.setStringValue("0"+ m_startHour.getStringValue());
+    			}
+    			if(!m_startMinute.getStringValue().matches("\\d\\d")){
+    				m_startMinute.setStringValue("0"+ m_startMinute.getStringValue());
+    			}
+    			if(!m_startSeconds.getStringValue().matches("\\d\\d")){
+    				m_startSeconds.setStringValue("0"+ m_startSeconds.getStringValue());
+    			}
+    			
+    			startTime = m_startDateYear.getStringValue()+"-"+
+    				m_startDateMonth.getStringValue()+"-"+
+    				m_startDateDay.getStringValue()+" "+
+    				m_startHour.getStringValue()+":"+
+    				m_startMinute.getStringValue()+":"+
+    				m_startSeconds.getStringValue()+".0";
+    			
+    			if(!m_endDateMonth.getStringValue().matches("\\d\\d")){
+    				m_endDateMonth.setStringValue("0"+ m_endDateMonth.getStringValue());
+    			}
+    			if(!m_endDateDay.getStringValue().matches("\\d\\d")){
+    				m_endDateDay.setStringValue("0"+ m_endDateDay.getStringValue());
+    			}
+    			if(!m_endHour.getStringValue().matches("\\d\\d")){
+    				m_endHour.setStringValue("0"+ m_endHour.getStringValue());
+    			}
+    			if(!m_endMinute.getStringValue().matches("\\d\\d")){
+    				m_endMinute.setStringValue("0"+ m_endMinute.getStringValue());
+    			}
+    			if(!m_endSeconds.getStringValue().matches("\\d\\d")){
+    				m_endSeconds.setStringValue("0"+ m_endSeconds.getStringValue());
+    			}
+    			
+    			endTime = m_endDateYear.getStringValue()+"-"+
+    				m_endDateMonth.getStringValue()+"-"+
+    				m_endDateDay.getStringValue()+" "+
+    				m_endHour.getStringValue()+":"+
+    				m_endMinute.getStringValue()+":"+
+    				m_endSeconds.getStringValue()+".0";
+    			
+    			startTime.trim();
+    			endTime.trim();
+    			if(startTime.matches(
     					"\\d\\d\\d\\d-\\d\\d-\\d\\d\\s\\d\\d:\\d\\d:\\d\\d.\\d")
-    					&&m_endTime.getStringValue().matches(
+    					&&endTime.matches(
     					"\\d\\d\\d\\d-\\d\\d-\\d\\d\\s\\d\\d:\\d\\d:\\d\\d.\\d")){
     				//yyyy-MM-dd HH:mm:ss.s"
     				logger.info("Matching");
@@ -181,11 +279,9 @@ public class JevisGetDataNodeModel extends NodeModel {
     			}    			
     		}else{
     			logger.error("Check NodeID! NodeID don't has an attribute called Value! "
-    					+ " Or node doesn't exist.");
-    			
+    					+ " Or node doesn't exist.");    			
     		}
-    		
-    		
+    		    		
     	}else{
     		logger.error("Jevis connection error!");
     	}
@@ -227,7 +323,9 @@ public class JevisGetDataNodeModel extends NodeModel {
         List<JEVisSample> valueList;
 		try {
 			valueList = my_Object.getAttribute(attributeName).getAllSamples();
-
+			
+			
+			
 	        for (JEVisSample value : valueList) {
 	        //Getting the data of value for input in table
 	        	filterDate(value);
@@ -245,8 +343,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 	            cells[2] = new StringCell("");
 	            counter++;
 	            DataRow row = new DefaultRow("Row"+ counter, cells);
-	            buf.addRowToTable(row); 
-	            
+	            buf.addRowToTable(row); 	            
 	        }
 
 		} catch (JEVisException e) {
@@ -263,22 +360,20 @@ public class JevisGetDataNodeModel extends NodeModel {
 	        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
 	        String timestamp = formatter.print(timestampString);
 	        
-	        DateTime start_Time = formatter.parseDateTime(m_startTime.getStringValue());
-	        DateTime end_Time = formatter.parseDateTime(m_endTime.getStringValue());
+	        DateTime start_Time = formatter.parseDateTime(startTime);
+	        DateTime end_Time = formatter.parseDateTime(endTime);
 		    if(start_Time.isBefore(timestampString) && end_Time.isAfter(timestampString)){
 		    	//logger.info("time: " + timestamp);
 		    	list_timefilvalue.add(value);
 		    }
-
 	        
 		} catch (JEVisException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-    	
+		}    	
     }
     
-    /**
+    /** 
      * {@inheritDoc}
      */
     @Override
@@ -304,8 +399,23 @@ public class JevisGetDataNodeModel extends NodeModel {
     protected void saveSettingsTo(final NodeSettingsWO settings) {
          // TODO: generated method stub
     	m_nodeID.saveSettingsTo(settings);
-    	m_startTime.saveSettingsTo(settings);
-    	m_endTime.saveSettingsTo(settings);
+    	//m_startTime.saveSettingsTo(settings);
+    	//m_endTime.saveSettingsTo(settings);
+    	
+    	m_startDateYear.saveSettingsTo(settings);
+    	m_startDateMonth.saveSettingsTo(settings);
+    	m_startDateDay.saveSettingsTo(settings);
+    	m_startHour.saveSettingsTo(settings);
+    	m_startMinute.saveSettingsTo(settings);
+    	m_startSeconds.saveSettingsTo(settings);
+    	
+    	m_endDateYear.saveSettingsTo(settings);
+    	m_endDateMonth.saveSettingsTo(settings);
+    	m_endDateDay.saveSettingsTo(settings);
+    	m_endHour.saveSettingsTo(settings);
+    	m_endMinute.saveSettingsTo(settings);
+    	m_endSeconds.saveSettingsTo(settings);
+    	
     }
 
     /**
@@ -316,8 +426,22 @@ public class JevisGetDataNodeModel extends NodeModel {
             throws InvalidSettingsException {
         // TODO: generated method stub
     	m_nodeID.loadSettingsFrom(settings);
-    	m_startTime.loadSettingsFrom(settings);
-    	m_endTime.loadSettingsFrom(settings);
+    	//m_startTime.loadSettingsFrom(settings);
+    	//m_endTime.loadSettingsFrom(settings);
+    	
+    	m_startDateYear.loadSettingsFrom(settings);
+    	m_startDateMonth.loadSettingsFrom(settings);
+    	m_startDateDay.loadSettingsFrom(settings);
+    	m_startHour.loadSettingsFrom(settings);
+    	m_startMinute.loadSettingsFrom(settings);
+    	m_startSeconds.loadSettingsFrom(settings);
+    	
+    	m_endDateYear.loadSettingsFrom(settings);
+    	m_endDateMonth.loadSettingsFrom(settings);
+    	m_endDateDay.loadSettingsFrom(settings);
+    	m_endHour.loadSettingsFrom(settings);
+    	m_endMinute.loadSettingsFrom(settings);
+    	m_endSeconds.loadSettingsFrom(settings);
     }
 
     /**
@@ -328,8 +452,23 @@ public class JevisGetDataNodeModel extends NodeModel {
             throws InvalidSettingsException {
         // TODO: generated method stub
     	m_nodeID.validateSettings(settings);
-    	m_startTime.validateSettings(settings);
-    	m_endTime.validateSettings(settings);
+    	//m_startTime.validateSettings(settings);
+    	//m_endTime.validateSettings(settings);
+    	
+    	m_startDateYear.validateSettings(settings);
+    	m_startDateMonth.validateSettings(settings);
+    	m_startDateDay.validateSettings(settings);
+    	m_startHour.validateSettings(settings);
+    	m_startMinute.validateSettings(settings);
+    	m_startSeconds.validateSettings(settings);
+    	
+    	m_endDateYear.validateSettings(settings);
+    	m_endDateMonth.validateSettings(settings);
+    	m_endDateDay.validateSettings(settings);
+    	m_endHour.validateSettings(settings);
+    	m_endMinute.validateSettings(settings);
+    	m_endSeconds.validateSettings(settings);
+    	
     }
     
     /**

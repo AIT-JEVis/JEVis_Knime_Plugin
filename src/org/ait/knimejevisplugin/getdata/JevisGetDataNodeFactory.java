@@ -1,5 +1,6 @@
 package org.ait.knimejevisplugin.getdata;
 
+import org.jevis.api.JEVisException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
@@ -51,7 +52,13 @@ public class JevisGetDataNodeFactory
      */
     @Override
     public NodeDialogPane createNodeDialogPane() {
-        return new JevisGetDataNodeDialog();
+        try {
+			return new JevisGetDataNodeDialog();
+		} catch (JEVisException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
     }
 
 }
