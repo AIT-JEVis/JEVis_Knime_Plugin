@@ -76,7 +76,7 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
    			new SettingsModelString(JevisGetDataNodeModel.startDateDay,"1"),
    				"day", days));
     	
-    	createNewGroup("Time Selection");
+    	createNewGroup("Start Time Selection");
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
         		JevisGetDataNodeModel.startHour, "00"), "hour"));
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
@@ -103,7 +103,7 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
    			new SettingsModelString(JevisGetDataNodeModel.endDateDay,"31"),
    				"day", days));
     	
-    	createNewGroup("Time Selection");
+    	createNewGroup("End Time Selection");
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
         		JevisGetDataNodeModel.endHour, "00"), "hour"));
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
