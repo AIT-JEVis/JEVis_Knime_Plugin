@@ -136,7 +136,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     private final SettingsModelString m_endDate = new SettingsModelString(
     		JevisGetDataNodeModel.endDate, "2016-01-22");
     private final SettingsModelString m_startDateYear = new SettingsModelString(
-    		JevisGetDataNodeModel.startDateyear, "2016");
+    		JevisGetDataNodeModel.startDateyear, "2000");
     private final SettingsModelString m_startDateMonth = new SettingsModelString(
     		JevisGetDataNodeModel.startDateMonth, "01");
     private final SettingsModelString m_startDateDay = new SettingsModelString(

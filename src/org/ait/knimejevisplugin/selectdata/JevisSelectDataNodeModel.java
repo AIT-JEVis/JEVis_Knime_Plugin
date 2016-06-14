@@ -55,6 +55,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static String m_NodeID = "NodeID";
    	public static int DEFAULT_NODEID = 483;
    	
+   	//Search for Attributes information
+   	public static String project = "Project";
+   	public static String location = "Location";
+   	public static String nodeType = "NodeType";
+   	public static String devicetype = "DeviceType";
+   	public static String component = "Component";
+   	
    	private JEVisDataSourceSQL jevis;
    	//Processing variables
 	private BufferedDataContainer buf;
@@ -79,6 +86,16 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	private final SettingsModelInteger m_nodeID = new SettingsModelInteger(
    			m_NodeID, DEFAULT_NODEID);
    	
+   	private final SettingsModelString m_project = new SettingsModelString(
+   			JevisSelectDataNodeModel.project,"");
+   	private final SettingsModelString m_location = new SettingsModelString(
+   			JevisSelectDataNodeModel.location,"");
+   	private final SettingsModelString m_nodeType = new SettingsModelString(
+   			JevisSelectDataNodeModel.nodeType,"");
+   	private final SettingsModelString m_devicetype = new SettingsModelString(
+   			JevisSelectDataNodeModel.devicetype,"");
+   	private final SettingsModelString m_component = new SettingsModelString(
+   			JevisSelectDataNodeModel.component,"");
     /**
      * {@inheritDoc}
      */
