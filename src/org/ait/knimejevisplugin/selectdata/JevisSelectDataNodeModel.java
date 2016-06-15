@@ -8,7 +8,13 @@ import org.ait.knimejevisplugin.getdata.JevisGetDataNodeModel;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.date.DateAndTimeCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.data.def.TimestampCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -21,6 +27,8 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+
+import javafx.scene.control.DateCell;
 
 /**
  * This is the model implementation of JevisSelectData.
@@ -61,6 +69,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static String nodeType = "NodeType";
    	public static String devicetype = "DeviceType";
    	public static String component = "Component";
+   	public static String searchNodeType = "SearchNodeType";
+   	public static String searchDeviceType = "SearchDeviceType";
+   	public static String searchComponentType = "SearchComponentType";
+   	
    	
    	private JEVisDataSourceSQL jevis;
    	//Processing variables
@@ -87,15 +99,23 @@ public class JevisSelectDataNodeModel extends NodeModel {
    			m_NodeID, DEFAULT_NODEID);
    	
    	private final SettingsModelString m_project = new SettingsModelString(
-   			JevisSelectDataNodeModel.project,"");
+   			JevisSelectDataNodeModel.project," ");
    	private final SettingsModelString m_location = new SettingsModelString(
-   			JevisSelectDataNodeModel.location,"");
+   			JevisSelectDataNodeModel.location," ");
    	private final SettingsModelString m_nodeType = new SettingsModelString(
-   			JevisSelectDataNodeModel.nodeType,"");
+   			JevisSelectDataNodeModel.nodeType," ");
    	private final SettingsModelString m_devicetype = new SettingsModelString(
-   			JevisSelectDataNodeModel.devicetype,"");
+   			JevisSelectDataNodeModel.devicetype," ");
    	private final SettingsModelString m_component = new SettingsModelString(
-   			JevisSelectDataNodeModel.component,"");
+   			JevisSelectDataNodeModel.component," ");
+   	private final SettingsModelString m_searchNodeTyoe = new SettingsModelString(
+   			JevisSelectDataNodeModel.searchNodeType, " ");
+   	private final SettingsModelString m_searchDeviceType = new SettingsModelString(
+   			JevisSelectDataNodeModel.searchDeviceType, " ");
+   	private final SettingsModelString m_searchComponentType = new SettingsModelString(
+   			JevisSelectDataNodeModel.searchComponentType, " ");
+   			
+   	
     /**
      * {@inheritDoc}
      */
@@ -106,8 +126,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	logger.setLevel(NodeLogger.LEVEL.INFO);
     	
     	connectingtojevis();
-    	DataTableSpec spec = new DataTableSpec();
-    	buf = exec.createDataContainer(spec);
+    	buf = exec.createDataContainer(createOutputTableSpec());
     	
     	if(jevis.isConnectionAlive()){
     		logger.info("Connection Alive!");
@@ -158,6 +177,30 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		logger.error("Connection error! Check Jevis settings and try again!");
     	}
     	
+    }
+    
+    private DataTableSpec createOutputTableSpec(){
+    	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator(
+    			"NodeID", IntCell.TYPE).createSpec();
+    	DataColumnSpec deviceTypeSpec = new DataColumnSpecCreator(
+    			"Devicetype", StringCell.TYPE).createSpec();
+    	DataColumnSpec componentTypeSpec = new DataColumnSpecCreator(
+    			"Component", StringCell.TYPE).createSpec();
+    	DataColumnSpec locationSpec = new DataColumnSpecCreator(
+    			"Location", StringCell.TYPE).createSpec();
+    	DataColumnSpec projectSpec = new DataColumnSpecCreator(
+    			"Project", StringCell.TYPE).createSpec();
+    	DataColumnSpec floorSpec = new DataColumnSpecCreator(
+    			"Floor", StringCell.TYPE).createSpec();
+    	DataColumnSpec firstTsSpec = new DataColumnSpecCreator(
+    			"First Timestamp", DateAndTimeCell.TYPE).createSpec();
+    	DataColumnSpec lastTSSpec = new DataColumnSpecCreator(
+    			"Last Timestamp", DateAndTimeCell.TYPE).createSpec();
+    	
+    	DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, deviceTypeSpec, componentTypeSpec,
+    			locationSpec, projectSpec, floorSpec, firstTsSpec, lastTSSpec);
+    	
+    	return outputTableSpec;
     }
     
     /**

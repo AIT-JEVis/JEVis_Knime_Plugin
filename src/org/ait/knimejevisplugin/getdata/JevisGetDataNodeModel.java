@@ -29,7 +29,10 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.IntValue;
+import org.knime.core.data.StringValue;
 import org.knime.core.data.container.RearrangeColumnsTable;
+import org.knime.core.data.date.DateAndTimeValue;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
@@ -264,6 +267,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    				"Comment", StringCell.TYPE).createSpec();
 	    		
 	    		result = new DataTableSpec(tsCol,valueCol,commentCol);
+	    		
 	    		buf = exec.createDataContainer(result);
 	    		
 	    		//Pushing basic information of table into flow variables
@@ -288,6 +292,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     	buf.close();
     	BufferedDataTable out = buf.getTable();
         // TODO: Return a BufferedDataTable for each output port 
+    
         return new BufferedDataTable[]{out};
     }
 
@@ -387,7 +392,28 @@ public class JevisGetDataNodeModel extends NodeModel {
     @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
             throws InvalidSettingsException {
+    	
+    	for(int i = 0; i< inSpecs[IN_PORT].getNumColumns(); i++){
+    		DataColumnSpec c = inSpecs[IN_PORT].getColumnSpec(i);
+    		if(i == 0){
+        		if(!c.getType().isCompatible(IntValue.class)){
+        	 		throw new InvalidSettingsException(
+            				"Invalid column type at first column"); 
+        		}
+    		}
+    		else if(0 < i && i < 5){
+    			if(!c.getType().isCompatible(StringValue.class)){
+    				throw new InvalidSettingsException(
+    						"Invalid Column type in columns 1 to 5.");
+    			}
+    		}else{
+    			if(!c.getType().isCompatible(DateAndTimeValue.class)){
+    				//TODO: Implement error message. 
+    			}
+    		}
 
+    	}
+    	
         // TODO: generated method stub
         return new DataTableSpec[]{null};
     }
