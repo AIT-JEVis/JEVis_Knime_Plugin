@@ -2,7 +2,10 @@ package org.ait.knimejevisplugin.selectdata;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.ait.knimejevisplugin.getdata.JevisGetDataNodeModel;
 import org.jevis.api.JEVisException;
@@ -25,6 +28,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
@@ -46,7 +50,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
         super(0, 1);
     }
 
-    private static final NodeLogger logger = NodeLogger
+    static final NodeLogger logger = NodeLogger
             .getLogger("SelectDataLogger");
     
     
@@ -60,7 +64,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static String jevisUser = "BerhnardM";
    	public static String jevisPW = "testpass01593";
  
-   	public static String m_NodeID = "NodeID";
+   	public static String nodeID = "NodeID";
    	public static int DEFAULT_NODEID = 483;
    	
    	//Search for Attributes information
@@ -73,6 +77,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static String searchDeviceType = "SearchDeviceType";
    	public static String searchComponentType = "SearchComponentType";
    	
+   	public static String parent = "parent";
+   	public static String children= "children";
+   	public static String allChildren = "allChildren";
+   	public static String siblings = "siblings";
    	
    	private JEVisDataSourceSQL jevis;
    	//Processing variables
@@ -96,7 +104,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
    			JevisSelectDataNodeModel.jevisPW,"testpass01593");
    	
    	private final SettingsModelInteger m_nodeID = new SettingsModelInteger(
-   			m_NodeID, DEFAULT_NODEID);
+   			nodeID, DEFAULT_NODEID);
    	
    	private final SettingsModelString m_project = new SettingsModelString(
    			JevisSelectDataNodeModel.project," ");
@@ -114,7 +122,15 @@ public class JevisSelectDataNodeModel extends NodeModel {
    			JevisSelectDataNodeModel.searchDeviceType, " ");
    	private final SettingsModelString m_searchComponentType = new SettingsModelString(
    			JevisSelectDataNodeModel.searchComponentType, " ");
-   			
+   	
+   	private final SettingsModelBoolean m_parents = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.parent, false);
+   	private final SettingsModelBoolean m_children = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.children, false);
+   	private final SettingsModelBoolean m_siblings = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.siblings, false);
+   	private final SettingsModelBoolean m_allChildren = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.allChildren, false);
    	
     /**
      * {@inheritDoc}
@@ -137,6 +153,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		for(JEVisObject child : list_Children){
     			logger.info(child.getName());
     		}
+    		SearchPattern searcher = new SearchPattern(jevis, m_project.getStringValue(),
+    				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
+    				m_component.getStringValue(), m_nodeID.getIntValue(), m_parents.getBooleanValue(),
+    				m_children.getBooleanValue(),m_siblings.getBooleanValue(),m_allChildren.getBooleanValue());
+    		searcher.searchProject();
+    		for(JEVisObject serch :searcher.searchresult)
+    		logger.warn(serch.getName());
     	}
     	
     	
@@ -177,6 +200,15 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		logger.error("Connection error! Check Jevis settings and try again!");
     	}
     	
+    }
+ 
+    		
+    private void getInformationFromNodeID(JEVisObject searchObject){
+    	
+    }
+    
+    private void fillTableWithAllInformation(){
+    	//TODO:metzhod stub
     }
     
     private DataTableSpec createOutputTableSpec(){
@@ -227,7 +259,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-         // TODO: generated method stub
+        //Saving ConnectionSettings
     	jhost.saveSettingsTo(settings);
     	jport.saveSettingsTo(settings);
     	jSchema.saveSettingsTo(settings);
@@ -235,6 +267,18 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	jPW.saveSettingsTo(settings);
     	jevUser.saveSettingsTo(settings);
     	jevPW.saveSettingsTo(settings);
+    	//Saving Search Settings
+    	m_project.saveSettingsTo(settings);
+    	m_location.saveSettingsTo(settings);
+    	m_nodeType.saveSettingsTo(settings);
+    	m_devicetype.saveSettingsTo(settings);
+    	m_component.saveSettingsTo(settings);
+    	
+    	m_parents.saveSettingsTo(settings);
+    	m_children.saveSettingsTo(settings);
+    	m_siblings.saveSettingsTo(settings);
+    	m_allChildren.saveSettingsTo(settings);
+    	
     }
 
     /**
@@ -251,6 +295,17 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	jPW.loadSettingsFrom(settings);
     	jevUser.loadSettingsFrom(settings);
     	jevPW.loadSettingsFrom(settings);
+    	
+    	m_project.loadSettingsFrom(settings);
+    	m_location.loadSettingsFrom(settings);
+    	m_nodeType.loadSettingsFrom(settings);
+    	m_devicetype.loadSettingsFrom(settings);
+    	m_component.loadSettingsFrom(settings);
+    	
+    	m_parents.loadSettingsFrom(settings);
+    	m_children.loadSettingsFrom(settings);
+    	m_siblings.loadSettingsFrom(settings);
+    	m_allChildren.loadSettingsFrom(settings);
     }
 
     /**
@@ -267,6 +322,18 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	jPW.validateSettings(settings);
     	jevUser.validateSettings(settings);
     	jevPW.validateSettings(settings);
+    	
+    	m_project.validateSettings(settings);
+    	m_location.validateSettings(settings);
+    	m_nodeType.validateSettings(settings);
+    	m_devicetype.validateSettings(settings);
+    	m_component.validateSettings(settings);
+    	
+    	m_parents.validateSettings(settings);
+    	m_children.validateSettings(settings);
+    	m_siblings.validateSettings(settings);
+    	m_allChildren.validateSettings(settings);
+
     	
     }
     
