@@ -50,7 +50,7 @@ public class SearchPattern {
 		
 	}
 
-	private List<JEVisObject> searchData() throws JEVisException{
+	public List<JEVisObject> searchData() throws JEVisException{
 		
 		
 		// List of all Datapoints which are gonna be searched
@@ -60,15 +60,15 @@ public class SearchPattern {
 		for(JEVisObject datapoint: datapoints){
 			List<JEVisObject> parents = datapoint.getParents();
 			//Getting Time information for OuputTable
-			DateTime firstTS = datapoint.getAttribute("Value").getTimestampFromFirstSample();
-			DateTime lastTS = datapoint.getAttribute("Value").getTimestampFromLastSample();
-			long fnodeID = datapoint.getID();
-			String dataName =  datapoint.getName();
+			//DateTime firstTS = datapoint.getAttribute("Value").getTimestampFromFirstSample();
+			//DateTime lastTS = datapoint.getAttribute("Value").getTimestampFromLastSample();
+			//long fnodeID = datapoint.getID();
+			//String dataName =  datapoint.getName();
 			for(JEVisObject parent :parents){
 				
 				if(parent.getID() == nodeID){
 					//TODO: some method to search there.
-					fnodeID = parent.getID();
+					long fnodeID = parent.getID();
 				}
 				if(parent.getJEVisClass() == jevis.getJEVisClass("Device")){
 					if(!devicetype.isEmpty()){
