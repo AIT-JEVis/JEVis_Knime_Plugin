@@ -157,8 +157,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
     				m_component.getStringValue(), m_nodeID.getIntValue(), m_parents.getBooleanValue(),
     				m_children.getBooleanValue(),m_siblings.getBooleanValue(),m_allChildren.getBooleanValue());
-    		searcher.searchData();
-    		for(JEVisObject serch :searcher.searchresult)
+    		
+    		for(JEVisObject serch :searcher.searchData())
     		logger.warn(serch.getName());
     	}
     	
