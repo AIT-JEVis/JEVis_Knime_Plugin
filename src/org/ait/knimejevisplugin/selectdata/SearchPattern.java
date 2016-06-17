@@ -7,6 +7,7 @@ import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
 import org.jevis.commons.cli.CommonCLIOptions.JEVis;
+import org.joda.time.DateTime;
 
 public class SearchPattern {
 	
@@ -22,11 +23,6 @@ public class SearchPattern {
 	boolean siblings;
 	boolean allChildren;
 	
-	List<String> fProject;
-	List<String> fLocation;
-	List<String> fNodeType;
-	List<String> fDevicetype;
-	List<String> fComponent;
 	
 	List<JEVisObject> searchresult;
 	
@@ -47,147 +43,86 @@ public class SearchPattern {
 	}
 
 
-	public void searchProject() throws JEVisException{
-		
-		List<JEVisObject> projectlist = jevis.getObjects(jevis.getJEVisClass("Organization"),true);
-		if(!project.isEmpty()){
-			for(JEVisObject sproject : projectlist){
-				if(sproject.getName().equals(project)){
-					searchLocation(sproject);
-				}
-			}
-		}else{
-			for(JEVisObject project:projectlist){
-				searchLocation(project);
-			}
-		}		
-	}
-	
-	private void searchLocation(JEVisObject sproject) throws JEVisException{
-		List<JEVisObject> locationlist = sproject.getChildren();
-		if(!location.isEmpty()){
-			for(JEVisObject slocation: locationlist){
-				if(slocation.getName().equals(location)){
-					
-					searchNodeType(sproject, slocation);
-				}				
-			}	
-		}else{
-			for(JEVisObject slocation: locationlist){
-				searchNodeType(sproject, slocation);
-			}
-		}
-	}
-	
-	private void searchNodeType(JEVisObject sproject, JEVisObject slocation) throws JEVisException{
-		List<JEVisClass> nodetypeList = jevis.getJEVisClasses();
-		if(!nodeType.isEmpty()){
-			for(JEVisClass snodetype: nodetypeList){
-				if(snodetype.getName().equals(nodeType)){
-					
-					searchComponent(sproject, slocation, snodetype);		
-				}
-			}
-		}else{
-			
-		}
-	}
-	
-	private void searchComponent(JEVisObject sproject, JEVisObject slocation, JEVisClass snodetype)
-			throws JEVisException{
-		List<JEVisObject> componentlist = slocation.getChildren();
-		if(!location.isEmpty()){
-			for(JEVisObject scomponent : componentlist){
-				if(scomponent.getName().equals(component)){
-					searchDeviceType(sproject, slocation, snodetype, scomponent);
-				}
-			}
-		}else{
-			for(JEVisObject scomponent : componentlist){
-				searchDeviceType(sproject, slocation, snodetype, scomponent);
-			}
-		}
-		
-	}
-	
-	private void searchDeviceType(JEVisObject sproject, JEVisObject slocation, JEVisClass snodetype,
-			JEVisObject scomponent )
-			throws JEVisException{
-		List<JEVisObject> devices = scomponent.getChildren(jevis.getJEVisClass("Data"), true);
-			if(!devicetype.isEmpty()){
-				for(JEVisObject device: devices){
-					searchresult.add(device);
-				}
-			}else{
-				
-			}
-	}
-	
-	
-	private JEVisObject searchProject1() throws JEVisException{
-		
-		List<JEVisObject> list_project = jevis.getObjects(jevis.getJEVisClass("Organization"), true);
-		JEVisObject notfoundObject= null;
-		
-		for(JEVisObject pro: list_project){
-			if(pro.getName().equals(project)){		
-				return pro;
-			}
-				
-		}
-		return notfoundObject;
-	}
-	
+
 	private List<JEVisObject> searchNodetype() throws JEVisException{
 		List<JEVisObject> list_nodetype = jevis.getObjects(jevis.getJEVisClass(nodeType), true);
 		return list_nodetype;
 		
 	}
-	
-	private void search() throws JEVisException{
-		
 
-		List<JEVisObject> searchlist = jevis.getObjects(jevis.getJEVisClass("Organization"), true);
-		while(!searchlist.get(1).getJEVisClass().equals(jevis.getJEVisClass("Data"))){
-			for(JEVisObject search:searchlist){
-				if(search.getName()==project){
-					JEVisObject organization = search;
-					searchlist= search.getChildren();
-					break;
-				}	
-			}
-		}			
-	}
-	
-	
-	private long searchLocation() throws JEVisException{
-		JEVisObject searchObject = jevis.getObject((long) nodeID);
+	private List<JEVisObject> searchData() throws JEVisException{
 		
-		JEVisClass finder= null;
-		do{
-			List<JEVisObject> search1 = searchObject.getChildren();
-			for(JEVisObject object : search1){
-				finder = object.getJEVisClass();
-				List<JEVisObject> search2= null;
-				if(object.getJEVisClass()==jevis.getJEVisClass("Building")){
-					if(object.getName().equals(location)){
-						long locationid= object.getID();
-					}else{
+		
+		// List of all Datapoints which are gonna be searched
+		List<JEVisObject> datapoints = jevis.getObjects(jevis.getJEVisClass("Data"), true);
+		//List containing found datapoints which match the search.
+		List<JEVisObject> searchresult= null;
+		for(JEVisObject datapoint: datapoints){
+			List<JEVisObject> parents = datapoint.getParents();
+			//Getting Time information for OuputTable
+			DateTime firstTS = datapoint.getAttribute("Value").getTimestampFromFirstSample();
+			DateTime lastTS = datapoint.getAttribute("Value").getTimestampFromLastSample();
+			long fnodeID = datapoint.getID();
+			String dataName =  datapoint.getName();
+			for(JEVisObject parent :parents){
+				
+				if(parent.getID() == nodeID){
+					//TODO: some method to search there.
+					fnodeID = parent.getID();
+				}
+				if(parent.getJEVisClass() == jevis.getJEVisClass("Device")){
+					if(!devicetype.isEmpty()){
+						if(parent.getName().equals(devicetype)){
+							String fcomponent = parent.getName();
+							searchresult.add(datapoint);
+						}
+						else{
+							break;
+						}
+					}
+					else{
+						String fcomponent = parent.getName();
+						searchresult.add(datapoint);
 						
 					}
-				}else{
-					search2 = object.getChildren();
 				}
-				
-				for(JEVisObject object2 : search2){
-					if(finder == jevis.getJEVisClass("Data")){
-						break;
+				else if(parent.getJEVisClass() == jevis.getJEVisClass("Building")){
+					if(!location.isEmpty()){
+						if(parent.getName().equals(location)){
+							String fLocation = parent.getName();
+							searchresult.add(datapoint);
+						}
+						else{
+							break;
+						}
 					}
-					search1= object2.getChildren();
+					else{
+						String flocation = parent.getName();
+						searchresult.add(datapoint);
+						
+					}
+				}
+				else if(parent.getJEVisClass()== jevis.getJEVisClass("Organization")){
+
+					if(!project.isEmpty()){
+						if(parent.getName().equals(project)){
+							String fproject = parent.getName();
+							searchresult.add(datapoint);
+						}
+						else{
+							break;
+						}
+					}
+					else{
+						String fproject = parent.getName();
+						searchresult.add(datapoint);
+					}
+					
 				}
 			}
-		}while(finder != jevis.getJEVisClass("Data"));
-			
-		
+		}
+		return searchresult;
 	}
+				
+	
 }
