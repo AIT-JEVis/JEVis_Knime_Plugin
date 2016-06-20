@@ -11,11 +11,16 @@ import org.ait.knimejevisplugin.getdata.JevisGetDataNodeModel;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.date.DateAndTimeCell;
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.def.TimestampCell;
 import org.knime.core.node.BufferedDataContainer;
@@ -53,7 +58,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     static final NodeLogger logger = NodeLogger
             .getLogger("SelectDataLogger");
     
-    
+    int counter = 0;
   //Jevis Connection information
   	public static String host = "Hostaddress";
    	public static String port = "Port";
@@ -68,6 +73,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static int DEFAULT_NODEID = 483;
    	
    	//Search for Attributes information
+   	public static String enableAttribute = "enableAttribute";
+   	
    	public static String project = "Project";
    	public static String location = "Location";
    	public static String nodeType = "NodeType";
@@ -76,6 +83,14 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static String searchNodeType = "SearchNodeType";
    	public static String searchDeviceType = "SearchDeviceType";
    	public static String searchComponentType = "SearchComponentType";
+   	
+   	public static String enableProject = "enableProject";
+   	public static String enableLocation = "enableLocation";
+   	public static String enableNodeType= "enableNodeType";
+   	public static String enableComponent= "enableComponent";
+   	public static String enableDevice = "enableDevice";
+   	
+   	public static String enableStructure = "enableStructure";
    	
    	public static String parent = "parent";
    	public static String children= "children";
@@ -106,6 +121,9 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	private final SettingsModelInteger m_nodeID = new SettingsModelInteger(
    			nodeID, DEFAULT_NODEID);
    	
+   	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableAttribute,true);
+   	
    	private final SettingsModelString m_project = new SettingsModelString(
    			JevisSelectDataNodeModel.project," ");
    	private final SettingsModelString m_location = new SettingsModelString(
@@ -116,12 +134,27 @@ public class JevisSelectDataNodeModel extends NodeModel {
    			JevisSelectDataNodeModel.devicetype," ");
    	private final SettingsModelString m_component = new SettingsModelString(
    			JevisSelectDataNodeModel.component," ");
+   	
+   	private final SettingsModelBoolean m_enableProject = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableProject, true);
+   	private final SettingsModelBoolean m_enableLocation = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableLocation, true);
+   	private final SettingsModelBoolean m_enableNodeType = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableNodeType, true);
+   	private final SettingsModelBoolean m_enableComponent = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableComponent, true);
+   	private final SettingsModelBoolean m_enableDevice = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableDevice, true);
+   	
    	private final SettingsModelString m_searchNodeTyoe = new SettingsModelString(
    			JevisSelectDataNodeModel.searchNodeType, " ");
    	private final SettingsModelString m_searchDeviceType = new SettingsModelString(
    			JevisSelectDataNodeModel.searchDeviceType, " ");
    	private final SettingsModelString m_searchComponentType = new SettingsModelString(
    			JevisSelectDataNodeModel.searchComponentType, " ");
+   	
+   	private final SettingsModelBoolean m_enableStructure = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableStructure, true);
    	
    	private final SettingsModelBoolean m_parents = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.parent, false);
@@ -146,6 +179,50 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	
     	if(jevis.isConnectionAlive()){
     		logger.info("Connection Alive!");
+
+    		SearchPattern searcher = new SearchPattern(jevis, m_project.getStringValue(),
+    				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
+    				m_component.getStringValue(), m_nodeID.getIntValue(), m_parents.getBooleanValue(),
+    				m_children.getBooleanValue(),m_siblings.getBooleanValue(),m_allChildren.getBooleanValue(),
+    				m_enableProject.getBooleanValue(), m_enableLocation.getBooleanValue(),
+    				m_enableNodeType.getBooleanValue(), m_enableDevice.getBooleanValue(),
+    				m_enableComponent.getBooleanValue());
+    		List<JEVisObject> searchresult= searcher.searchData();
+    		
+    		DataTableSpec result = createOutputTableSpec();
+    		for(JEVisObject search : searchresult){
+    			DataCell[]cells = new DataCell[result.getNumColumns()];
+ 	            cells[0] = new LongCell(search.getID());
+ 	            cells[1] = new StringCell(search.getName());
+ 	            cells[2] = new StringCell("");
+ 	            cells[3] = new StringCell("");
+ 	            cells[4] = new StringCell("");
+ 	            cells[5] = new StringCell("");
+ 	            cells[6] = new StringCell("");
+ 	            if(search.getAttributes()== null){
+ 	            	cells[7] = new DateAndTimeCell(0, 0, 0);
+ 	            	cells[8]= new DateAndTimeCell(0, 0, 0);
+ 	            }
+ 	            else if(search.getAttribute("Value") != null){
+ 		            cells[7] = new DateAndTimeCell(
+ 	 	            		search.getAttribute("Value").getTimestampFromFirstSample().getYear(),
+ 	 	            		search.getAttribute("Value").getTimestampFromFirstSample().getMonthOfYear(), 
+ 	 	            		search.getAttribute("Value").getTimestampFromFirstSample().getDayOfMonth());
+ 	 	            cells[8] = new DateAndTimeCell(
+ 	 	            		search.getAttribute("Value").getTimestampFromLastSample().getYear(),
+ 	 	            		search.getAttribute("Value").getTimestampFromLastSample().getMonthOfYear(), 
+ 	 	            		search.getAttribute("Value").getTimestampFromLastSample().getDayOfMonth());
+ 	            }else{
+ 	            	cells[7] = new DateAndTimeCell(0, 0, 0);
+ 	            	cells[8] = new DateAndTimeCell(0, 0, 0);
+ 	            }
+
+ 	            counter++;
+	            DataRow row = new DefaultRow("Row"+ counter, cells);
+	            buf.addRowToTable(row);
+    		}
+    		/*
+    		//TODO: Search after structure not implemented yet
     		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;
     		//logger.info(jObject.getJEVisClass().getType("Value").getPrimitiveType());
     		//logger.info(jObject.getAttribute("Value").getType().toString());
@@ -153,13 +230,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		for(JEVisObject child : list_Children){
     			logger.info(child.getName());
     		}
-    		SearchPattern searcher = new SearchPattern(jevis, m_project.getStringValue(),
-    				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
-    				m_component.getStringValue(), m_nodeID.getIntValue(), m_parents.getBooleanValue(),
-    				m_children.getBooleanValue(),m_siblings.getBooleanValue(),m_allChildren.getBooleanValue());
-    		
     		for(JEVisObject serch :searcher.searchData())
-    		logger.warn(serch.getName());
+    		logger.warn(serch.getName());*/
     	}
     	
     	

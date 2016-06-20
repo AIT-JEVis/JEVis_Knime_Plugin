@@ -68,7 +68,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    	private final SettingsModelString jevPW = new SettingsModelString(
    			JevisSelectDataNodeModel.jevisPW,"testpass01593");
 	
-   	private final SettingsModelBoolean enableAttribute = new SettingsModelBoolean("ENABLE", false);
+   	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableAttribute,true);
    	
    	private final SettingsModelString m_project = new SettingsModelString(
    			JevisSelectDataNodeModel.project,"");
@@ -80,12 +81,27 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    			JevisSelectDataNodeModel.devicetype,"");
    	private final SettingsModelString m_component = new SettingsModelString(
    			JevisSelectDataNodeModel.component,"");
+   	
+   	private final SettingsModelBoolean m_enableProject = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableProject, true);
+   	private final SettingsModelBoolean m_enableLocation = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableLocation, true);
+   	private final SettingsModelBoolean m_enableNodeType = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableNodeType, true);
+   	private final SettingsModelBoolean m_enableComponent = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableComponent, true);
+   	private final SettingsModelBoolean m_enableDevice = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableDevice, true);
+   	
    	private final SettingsModelString m_searchNodeType = new SettingsModelString(
    			JevisSelectDataNodeModel.searchNodeType, " ");
    	private final SettingsModelString m_searchDeviceType = new SettingsModelString(
    			JevisSelectDataNodeModel.searchDeviceType, " ");
    	private final SettingsModelString m_searchComponentType = new SettingsModelString(
    			JevisSelectDataNodeModel.searchComponentType, " ");
+   	
+   	private final SettingsModelBoolean m_enableStructure = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableStructure, true);
    	
    	private final SettingsModelBoolean m_parents = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.parent, false);
@@ -123,27 +139,32 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	
     	createNewTabAt("Filter Output",1);
     	createNewGroup("Search through attributes");
-    	addDialogComponent(new DialogComponentBoolean(enableAttribute, "disable Attribute Search"));
-    	enableAttribute.addChangeListener(new ChangeListener() {
+    	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "disable Attribute Search"));
+    	m_enableAttribute.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				// TODO Auto-generated method stub
-		    	m_nodeType.setEnabled(enableAttribute.getBooleanValue());
-		    	m_devicetype.setEnabled(enableAttribute.getBooleanValue());
-		    	m_component.setEnabled(enableAttribute.getBooleanValue());
-		    	m_location.setEnabled(enableAttribute.getBooleanValue());
-		    	m_searchDeviceType.setEnabled(enableAttribute.getBooleanValue());
-		    	m_searchNodeType.setEnabled(enableAttribute.getBooleanValue());
-		    	m_searchComponentType.setEnabled(enableAttribute.getBooleanValue());
-		    	m_project.setEnabled(enableAttribute.getBooleanValue());
+		    	m_nodeType.setEnabled(m_enableAttribute.getBooleanValue());
+		    	m_devicetype.setEnabled(m_enableAttribute.getBooleanValue());
+		    	m_component.setEnabled(m_enableAttribute.getBooleanValue());
+		    	m_location.setEnabled(m_enableAttribute.getBooleanValue());
+		    	m_searchDeviceType.setEnabled(m_enableAttribute.getBooleanValue());
+		    	m_searchNodeType.setEnabled(m_enableAttribute.getBooleanValue());
+		    	m_searchComponentType.setEnabled(m_enableAttribute.getBooleanValue());
+		    	m_project.setEnabled(m_enableAttribute.getBooleanValue());
 		    	
 			}
 		});
     	DialogComponentStringSelection diac_nodeType = new  DialogComponentStringSelection(m_nodeType, "NodeType", nodefilter);
 
     	//Searching for Attributes like project, location, nodeType, device and component
+    	setHorizontalPlacement(true);
+    	addDialogComponent(new DialogComponentBoolean(m_enableProject, "enable Project search:"));
     	addDialogComponent(new DialogComponentString(m_project, "Project"));
+    	setHorizontalPlacement(false);
+    	setHorizontalPlacement(true);
+    	addDialogComponent(new DialogComponentBoolean(m_enableLocation, "enable location search:"));
     	addDialogComponent(new DialogComponentString(m_location, "Location"));
     	setHorizontalPlacement(true);
     	addDialogComponent(diac_nodeType);
