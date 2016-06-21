@@ -161,24 +161,69 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	//Searching for Attributes like project, location, nodeType, device and component
     	setHorizontalPlacement(true);
     	addDialogComponent(new DialogComponentBoolean(m_enableProject, "enable Project search:"));
+    	m_enableProject.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				m_project.setEnabled(m_enableProject.getBooleanValue());
+			}
+		});
     	addDialogComponent(new DialogComponentString(m_project, "Project"));
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
     	addDialogComponent(new DialogComponentBoolean(m_enableLocation, "enable location search:"));
+    	m_enableLocation.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				m_location.setEnabled(m_enableLocation.getBooleanValue());
+			}
+		});
     	addDialogComponent(new DialogComponentString(m_location, "Location"));
+    	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
+    	addDialogComponent(new DialogComponentBoolean(m_enableNodeType, "Enable Node Search"));
+    	m_enableNodeType.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				m_nodeType.setEnabled(m_enableNodeType.getBooleanValue());
+			}
+		});
     	addDialogComponent(diac_nodeType);
     	//addDialogComponent(new DialogComponentString(m_searchNodeType," "));
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
+    	addDialogComponent(new DialogComponentBoolean(m_enableDevice, "Enable Device Search"));
+    	m_enableDevice.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				m_devicetype.setEnabled(m_enableDevice.getBooleanValue());
+			}
+		});
     	addDialogComponent(new DialogComponentStringSelection(m_devicetype, "Device", devicetypes));
     	//addDialogComponent(new DialogComponentString(m_searchDeviceType, " "));
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
+    	addDialogComponent(new DialogComponentBoolean(m_enableComponent, "Enable Component Search"));
+    	m_enableComponent.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				m_component.setEnabled(m_enableComponent.getBooleanValue());
+			}
+		});
     	addDialogComponent(new DialogComponentStringSelection(m_component, "Component", components));
     	//addDialogComponent(new DialogComponentString(m_searchComponentType, " "));
     	
     	createNewGroup("Search with structure");
+    	addDialogComponent(new DialogComponentBoolean(m_enableStructure, "Enable Structure Search"));
     	setHorizontalPlacement(true);
     	addDialogComponent(new DialogComponentBoolean(m_parents, "Parents"));
     	addDialogComponent(new DialogComponentBoolean(m_children, "Children"));

@@ -198,23 +198,23 @@ public class JevisSelectDataNodeModel extends NodeModel {
  	            cells[3] = new StringCell("");
  	            cells[4] = new StringCell("");
  	            cells[5] = new StringCell("");
- 	            cells[6] = new StringCell("");
+ 	        //    cells[6] = new StringCell("");
  	            if(search.getAttributes()== null){
  	            	cells[7] = new DateAndTimeCell(0, 0, 0);
- 	            	cells[8]= new DateAndTimeCell(0, 0, 0);
+ 	            	cells[6]= new DateAndTimeCell(0, 0, 0);
  	            }
  	            else if(search.getAttribute("Value") != null){
  		            cells[7] = new DateAndTimeCell(
  	 	            		search.getAttribute("Value").getTimestampFromFirstSample().getYear(),
  	 	            		search.getAttribute("Value").getTimestampFromFirstSample().getMonthOfYear(), 
  	 	            		search.getAttribute("Value").getTimestampFromFirstSample().getDayOfMonth());
- 	 	            cells[8] = new DateAndTimeCell(
+ 	 	            cells[6] = new DateAndTimeCell(
  	 	            		search.getAttribute("Value").getTimestampFromLastSample().getYear(),
  	 	            		search.getAttribute("Value").getTimestampFromLastSample().getMonthOfYear(), 
  	 	            		search.getAttribute("Value").getTimestampFromLastSample().getDayOfMonth());
  	            }else{
  	            	cells[7] = new DateAndTimeCell(0, 0, 0);
- 	            	cells[8] = new DateAndTimeCell(0, 0, 0);
+ 	            	cells[6] = new DateAndTimeCell(0, 0, 0);
  	            }
 
  	            counter++;
@@ -285,7 +285,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     
     private DataTableSpec createOutputTableSpec(){
     	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator(
-    			"NodeID", IntCell.TYPE).createSpec();
+    			"NodeID", LongCell.TYPE).createSpec();
     	DataColumnSpec deviceTypeSpec = new DataColumnSpecCreator(
     			"Devicetype", StringCell.TYPE).createSpec();
     	DataColumnSpec componentTypeSpec = new DataColumnSpecCreator(
@@ -351,6 +351,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	m_siblings.saveSettingsTo(settings);
     	m_allChildren.saveSettingsTo(settings);
     	
+    	m_enableAttribute.saveSettingsTo(settings);
+    	m_enableComponent.saveSettingsTo(settings);
+    	m_enableDevice.saveSettingsTo(settings);
+    	m_enableLocation.saveSettingsTo(settings);
+    	m_enableNodeType.saveSettingsTo(settings);
+    	m_enableProject.saveSettingsTo(settings);
+    	m_enableStructure.saveSettingsTo(settings);
     }
 
     /**
@@ -378,6 +385,14 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	m_children.loadSettingsFrom(settings);
     	m_siblings.loadSettingsFrom(settings);
     	m_allChildren.loadSettingsFrom(settings);
+    	
+    	m_enableAttribute.loadSettingsFrom(settings);
+    	m_enableComponent.loadSettingsFrom(settings);
+    	m_enableDevice.loadSettingsFrom(settings);
+    	m_enableLocation.loadSettingsFrom(settings);
+    	m_enableNodeType.loadSettingsFrom(settings);
+    	m_enableProject.loadSettingsFrom(settings);
+    	m_enableStructure.loadSettingsFrom(settings);
     }
 
     /**
@@ -406,6 +421,14 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	m_siblings.validateSettings(settings);
     	m_allChildren.validateSettings(settings);
 
+    	m_enableAttribute.validateSettings(settings);
+    	m_enableComponent.validateSettings(settings);
+    	m_enableDevice.validateSettings(settings);
+    	m_enableLocation.validateSettings(settings);
+    	m_enableNodeType.validateSettings(settings);
+    	m_enableProject.validateSettings(settings);
+    	m_enableStructure.validateSettings(settings);
+    	
     	
     }
     

@@ -82,9 +82,9 @@ public class SearchPattern {
 	public List<JEVisObject> checkLevel(List<JEVisObject> children, List<JEVisObject> searchresult) throws JEVisException{
 
 		for(JEVisObject child : children){
-			if(child.getJEVisClass()== jevis.getJEVisClass("Organization")){
+			if(child.getJEVisClass() == jevis.getJEVisClass("Organization")){
 				System.out.println("Project:" + child.getName());
-				if(!enabledProject){
+				if(enabledProject){
 					if(child.getName().equals(project)){
 						projectObject = child;
 						List<JEVisObject> projectChildren = projectObject.getChildren();
@@ -94,9 +94,10 @@ public class SearchPattern {
 					checkLevel(child.getChildren(), searchresult);
 				}
 			}
+
 			else if(child.getJEVisClass()==jevis.getJEVisClass("Building")){
 				System.out.println("Location:" + child.getName());
-				if(!enabledLocation){
+				if(enabledLocation){
 					if(child.getName().equals(location)){
 						locationObject = child;
 						List<JEVisObject> locationChildren = locationObject.getChildren();
@@ -109,7 +110,7 @@ public class SearchPattern {
 			}
 			else if(child.getJEVisClass()==jevis.getJEVisClass("Device")){
 				System.out.println("Component:" + child.getName());
-				if(!enabledComponent){
+				if(enabledComponent){
 					if(child.getName().equals(component)){
 						componentObject = child;
 						List<JEVisObject> componentChildren = componentObject.getChildren();
@@ -121,17 +122,22 @@ public class SearchPattern {
 			}
 			else if(child.getJEVisClass()== jevis.getJEVisClass("Data")){
 				System.out.println("Data:" + child.getName());
-				if(!enableddeviceType){
-					if(child.equals(devicetype)){
+				if(enableddeviceType){
+					if(child.getName().equals(devicetype)){
 						searchresult.add(child);
 					}else{
 						System.out.println("No Datapoint found");
 					}
 				}else{
 					searchresult.add(child);
-				}
-
+				}	
 			}
+	/*		else if(child.getJEVisClass()== jevis.getJEVisClass(nodeType)){
+				System.out.println("NodeType:"+ child.getName());
+				if(enabledNodeType){
+					searchresult.add(child);
+				}
+			}*/
 			else{
 				checkLevel(child.getChildren(), searchresult);				
 			}
