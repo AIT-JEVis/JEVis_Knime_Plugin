@@ -97,6 +97,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static String allChildren = "allChildren";
    	public static String siblings = "siblings";
    	
+   	public static SearchConfiguration configuration = new SearchConfiguration();
+   	
    	private JEVisDataSourceSQL jevis;
    	//Processing variables
 	private BufferedDataContainer buf;
@@ -179,48 +181,18 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	
     	if(jevis.isConnectionAlive()){
     		logger.info("Connection Alive!");
-
-    		SearchPattern searcher = new SearchPattern(jevis, m_project.getStringValue(),
+    		DataTableSpec result = createOutputTableSpec();
+    		SearchForAttributes searcher = new SearchForAttributes(jevis, m_project.getStringValue(),
     				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
     				m_component.getStringValue(), m_nodeID.getIntValue(), m_parents.getBooleanValue(),
     				m_children.getBooleanValue(),m_siblings.getBooleanValue(),m_allChildren.getBooleanValue(),
     				m_enableProject.getBooleanValue(), m_enableLocation.getBooleanValue(),
     				m_enableNodeType.getBooleanValue(), m_enableDevice.getBooleanValue(),
-    				m_enableComponent.getBooleanValue());
-    		List<JEVisObject> searchresult= searcher.searchData();
+    				m_enableComponent.getBooleanValue(),result);
+    		BufferedDataContainer test = exec.createDataContainer(result);
+    		buf = searcher.searchData(test);
     		
-    		DataTableSpec result = createOutputTableSpec();
-    		for(JEVisObject search : searchresult){
-    			DataCell[]cells = new DataCell[result.getNumColumns()];
- 	            cells[0] = new LongCell(search.getID());
- 	            cells[1] = new StringCell(search.getName());
- 	            cells[2] = new StringCell("");
- 	            cells[3] = new StringCell("");
- 	            cells[4] = new StringCell("");
- 	            cells[5] = new StringCell("");
- 	        //    cells[6] = new StringCell("");
- 	            if(search.getAttributes()== null){
- 	            	cells[7] = new DateAndTimeCell(0, 0, 0);
- 	            	cells[6]= new DateAndTimeCell(0, 0, 0);
- 	            }
- 	            else if(search.getAttribute("Value") != null){
- 		            cells[7] = new DateAndTimeCell(
- 	 	            		search.getAttribute("Value").getTimestampFromFirstSample().getYear(),
- 	 	            		search.getAttribute("Value").getTimestampFromFirstSample().getMonthOfYear(), 
- 	 	            		search.getAttribute("Value").getTimestampFromFirstSample().getDayOfMonth());
- 	 	            cells[6] = new DateAndTimeCell(
- 	 	            		search.getAttribute("Value").getTimestampFromLastSample().getYear(),
- 	 	            		search.getAttribute("Value").getTimestampFromLastSample().getMonthOfYear(), 
- 	 	            		search.getAttribute("Value").getTimestampFromLastSample().getDayOfMonth());
- 	            }else{
- 	            	cells[7] = new DateAndTimeCell(0, 0, 0);
- 	            	cells[6] = new DateAndTimeCell(0, 0, 0);
- 	            }
 
- 	            counter++;
-	            DataRow row = new DefaultRow("Row"+ counter, cells);
-	            buf.addRowToTable(row);
-    		}
     		/*
     		//TODO: Search after structure not implemented yet
     		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;
@@ -287,13 +259,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator(
     			"NodeID", LongCell.TYPE).createSpec();
     	DataColumnSpec deviceTypeSpec = new DataColumnSpecCreator(
-    			"Devicetype", StringCell.TYPE).createSpec();
+    			configuration.deviceModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec componentTypeSpec = new DataColumnSpecCreator(
-    			"Component", StringCell.TYPE).createSpec();
+    			configuration.projectModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec locationSpec = new DataColumnSpecCreator(
-    			"Location", StringCell.TYPE).createSpec();
+    			configuration.locationModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec projectSpec = new DataColumnSpecCreator(
-    			"Project", StringCell.TYPE).createSpec();
+    			configuration.componentModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec floorSpec = new DataColumnSpecCreator(
     			"Floor", StringCell.TYPE).createSpec();
     	DataColumnSpec firstTsSpec = new DataColumnSpecCreator(

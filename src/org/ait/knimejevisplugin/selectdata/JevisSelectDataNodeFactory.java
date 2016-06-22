@@ -18,6 +18,7 @@ public class JevisSelectDataNodeFactory
      */
     @Override
     public JevisSelectDataNodeModel createNodeModel() {
+    	SearchConfiguration configuration = new SearchConfiguration();
         return new JevisSelectDataNodeModel();
     }
 
