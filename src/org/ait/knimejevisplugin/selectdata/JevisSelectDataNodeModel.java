@@ -35,6 +35,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
+import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import javafx.scene.control.DateCell;
@@ -59,27 +60,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
             .getLogger("SelectDataLogger");
     
     int counter = 0;
-  //Jevis Connection information
-  	public static String host = "Hostaddress";
-   	public static String port = "Port";
-   	public static String sqlSchema = "Schema";
-   	public static String sqlUser = "User";
-   	public static String sqlPW = "Password";
-   	
-   	public static String jevisUser = "BerhnardM";
-   	public static String jevisPW = "testpass01593";
  
    	public static String nodeID = "NodeID";
    	public static int DEFAULT_NODEID = 483;
    	
-   	//Search for Attributes information
-   	public static String enableAttribute = "enableAttribute";
+   	//Search for Specific Datapoints information
+   	public static String enableNodeSearch = "enableDatapointSearch";
    	
-   	public static String project = "Project";
-   	public static String location = "Location";
-   	public static String nodeType = "NodeType";
-   	public static String devicetype = "DeviceType";
-   	public static String component = "Component";
    	public static String searchNodeType = "SearchNodeType";
    	public static String searchDeviceType = "SearchDeviceType";
    	public static String searchComponentType = "SearchComponentType";
@@ -92,6 +79,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	
    	public static String enableStructure = "enableStructure";
    	
+
    	public static String parent = "parent";
    	public static String children= "children";
    	public static String allChildren = "allChildren";
@@ -105,37 +93,41 @@ public class JevisSelectDataNodeModel extends NodeModel {
 	
 	//Settingsmodells
     private final SettingsModelString jhost = new SettingsModelString(
-    		JevisSelectDataNodeModel.host, "jevis3.ait.ac.at");
+    		JevisSelectDataNodeModel.configuration.hostModelName,
+    		JevisSelectDataNodeModel.configuration.DEFAULT_Host);
     private final SettingsModelString jport = new SettingsModelString(
-    		JevisSelectDataNodeModel.port, "3306");
+    		JevisSelectDataNodeModel.configuration.portModelName,
+    		JevisSelectDataNodeModel.configuration.DEFAULT_port);
    	private final SettingsModelString jSchema = new SettingsModelString(
-   			JevisSelectDataNodeModel.sqlSchema, "jevis");
+   			JevisSelectDataNodeModel.configuration.sqlSchemaModelName,
+   			JevisSelectDataNodeModel.configuration.DEFAULT_sqlShema);
    	private final SettingsModelString jUser = new SettingsModelString(
-   			JevisSelectDataNodeModel.sqlUser, "jevis");
+   			JevisSelectDataNodeModel.configuration.sqlUserModelName,
+   			JevisSelectDataNodeModel.configuration.DEFAULT_sqlUserName);
    	private final SettingsModelString jPW = new SettingsModelString(
-   			JevisSelectDataNodeModel.sqlPW, "vu5eS1ma");
+   			JevisSelectDataNodeModel.configuration.sqlPWModelName, 
+   			JevisSelectDataNodeModel.configuration.DEFAULT_sqlPW);
    	
    	private final SettingsModelString jevUser = new SettingsModelString(
-   			JevisSelectDataNodeModel.jevisUser, "BerhnardM");
+   			JevisSelectDataNodeModel.configuration.jevisUserModelName, 
+   			JevisSelectDataNodeModel.configuration.DEFAULT_jevisUserName);
    	private final SettingsModelString jevPW = new SettingsModelString(
-   			JevisSelectDataNodeModel.jevisPW,"testpass01593");
+   			JevisSelectDataNodeModel.configuration.jevisPWModelName,
+   			JevisSelectDataNodeModel.configuration.DEFAULT_jevisPW);
    	
-   	private final SettingsModelInteger m_nodeID = new SettingsModelInteger(
-   			nodeID, DEFAULT_NODEID);
-   	
-   	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableAttribute,true);
+   	private final SettingsModelBoolean m_enableNodeSearch = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableNodeSearch, true);
    	
    	private final SettingsModelString m_project = new SettingsModelString(
-   			JevisSelectDataNodeModel.project," ");
+   			JevisSelectDataNodeModel.configuration.projectModelName," ");
    	private final SettingsModelString m_location = new SettingsModelString(
-   			JevisSelectDataNodeModel.location," ");
+   			JevisSelectDataNodeModel.configuration.locationModelName," ");
    	private final SettingsModelString m_nodeType = new SettingsModelString(
-   			JevisSelectDataNodeModel.nodeType," ");
+   			JevisSelectDataNodeModel.configuration.nodeType," ");
    	private final SettingsModelString m_devicetype = new SettingsModelString(
-   			JevisSelectDataNodeModel.devicetype," ");
+   			JevisSelectDataNodeModel.configuration.deviceModelName," ");
    	private final SettingsModelString m_component = new SettingsModelString(
-   			JevisSelectDataNodeModel.component," ");
+   			JevisSelectDataNodeModel.configuration.componentModelName," ");
    	
    	private final SettingsModelBoolean m_enableProject = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableProject, true);
@@ -158,6 +150,9 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	private final SettingsModelBoolean m_enableStructure = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableStructure, true);
    	
+   	private final SettingsModelLong m_nodeId = new SettingsModelLong(
+   			JevisSelectDataNodeModel.nodeID , 0);
+   	
    	private final SettingsModelBoolean m_parents = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.parent, false);
    	private final SettingsModelBoolean m_children = new SettingsModelBoolean(
@@ -177,33 +172,33 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	logger.setLevel(NodeLogger.LEVEL.INFO);
     	
     	connectingtojevis();
-    	buf = exec.createDataContainer(createOutputTableSpec());
+    	
     	
     	if(jevis.isConnectionAlive()){
     		logger.info("Connection Alive!");
-    		DataTableSpec result = createOutputTableSpec();
-    		SearchForAttributes searcher = new SearchForAttributes(jevis, m_project.getStringValue(),
-    				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
-    				m_component.getStringValue(), m_nodeID.getIntValue(), m_parents.getBooleanValue(),
-    				m_children.getBooleanValue(),m_siblings.getBooleanValue(),m_allChildren.getBooleanValue(),
-    				m_enableProject.getBooleanValue(), m_enableLocation.getBooleanValue(),
-    				m_enableNodeType.getBooleanValue(), m_enableDevice.getBooleanValue(),
-    				m_enableComponent.getBooleanValue(),result);
-    		BufferedDataContainer test = exec.createDataContainer(result);
-    		buf = searcher.searchData(test);
     		
-
-    		/*
-    		//TODO: Search after structure not implemented yet
-    		JEVisObject jObject = jevis.getObject((long) m_nodeID.getIntValue()) ;
-    		//logger.info(jObject.getJEVisClass().getType("Value").getPrimitiveType());
-    		//logger.info(jObject.getAttribute("Value").getType().toString());
-    		List<JEVisObject> list_Children = jObject.getChildren();
-    		for(JEVisObject child : list_Children){
-    			logger.info(child.getName());
+    		
+    		if(m_enableNodeSearch.getBooleanValue()){
+    			buf = exec.createDataContainer(createOutputTableSpecforDatapoints());
+    			DataTableSpec datapointResult = createOutputTableSpecforDatapoints();
+        		SearchForNodes datapointsearcher = new SearchForNodes(jevis, m_project.getStringValue(),
+        				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
+        				m_component.getStringValue(), m_enableProject.getBooleanValue(),
+        				m_enableLocation.getBooleanValue(), m_enableNodeType.getBooleanValue(),
+        				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
+        				datapointResult);
+        		buf = datapointsearcher.searchData(buf);
     		}
-    		for(JEVisObject serch :searcher.searchData())
-    		logger.warn(serch.getName());*/
+    		if(m_enableStructure.getBooleanValue()){
+    			buf = exec.createDataContainer(createOuputTableforStructure());
+    			DataTableSpec structureResult = createOuputTableforStructure();
+    			SearchForStructure structuresearcher = new SearchForStructure(jevis, m_nodeId.getLongValue(),
+    					m_parents.getBooleanValue(), m_children.getBooleanValue(),
+    					m_siblings.getBooleanValue(), m_allChildren.getBooleanValue());
+    			buf = structuresearcher.structureSearch(buf, structureResult);
+    		}
+
+
     	}
     	
     	
@@ -232,7 +227,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	try{
     	//Connecting to Jevis with connection information
     	jevis = new JEVisDataSourceSQL(jhost.getStringValue(), jport.getStringValue(), jSchema.getStringValue(), jUser.getStringValue(), jPW.getStringValue());
-    	jevis.connect(jevisUser, jevisPW);
+    	jevis.connect(jevUser.getStringValue(), jevPW.getStringValue());
     	
     	pushFlowVariableString("host", jhost.getStringValue());
     	pushFlowVariableString("port", jport.getStringValue());
@@ -246,16 +241,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	
     }
  
-    		
-    private void getInformationFromNodeID(JEVisObject searchObject){
-    	
-    }
     
-    private void fillTableWithAllInformation(){
-    	//TODO:metzhod stub
-    }
-    
-    private DataTableSpec createOutputTableSpec(){
+    private DataTableSpec createOutputTableSpecforDatapoints(){
     	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator(
     			"NodeID", LongCell.TYPE).createSpec();
     	DataColumnSpec deviceTypeSpec = new DataColumnSpecCreator(
@@ -279,6 +266,15 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	return outputTableSpec;
     }
     
+    private DataTableSpec createOuputTableforStructure(){
+    	
+    	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator("NodeID", LongCell.TYPE).createSpec();
+    	DataColumnSpec nameSpec = new DataColumnSpecCreator("Name", StringCell.TYPE).createSpec();
+    	DataColumnSpec levelSpec = new DataColumnSpecCreator("Level", StringCell.TYPE).createSpec();
+    	DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, nameSpec, levelSpec);
+		return outputTableSpec;
+    	
+    }
     /**
      * {@inheritDoc}
      */
@@ -318,12 +314,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	m_devicetype.saveSettingsTo(settings);
     	m_component.saveSettingsTo(settings);
     	
+    	m_nodeId.saveSettingsTo(settings);
     	m_parents.saveSettingsTo(settings);
     	m_children.saveSettingsTo(settings);
     	m_siblings.saveSettingsTo(settings);
     	m_allChildren.saveSettingsTo(settings);
     	
-    	m_enableAttribute.saveSettingsTo(settings);
+    	m_enableNodeSearch.saveSettingsTo(settings);
     	m_enableComponent.saveSettingsTo(settings);
     	m_enableDevice.saveSettingsTo(settings);
     	m_enableLocation.saveSettingsTo(settings);
@@ -353,12 +350,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	m_devicetype.loadSettingsFrom(settings);
     	m_component.loadSettingsFrom(settings);
     	
+    	m_nodeId.loadSettingsFrom(settings);
     	m_parents.loadSettingsFrom(settings);
     	m_children.loadSettingsFrom(settings);
     	m_siblings.loadSettingsFrom(settings);
     	m_allChildren.loadSettingsFrom(settings);
     	
-    	m_enableAttribute.loadSettingsFrom(settings);
+    	m_enableNodeSearch.loadSettingsFrom(settings);
     	m_enableComponent.loadSettingsFrom(settings);
     	m_enableDevice.loadSettingsFrom(settings);
     	m_enableLocation.loadSettingsFrom(settings);
@@ -388,12 +386,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	m_devicetype.validateSettings(settings);
     	m_component.validateSettings(settings);
     	
+    	m_nodeId.validateSettings(settings);
     	m_parents.validateSettings(settings);
     	m_children.validateSettings(settings);
     	m_siblings.validateSettings(settings);
     	m_allChildren.validateSettings(settings);
 
-    	m_enableAttribute.validateSettings(settings);
+    	m_enableNodeSearch.validateSettings(settings);
     	m_enableComponent.validateSettings(settings);
     	m_enableDevice.validateSettings(settings);
     	m_enableLocation.validateSettings(settings);
