@@ -212,6 +212,72 @@ public class SearchForNodes {
 	}
 	
 	
+	private boolean checkLevel(JEVisObject starter, String level) throws JEVisException{
+		if(starter.getJEVisClass().equals(jevis.getJEVisClass(level))){
+			return true;
+		}
+		return false;
+	}
+	
+	public void getfilterStructureOutputWithAttributes(JEVisObject starter) throws JEVisException{
+		
+		if(checkLevel(starter,JevisSelectDataNodeModel.configuration.projectLevelName)){
+			
+		}
+		if(checkLevel(starter, JevisSelectDataNodeModel.configuration.locationLevelName)){
+			
+		}
+		if(checkLevel(starter, JevisSelectDataNodeModel.configuration.componentLevelName)){
+			
+		}
+		if(checkLevel(starter, JevisSelectDataNodeModel.configuration.deviceLevelName)){
+			
+		}
+		
+	}
+
+	private List<JEVisObject> gothroughchildrenData(List<JEVisObject> children) throws JEVisException{
+	
+		for(JEVisObject child :children){
+			if(checkLevel(child,JevisSelectDataNodeModel.configuration.projectLevelName)){
+				if(enabledProject){
+					
+				}
+				gothroughchildrenData(child.getChildren());
+				
+			}
+			if(checkLevel(child, JevisSelectDataNodeModel.configuration.locationLevelName)){
+				
+			}
+			if(checkLevel(child, JevisSelectDataNodeModel.configuration.componentLevelName)){
+				
+			}
+			if(checkLevel(child, JevisSelectDataNodeModel.configuration.deviceLevelName)){
+				
+			}
+			
+		}
+	
+		return children;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/*
 	public List<JEVisObject> searchDatatest() throws JEVisException{
 		

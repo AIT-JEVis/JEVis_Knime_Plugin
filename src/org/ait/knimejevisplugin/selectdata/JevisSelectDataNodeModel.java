@@ -194,7 +194,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     			DataTableSpec structureResult = createOuputTableforStructure();
     			SearchForStructure structuresearcher = new SearchForStructure(jevis, m_nodeId.getLongValue(),
     					m_parents.getBooleanValue(), m_children.getBooleanValue(),
-    					m_siblings.getBooleanValue(), m_allChildren.getBooleanValue());
+    					m_siblings.getBooleanValue(), m_allChildren.getBooleanValue(),
+    					m_enableNodeSearch.getBooleanValue());
     			buf = structuresearcher.structureSearch(buf, structureResult);
     		}
 

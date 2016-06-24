@@ -23,14 +23,14 @@ public class SearchForStructure {
 	boolean children;
 	boolean siblings;
 	boolean allChildren;
-	
+	boolean enabledAttributes;
 
 	List<JEVisObject> resultlist = new ArrayList<JEVisObject>();
 	
 	
 	
 	public SearchForStructure(JEVisDataSourceSQL jevis, long nodeID, boolean parent, boolean children,
-			boolean siblings, boolean allChildren) {
+			boolean siblings, boolean allChildren, boolean enabledAttributes) {
 		super();
 		this.jevis = jevis;
 		this.nodeID = nodeID;
@@ -38,6 +38,7 @@ public class SearchForStructure {
 		this.children = children;
 		this.siblings = siblings;
 		this.allChildren = allChildren;
+		this.enabledAttributes = enabledAttributes;
 	}
 	
 	public BufferedDataContainer structureSearch(BufferedDataContainer buf, DataTableSpec result) throws JEVisException{
@@ -57,8 +58,15 @@ public class SearchForStructure {
 	public List<JEVisObject> searchForStructure() throws JEVisException{
 		JEVisObject startingObject = jevis.getObject(nodeID);
 		JevisSelectDataNodeModel.configuration.fillLevel();
-		List<JEVisObject> foundObjects = new ArrayList<JEVisObject>();
-		searchelement(startingObject, foundObjects);
+		if(enabledAttributes){
+			getfilterStructureOutputWithAttributes(startingObject);
+		}
+		else{
+			List<JEVisObject> foundObjects = new ArrayList<JEVisObject>();
+			searchelement(startingObject, foundObjects);
+			
+		}
+		
 		return resultlist;
 	}
 	
@@ -97,7 +105,7 @@ public class SearchForStructure {
 			fillResultList(list_siblings);
 		}
 		if(allChildren){
-			//TODO: Insert function for getting allChildren
+			
 			List<JEVisObject> list_allChildren = startingObject.getChildren();
 			fillResultList(getAllChildren(list_allChildren, foundObjects));
 		}
@@ -159,5 +167,9 @@ public class SearchForStructure {
 		return foundObjects;
 		
 	}
+	
+	
+
+	
 	
 }
