@@ -20,8 +20,6 @@ import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataContainer;
 
-import com.jcraft.jsch.Logger;
-
 public class SearchForNodes {
 	
 	JEVisDataSourceSQL jevis;
@@ -31,11 +29,7 @@ public class SearchForNodes {
 	String devicetype;
 	String component;
 	int nodeID;
-	boolean parent; 
-	boolean children;
-	boolean siblings;
-	boolean allChildren;
-	
+
 	boolean enabledProject;
 	boolean enabledLocation;
 	boolean enabledNodeType;
@@ -72,22 +66,23 @@ public class SearchForNodes {
 
 	}
 	
-	private List<JEVisObject> searchNodetype() throws JEVisException{
-		List<JEVisObject> list_nodetype = jevis.getObjects(jevis.getJEVisClass(nodeType), true);
-		return list_nodetype;
-		
-	}
 
 
-	public BufferedDataContainer searchData(BufferedDataContainer buf) throws JEVisException{
+/*
+ * Search for Datapoints in Specific Projects, Locations, Components and Devices 
+ */
+	public BufferedDataContainer searchforDataPoints(BufferedDataContainer buf) throws JEVisException{
 		counter = 0;
 		cells = new DataCell[result.getNumColumns()];
-		List<JEVisObject> projects = jevis.getObjects(jevis.getJEVisClass("Organization"), true);
-		checkLevel(projects,buf);
+		List<JEVisObject> projects = jevis.getObjects(jevis.getJEVisClass(
+				JevisSelectDataNodeModel.configuration.projectLevelName), true);
+		computeResultTable(projects,buf);
 		return buf;
 		
 	}
-	public BufferedDataContainer checkLevel(List<JEVisObject> children, BufferedDataContainer buf) throws JEVisException{
+	
+	public BufferedDataContainer computeResultTable(List<JEVisObject> children, BufferedDataContainer buf)
+			throws JEVisException{
 		
 		for(JEVisObject child : children){
 			
@@ -98,11 +93,11 @@ public class SearchForNodes {
 					if(child.getName().equals(project)){
 				
 						cells[2] = new StringCell(child.getName());
-						checkLevel(child.getChildren(), buf);					
+						computeResultTable(child.getChildren(), buf);					
 					}
 				}else{
 					cells[2] = new StringCell(child.getName());		
-					checkLevel(child.getChildren(), buf);
+					computeResultTable(child.getChildren(), buf);
 				}
 			}
 
@@ -112,11 +107,11 @@ public class SearchForNodes {
 				if(enabledLocation){
 					if(child.getName().equals(location)){
 						cells[3] = new StringCell(child.getName());
-						checkLevel(child.getChildren(), buf);
+						computeResultTable(child.getChildren(), buf);
 					}
 				}else{
 					cells[3] = new StringCell(child.getName());
-					checkLevel(child.getChildren(), buf);
+					computeResultTable(child.getChildren(), buf);
 					
 				}
 			}
@@ -126,11 +121,11 @@ public class SearchForNodes {
 				if(enabledComponent){
 					if(child.getName().equals(component)){
 						cells[4] = new StringCell(child.getName());
-						checkLevel(child.getChildren(), buf);
+						computeResultTable(child.getChildren(), buf);
 					}
 				}else{
 					cells[4] = new StringCell(child.getName());
-					checkLevel(child.getChildren(), buf);
+					computeResultTable(child.getChildren(), buf);
 				}
 			}
 			else if(child.getJEVisClass()== jevis.getJEVisClass(
@@ -138,29 +133,25 @@ public class SearchForNodes {
 				System.out.println("Data:" + child.getName());
 				if(enableddeviceType){
 					if(child.getName().equals(devicetype)){
-			          buf = filter(child, buf);
+			          buf = fillTableWithDatapointInformation(child, buf);
 					}else{
 						System.out.println("No Datapoint found");
 					}
 				}else{
-					buf = filter(child, buf);
+					buf = fillTableWithDatapointInformation(child, buf);
 				}	
 			}
-	/*		else if(child.getJEVisClass()== jevis.getJEVisClass(nodeType)){
-				System.out.println("NodeType:"+ child.getName());
-				if(enabledNodeType){
-					searchresult.add(child);
-				}
-			}*/
+
 			else{
-				checkLevel(child.getChildren(), buf);				
+				computeResultTable(child.getChildren(), buf);				
 			}
 			
 		}
 		return buf;
 	}
 	
-	private BufferedDataContainer filter(JEVisObject child, BufferedDataContainer buf ) throws JEVisException{
+	private BufferedDataContainer fillTableWithDatapointInformation(
+			JEVisObject child, BufferedDataContainer buf ) throws JEVisException{
 		cells[0] = new LongCell(child.getID());
         cells[1] = new StringCell(child.getName());
         cells[5] = new StringCell(" ");
@@ -204,6 +195,62 @@ public class SearchForNodes {
 	}
 	
 
+
+	
+/*
+ * Search for a specific Nodetype and filtering after Project, Location, or Component	
+ */
+	
+	public List<JEVisObject> searchNodetype() throws JEVisException{
+		List<JEVisObject> list_nodetype = jevis.getObjects(jevis.getJEVisClass(nodeType), true);
+		for(JEVisObject node : list_nodetype){
+			getParentData(node, list_nodetype);
+		}
+		
+		return list_nodetype;
+		
+	}
+	
+	private void getParentData(JEVisObject node, List<JEVisObject> list_nodeType) throws JEVisException{
+		if(!checkLevel(node, JevisSelectDataNodeModel.configuration.projectLevelName)){
+			if(checkLevel(node, JevisSelectDataNodeModel.configuration.locationLevelName)){
+				searchNodeTypeList(node, enabledLocation, location, list_nodeType);
+			}
+			else if(checkLevel(node, JevisSelectDataNodeModel.configuration.componentLevelName)){
+				searchNodeTypeList(node, enabledComponent, component, list_nodeType);
+			}
+			else{
+				for(JEVisObject parent : node.getParents()){
+					getParentData(parent, list_nodeType);
+				}
+			}
+		}else{
+			searchNodeTypeList(node, enabledProject, project, list_nodeType);
+		}
+	}
+	
+	private void searchNodeTypeList(
+			JEVisObject object, boolean enabled, String objectName, List<JEVisObject> list_nodeType) 
+			throws JEVisException{
+		if(enabled){
+			if(!object.getName().equals(objectName)){
+				list_nodeType.remove(object);
+			}
+		}
+	}
+	
+	/*
+	 * Useful Functions short functions.
+	 */
+	
+	private boolean checkLevel(JEVisObject object, String level) throws JEVisException{
+		if(object.getJEVisClass().equals(jevis.getJEVisClass(level))){
+			return true;
+		}
+		return false;
+	}
+	
+	
 	private BufferedDataContainer fillTable(DataCell[] cells,BufferedDataContainer buf){
 		counter++;
 		DataRow row = new DefaultRow("Row"+counter, cells);
@@ -211,152 +258,4 @@ public class SearchForNodes {
         return buf;
 	}
 	
-	
-	private boolean checkLevel(JEVisObject starter, String level) throws JEVisException{
-		if(starter.getJEVisClass().equals(jevis.getJEVisClass(level))){
-			return true;
-		}
-		return false;
-	}
-	
-	public void getfilterStructureOutputWithAttributes(JEVisObject starter) throws JEVisException{
-		
-		if(checkLevel(starter,JevisSelectDataNodeModel.configuration.projectLevelName)){
-			
-		}
-		if(checkLevel(starter, JevisSelectDataNodeModel.configuration.locationLevelName)){
-			
-		}
-		if(checkLevel(starter, JevisSelectDataNodeModel.configuration.componentLevelName)){
-			
-		}
-		if(checkLevel(starter, JevisSelectDataNodeModel.configuration.deviceLevelName)){
-			
-		}
-		
-	}
-
-	private List<JEVisObject> gothroughchildrenData(List<JEVisObject> children) throws JEVisException{
-	
-		for(JEVisObject child :children){
-			if(checkLevel(child,JevisSelectDataNodeModel.configuration.projectLevelName)){
-				if(enabledProject){
-					
-				}
-				gothroughchildrenData(child.getChildren());
-				
-			}
-			if(checkLevel(child, JevisSelectDataNodeModel.configuration.locationLevelName)){
-				
-			}
-			if(checkLevel(child, JevisSelectDataNodeModel.configuration.componentLevelName)){
-				
-			}
-			if(checkLevel(child, JevisSelectDataNodeModel.configuration.deviceLevelName)){
-				
-			}
-			
-		}
-	
-		return children;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/*
-	public List<JEVisObject> searchDatatest() throws JEVisException{
-		
-		
-		// List of all Datapoints which are gonna be searched
-		List<JEVisObject> datapoints = jevis.getObjects(jevis.getJEVisClass("Data"), true);
-		//List containing found datapoints which match the search.
-		List<JEVisObject> searchresult= null;
-		for(JEVisObject datapoint: datapoints){
-			List<JEVisObject> parents = datapoint.getParents();
-			//Getting Time information for OuputTable
-			//DateTime firstTS = datapoint.getAttribute("Value").getTimestampFromFirstSample();
-			//DateTime lastTS = datapoint.getAttribute("Value").getTimestampFromLastSample();
-			//long fnodeID = datapoint.getID();
-			//String dataName =  datapoint.getName();
-			for(JEVisObject parent :parents){
-				
-				if(parent.getID() == nodeID){
-					//TODO: some method to search there.
-					long fnodeID = parent.getID();
-				}
-	
-			}
-		}
-		return searchresult;
-	}
-				
-	public void checkData(JEVisObject parent, JEVisObject datapoint) throws JEVisException{
-		if(parent.getJEVisClass() == jevis.getJEVisClass("Device")){
-			if(enableddeviceType){
-				if(parent.getName().equals(devicetype)){
-					String fcomponent = parent.getName();
-					searchresult.add(datapoint);
-				}
-				else{
-					break;
-				}
-			}
-			else{
-				String fcomponent = parent.getName();
-				searchresult.add(datapoint);
-				
-			}
-		}
-		else if(parent.getJEVisClass() == jevis.getJEVisClass("Building")){
-			if(enabledLocation){
-				if(parent.getName().equals(location)){
-					String fLocation = parent.getName();
-					searchresult.add(datapoint);
-				}
-				else{
-					break;
-				}
-			}
-			else{
-				String flocation = parent.getName();
-				searchresult.add(datapoint);
-				
-			}
-		}
-		else if(parent.getJEVisClass()== jevis.getJEVisClass("Organization")){
-
-			if(enabledProject){
-				if(parent.getName().equals(project)){
-					String fproject = parent.getName();
-					searchresult.add(datapoint);
-				}
-				else{
-					break;
-				}
-			}
-			else{
-				String fproject = parent.getName();
-				searchresult.add(datapoint);
-			}
-			
-		}
-	
-	
-
-	}*/
 }

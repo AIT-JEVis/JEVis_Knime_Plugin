@@ -155,7 +155,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
+				
 		    	m_nodeType.setEnabled(m_enableNodeSearch.getBooleanValue());
 		    	m_devicetype.setEnabled(m_enableNodeSearch.getBooleanValue());
 		    	m_component.setEnabled(m_enableNodeSearch.getBooleanValue());
@@ -176,7 +176,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
+				
 				m_project.setEnabled(m_enableProject.getBooleanValue());
 			}
 		});
@@ -202,7 +202,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
+				
 				m_devicetype.setEnabled(m_enableDevice.getBooleanValue());
 			}
 		});
@@ -229,7 +229,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
+				
 				m_nodeType.setEnabled(m_enableNodeType.getBooleanValue());
 			}
 		});
@@ -267,8 +267,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(new DialogComponentLabel("Search! "));
     	
     	
-    	
-    	//getsearchinformation(jevis);
     }
     
     
@@ -311,19 +309,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     				}
     			}
     			
-    			Map<String, List<JEVisObject>> jevisObjects = new HashMap<String, List<JEVisObject>>();
-    			for(int i=0; i<jevis.getJEVisClasses().size();i++){
-    				jevisObjects.put(jevis.getJEVisClasses().get(i).getName(),
-    						jevis.getObjects(jevis.getJEVisClasses().get(i),true));
-    			}
-    				//Currently don't remember what that should do. Have to think about. 
-    				/*
-					List<JEVisObject> list_devices = jevis.getObjects(
-							jevis.getJEVisClass("Data"), true);
-					list_devices.get(i).getID();
-					*/
-				
-    			
     		}
     	}catch(JEVisException e){
     		e.printStackTrace();
@@ -349,55 +334,5 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	
     }
     
-    private void filtering(DialogComponentStringSelection diac_nodeType){
-    	
-    	createNewGroup("Search for Attributes");
-    	setHorizontalPlacement(false);
-
-    }
-    
-    public void getsearchinformation(JEVisDataSourceSQL jevis){
-    	
-    	try {
-			if(jevis.isConnectionAlive()){
-				for(int i= 0 ; i<jevis.getObjects(jevis.getJEVisClass("Data"), true).size(); i++) {
-						//logger.error(jevis.getObjects(jevis.getJEVisClass("Data"), true).
-							//	get(i).getName());
-						
-						/*
-						if(myObject.getJEVisClass().equals(jevis.getJEVisClass("Organization"))){
-							ArrayList<JEVisObject> projects = new ArrayList<JEVisObject>();
-							projects.add(myObject);
-							logger.error("Searching Object: Class:  " + myObject.getJEVisClass().toString()
-									+"sortied into: " + projects.toString() );
-						}
-						else if(myObject.getJEVisClass().equals(jevis.getJEVisClass("Building"))){
-							ArrayList<JEVisObject> buildings = new ArrayList<JEVisObject>();
-							buildings.add(myObject);
-						}
-						else if(myObject.getJEVisClass().equals(jevis.getJEVisClass("Data"))){
-							ArrayList<JEVisObject> datapoints = new ArrayList<JEVisObject>();
-							datapoints.add(myObject);
-						}*/
-							
-				}
-				for(int i=0; i<jevis.getJEVisClasses().size();i++){
-					//logger.error(jevis.getJEVisClasses().get(i).getName());
-					
-				}
-				for(int i= 0 ; i<jevis.getObjects(jevis.getJEVisClass(
-						jevis.getJEVisClasses().get(i).getName()), true).size(); i++) {
-					/*logger.error(jevis.getObjects(
-							jevis.getJEVisClass(jevis.getJEVisClasses().get(i).getName()), true).
-							get(i).getName());
-							*/
-				}
-			}
-			
-    	}catch (JEVisException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
 }
 

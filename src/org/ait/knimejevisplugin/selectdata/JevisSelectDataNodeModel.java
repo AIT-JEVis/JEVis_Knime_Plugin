@@ -140,13 +140,6 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	private final SettingsModelBoolean m_enableDevice = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableDevice, true);
    	
-   	private final SettingsModelString m_searchNodeTyoe = new SettingsModelString(
-   			JevisSelectDataNodeModel.searchNodeType, " ");
-   	private final SettingsModelString m_searchDeviceType = new SettingsModelString(
-   			JevisSelectDataNodeModel.searchDeviceType, " ");
-   	private final SettingsModelString m_searchComponentType = new SettingsModelString(
-   			JevisSelectDataNodeModel.searchComponentType, " ");
-   	
    	private final SettingsModelBoolean m_enableStructure = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableStructure, true);
    	
@@ -165,7 +158,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     /**
      * {@inheritDoc}
      */
-    @Override
+    @SuppressWarnings({ "static-access", "deprecation" })
+	@Override
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
     	
@@ -187,16 +181,16 @@ public class JevisSelectDataNodeModel extends NodeModel {
         				m_enableLocation.getBooleanValue(), m_enableNodeType.getBooleanValue(),
         				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
         				datapointResult);
-        		buf = datapointsearcher.searchData(buf);
+        		buf = datapointsearcher.searchforDataPoints(buf);
     		}
     		if(m_enableStructure.getBooleanValue()){
-    			buf = exec.createDataContainer(createOuputTableforStructure());
-    			DataTableSpec structureResult = createOuputTableforStructure();
+    			buf = exec.createDataContainer(createOuputTableSpecforStructure());
+    			DataTableSpec structureResult = createOuputTableSpecforStructure();
     			SearchForStructure structuresearcher = new SearchForStructure(jevis, m_nodeId.getLongValue(),
     					m_parents.getBooleanValue(), m_children.getBooleanValue(),
     					m_siblings.getBooleanValue(), m_allChildren.getBooleanValue(),
     					m_enableNodeSearch.getBooleanValue());
-    			buf = structuresearcher.structureSearch(buf, structureResult);
+    			buf = structuresearcher.fillTableWithStructureSearchResult(buf, structureResult);
     		}
 
 
@@ -267,7 +261,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	return outputTableSpec;
     }
     
-    private DataTableSpec createOuputTableforStructure(){
+    private DataTableSpec createOuputTableSpecforStructure(){
     	
     	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator("NodeID", LongCell.TYPE).createSpec();
     	DataColumnSpec nameSpec = new DataColumnSpecCreator("Name", StringCell.TYPE).createSpec();

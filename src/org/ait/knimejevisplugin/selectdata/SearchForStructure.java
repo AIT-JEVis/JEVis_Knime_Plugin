@@ -41,7 +41,7 @@ public class SearchForStructure {
 		this.enabledAttributes = enabledAttributes;
 	}
 	
-	public BufferedDataContainer structureSearch(BufferedDataContainer buf, DataTableSpec result) throws JEVisException{
+	public BufferedDataContainer fillTableWithStructureSearchResult(BufferedDataContainer buf, DataTableSpec result) throws JEVisException{
 		DataCell[] cells = new DataCell[result.getNumColumns()];
 		int counter = 0;
 		for(JEVisObject foundObject : searchForStructure()){
@@ -56,17 +56,11 @@ public class SearchForStructure {
 	}
 
 	public List<JEVisObject> searchForStructure() throws JEVisException{
+
 		JEVisObject startingObject = jevis.getObject(nodeID);
 		JevisSelectDataNodeModel.configuration.fillLevel();
-		if(enabledAttributes){
-			getfilterStructureOutputWithAttributes(startingObject);
-		}
-		else{
-			List<JEVisObject> foundObjects = new ArrayList<JEVisObject>();
-			searchelement(startingObject, foundObjects);
-			
-		}
-		
+		List<JEVisObject> foundObjects = new ArrayList<JEVisObject>();
+		searchelement(startingObject, foundObjects);
 		return resultlist;
 	}
 	
