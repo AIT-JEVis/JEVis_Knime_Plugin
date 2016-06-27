@@ -201,6 +201,22 @@ public class SearchForNodes {
  * Search for a specific Nodetype and filtering after Project, Location, or Component	
  */
 	
+	public BufferedDataContainer fillTableWithNodetypeSearchResult(BufferedDataContainer buf, DataTableSpec result) throws JEVisException{
+		DataCell[] cells = new DataCell[result.getNumColumns()];
+		int counter = 0;
+		for(JEVisObject foundObject : searchNodetype()){
+			cells[0] = new LongCell(foundObject.getID());
+			cells[1] = new StringCell(foundObject.getName());
+			cells[2] = new StringCell(foundObject.getJEVisClass().getName());
+			counter++;
+			DataRow row = new DefaultRow("Row"+ counter, cells);
+			buf.addRowToTable(row);
+		}
+		return buf;
+	}
+	
+	
+	
 	public List<JEVisObject> searchNodetype() throws JEVisException{
 		List<JEVisObject> list_nodetype = jevis.getObjects(jevis.getJEVisClass(nodeType), true);
 		for(JEVisObject node : list_nodetype){

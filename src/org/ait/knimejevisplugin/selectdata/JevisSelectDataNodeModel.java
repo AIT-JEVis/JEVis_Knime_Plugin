@@ -77,9 +77,12 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static String enableComponent= "enableComponent";
    	public static String enableDevice = "enableDevice";
    	
-   	public static String enableStructure = "enableStructure";
+   	public static String enableAttributeSearch = "enableAttributeSearch";
    	
-
+   	public static String attributeModelName = "Attribute";
+   	
+   	public static String enableStructure = "enableStructureSearch";
+   	
    	public static String parent = "parent";
    	public static String children= "children";
    	public static String allChildren = "allChildren";
@@ -140,6 +143,12 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	private final SettingsModelBoolean m_enableDevice = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableDevice, true);
    	
+   	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableAttributeSearch, true);
+   	
+   	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelName, " ");
+   	
    	private final SettingsModelBoolean m_enableStructure = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableStructure, true);
    	
@@ -191,6 +200,18 @@ public class JevisSelectDataNodeModel extends NodeModel {
     					m_siblings.getBooleanValue(), m_allChildren.getBooleanValue(),
     					m_enableNodeSearch.getBooleanValue());
     			buf = structuresearcher.fillTableWithStructureSearchResult(buf, structureResult);
+    		}
+    		if(m_enableNodeType.getBooleanValue()){
+    			buf = exec.createDataContainer(createOuputTableSpecforStructure());
+    			DataTableSpec nodeTypeResult = createOuputTableSpecforStructure();
+    			SearchForNodes nodetypesearcher = new SearchForNodes(jevis, m_project.getStringValue(),
+        				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
+        				m_component.getStringValue(), m_enableProject.getBooleanValue(),
+        				m_enableLocation.getBooleanValue(), m_enableNodeType.getBooleanValue(),
+        				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
+        				nodeTypeResult);
+    			buf = nodetypesearcher.fillTableWithNodetypeSearchResult(buf, nodeTypeResult);
+    			
     		}
 
 

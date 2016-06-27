@@ -10,6 +10,8 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.jevis.api.JEVisAttribute;
+import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
@@ -50,6 +52,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 	ArrayList<String> devicetypes = new ArrayList<String>();
 	ArrayList<String> components = new ArrayList<String>();
 	ArrayList<String> nodetypes = new ArrayList<String>();
+	ArrayList<String> attributes = new ArrayList<String>();
 
 	private static final Logger logger = LogManager.getLogger("SelectNdoeDialog");
 	
@@ -103,12 +106,11 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    	private final SettingsModelBoolean m_enableDevice = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableDevice, true);
    	
-   	private final SettingsModelString m_searchNodeType = new SettingsModelString(
-   			JevisSelectDataNodeModel.searchNodeType, " ");
-   	private final SettingsModelString m_searchDeviceType = new SettingsModelString(
-   			JevisSelectDataNodeModel.searchDeviceType, " ");
-   	private final SettingsModelString m_searchComponentType = new SettingsModelString(
-   			JevisSelectDataNodeModel.searchComponentType, " ");
+   	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
+   			JevisSelectDataNodeModel.enableAttributeSearch, true);
+   	
+   	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelName, " ");
    	
    	private final SettingsModelBoolean m_enableStructure = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableStructure, true);
@@ -134,6 +136,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	getnodetypes(jevis, nodefilter);
     	getdevicetypes(jevis, devicetypes);
     	getcomponents(jevis, components);
+    	getAttributes(jevis, attributes);
     	
     	createNewGroup("Database Connection Settings");
     	setHorizontalPlacement(false);
@@ -160,14 +163,12 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		    	m_devicetype.setEnabled(m_enableNodeSearch.getBooleanValue());
 		    	m_component.setEnabled(m_enableNodeSearch.getBooleanValue());
 		    	m_location.setEnabled(m_enableNodeSearch.getBooleanValue());
-		    	m_searchDeviceType.setEnabled(m_enableNodeSearch.getBooleanValue());
-		    	m_searchNodeType.setEnabled(m_enableNodeSearch.getBooleanValue());
-		    	m_searchComponentType.setEnabled(m_enableNodeSearch.getBooleanValue());
 		    	m_project.setEnabled(m_enableNodeSearch.getBooleanValue());
 		    	
 			}
 		});
-    	DialogComponentStringSelection diac_nodeType = new  DialogComponentStringSelection(m_nodeType, "NodeType", nodefilter);
+    	DialogComponentStringSelection diac_nodeType = new DialogComponentStringSelection(
+    			m_nodeType, "NodeType", nodefilter);
     	
     	//Searching for Attributes like project, location, nodeType, device and component
     	setHorizontalPlacement(true);
@@ -236,6 +237,10 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(diac_nodeType);
     	
     	createNewGroup("Search for Specific Attribute");
+    	setHorizontalPlacement(true);
+    	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Enable Attribute Search"));
+    	addDialogComponent(new DialogComponentStringSelection(
+    			m_AttributeSearch, "Select available Attribute", attributes));
     	
     	
     	createNewGroup("Search with structure");
@@ -332,6 +337,27 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     		e.printStackTrace();
     	}
     	
+    }
+    
+    public void getAttributes(JEVisDataSourceSQL jevis, ArrayList<String> attributes){
+    	try{
+    		if(jevis.isConnectionAlive()){
+    			List<JEVisClass> jClasses = jevis.getJEVisClasses();
+    			for(JEVisClass jclass: jClasses){
+    				List<JEVisObject> jObjects = jevis.getObjects(jclass, true);
+    				for(JEVisObject jObject : jObjects){
+    					List<JEVisAttribute> jAttributes = jObject.getAttributes();
+    					for(JEVisAttribute jattribute :jAttributes){
+    						if(!attributes.contains(jattribute.getName())){
+    							attributes.add(jattribute.getName());
+    						}
+    					}
+    				}
+    			}
+    		}
+    	}catch(JEVisException e){
+    		e.printStackTrace();
+    	}
     }
     
 }
