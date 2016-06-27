@@ -338,7 +338,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	}
     	
     }
-    
+    // TODO: Needing to improve on Perfomance
     public void getAttributes(JEVisDataSourceSQL jevis, ArrayList<String> attributes){
     	try{
     		if(jevis.isConnectionAlive()){
@@ -350,6 +350,9 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     					for(JEVisAttribute jattribute :jAttributes){
     						if(!attributes.contains(jattribute.getName())){
     							attributes.add(jattribute.getName());
+    						}
+    						else{
+    							break;
     						}
     					}
     				}
