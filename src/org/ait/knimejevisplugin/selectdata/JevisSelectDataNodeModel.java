@@ -199,22 +199,33 @@ public class JevisSelectDataNodeModel extends NodeModel {
     					m_parents.getBooleanValue(), m_children.getBooleanValue(),
     					m_siblings.getBooleanValue(), m_allChildren.getBooleanValue(),
     					m_enableNodeSearch.getBooleanValue());
-    			buf = structuresearcher.fillTableWithStructureSearchResult(buf, structureResult);
-    		}
-    		if(m_enableNodeType.getBooleanValue()){
-    			buf = exec.createDataContainer(createOuputTableSpecforStructure());
-    			DataTableSpec nodeTypeResult = createOuputTableSpecforStructure();
     			SearchForNodes nodetypesearcher = new SearchForNodes(jevis, m_project.getStringValue(),
         				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
         				m_component.getStringValue(), m_enableProject.getBooleanValue(),
         				m_enableLocation.getBooleanValue(), m_enableNodeType.getBooleanValue(),
         				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
-        				nodeTypeResult);
-    			buf = nodetypesearcher.fillTableWithNodetypeSearchResult(buf, nodeTypeResult);
-    			
+        				structureResult);
+    			buf = nodetypesearcher.searchforInformation(structuresearcher.searchForStructure(), buf);
     		}
-
-
+    		if(m_enableNodeType.getBooleanValue()){
+    			buf = exec.createDataContainer(createOuputTableSpecforStructure());
+    			DataTableSpec spec = createOuputTableSpecforStructure();
+    			/*SearchForNodes nodetypesearcher = new SearchForNodes(jevis, m_project.getStringValue(),
+        				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
+        				m_component.getStringValue(), m_enableProject.getBooleanValue(),
+        				m_enableLocation.getBooleanValue(), m_enableNodeType.getBooleanValue(),
+        				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
+        				nodeTypeResult);
+    			buf = nodetypesearcher.fillTableWithNodetypeSearchResult(buf);
+    			*/
+    			SearchForAttributes searcher = new SearchForAttributes(jevis, m_enableProject.getBooleanValue(),
+    					configuration.projectLevelName, m_enableLocation.getBooleanValue(),
+    					configuration.locationLevelName, m_enableComponent.getBooleanValue(),
+    					configuration.componentLevelName, m_enableNodeType.getBooleanValue(), 
+    					m_nodeType.getStringValue(), spec);
+    			buf = searcher.searchForNodetypes(buf);
+    		}
+    		    		
     	}
     	
     	
@@ -286,11 +297,19 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	
     	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator("NodeID", LongCell.TYPE).createSpec();
     	DataColumnSpec nameSpec = new DataColumnSpecCreator("Name", StringCell.TYPE).createSpec();
-    	DataColumnSpec levelSpec = new DataColumnSpecCreator("Level", StringCell.TYPE).createSpec();
-    	DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, nameSpec, levelSpec);
+    	DataColumnSpec projectTypeSpec = new DataColumnSpecCreator(
+    			configuration.projectModelName, StringCell.TYPE).createSpec();
+    	DataColumnSpec locationSpec = new DataColumnSpecCreator(
+    			configuration.locationModelName, StringCell.TYPE).createSpec();
+    	DataColumnSpec componentSpec = new DataColumnSpecCreator(
+    			configuration.componentModelName, StringCell.TYPE).createSpec();
+
+    	DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, nameSpec, projectTypeSpec,
+    			locationSpec, componentSpec);
 		return outputTableSpec;
     	
     }
+    
     /**
      * {@inheritDoc}
      */
