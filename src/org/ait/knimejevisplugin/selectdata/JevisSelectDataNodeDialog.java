@@ -344,19 +344,17 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     		if(jevis.isConnectionAlive()){
     			List<JEVisClass> jClasses = jevis.getJEVisClasses();
     			for(JEVisClass jclass: jClasses){
-    				List<JEVisObject> jObjects = jevis.getObjects(jclass, true);
-    				for(JEVisObject jObject : jObjects){
+    				if(!jevis.getObjects(jclass,true).isEmpty()){
+    					JEVisObject jObject = jevis.getObjects(jclass, true).get(0);
     					List<JEVisAttribute> jAttributes = jObject.getAttributes();
     					for(JEVisAttribute jattribute :jAttributes){
     						if(!attributes.contains(jattribute.getName())){
     							attributes.add(jattribute.getName());
     						}
-    						else{
-    							break;
-    						}
     					}
     				}
     			}
+    			
     		}
     	}catch(JEVisException e){
     		e.printStackTrace();
