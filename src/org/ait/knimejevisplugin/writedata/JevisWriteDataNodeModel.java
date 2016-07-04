@@ -2,6 +2,7 @@ package org.ait.knimejevisplugin.writedata;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +11,11 @@ import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.AttributeTable;
 import org.jevis.api.sql.JEVisAttributeSQL;
 import org.jevis.api.sql.JEVisDataSourceSQL;
+import org.jevis.api.sql.JEVisObjectSQL;
 import org.jevis.api.sql.JEVisSampleSQL;
 import org.jevis.commons.database.JEVisObjectDataManager;
+import org.jevis.commons.driver.JEVisImporter;
+import org.jevis.commons.driver.JEVisImporterAdapter;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -93,12 +97,15 @@ public class JevisWriteDataNodeModel extends NodeModel {
         	
         	if(m_update.getBooleanValue()){
             	JEVisObject obj = jevis.getObject(m_objID.getLongValue());
+            	
+            	obj.getAttribute("Value").deleteAllSample();
+            	obj.getAttribute("Value").addSamples(arg0);
             	writer.updateObject(obj);
         	}
         	
         	if(m_newDataPoint.getBooleanValue()){
-        		
-        	/*	BufferedDataTable table = inData[IN_PORT];
+        		AttributeTable atttable = new AttributeTable(jevis);
+        		BufferedDataTable table = inData[IN_PORT];
         		int rowCount =table.getRowCount();
         		
         		for(DataRow row: table){
@@ -108,13 +115,26 @@ public class JevisWriteDataNodeModel extends NodeModel {
             				if(i== 1)
             				cell.getType().getName();
             				
+            				
+            				
+            				ResultSet rs = (ResultSet) jevis.getObjects(
+            						jevis.getJEVisClass("Data"), true).get(0);
+            				rs.findColumn("COLUMN_NAME");
+            				
+            				JEVisObject obj = new JEVisObjectSQL(jevis, rs);
+            				
+            				obj.getAttribute("Value").addSamples();
+            				
+            				
+            				JEVisAttribute attribute = new JEVisAttributeSQL(
+            						jevis,obj, obj.getAttribute("Value").getType());
+            				atttable.insert(attribute);
             			}
             			
             			
-            			AttributeTable atttable =
-            			JEVisAttribute attribute = new JEVisAttributeSQL(jevis, null);
-            			JEVisSampleSQL sample = new JEVisSampleSQL(
-            					jevis, attribute , ((DoubleValue)cell).getDoubleValue() , null);
+            			
+            			
+
             		}
             		
         		}
@@ -123,8 +143,8 @@ public class JevisWriteDataNodeModel extends NodeModel {
         		writer.writeObject(obj, m_parentID.getLongValue());
         	}
 
-*/
-        	}
+
+        	
         	return new BufferedDataTable[]{};
     }
 
