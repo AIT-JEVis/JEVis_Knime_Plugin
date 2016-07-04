@@ -67,8 +67,6 @@ public class SearchForNodes {
 
 	}
 	
-
-
 /*
  * Search for Datapoints in Specific Projects, Locations, Components and Devices 
  */
@@ -204,7 +202,6 @@ public class SearchForNodes {
 	
 	public BufferedDataContainer fillTableWithNodetypeSearchResult(BufferedDataContainer buf) throws JEVisException{
 		buf = searchforInformation(searchNodetype(), buf);
-
 		return buf;
 	}
 	
@@ -217,8 +214,7 @@ public class SearchForNodes {
 		}
 		
 		return list_nodetype;
-		
-	}
+		}
 	
 	private void getParentData(JEVisObject node, List<JEVisObject> list_nodeType) throws JEVisException{
 		if(!checkLevel(node, JevisSelectDataNodeModel.configuration.projectLevelName)){
@@ -373,15 +369,11 @@ public class SearchForNodes {
 	}
 	
 	private BufferedDataContainer fillTableWithBasicInfo(JEVisObject child, BufferedDataContainer buf){
-
 		
 			cells[0] = new LongCell(child.getID());
 			cells[1] = new StringCell(child.getName());
 			buf = fillTable( buf);
 		
 		return buf;
-	}
-
-	
-	
+	}	
 }

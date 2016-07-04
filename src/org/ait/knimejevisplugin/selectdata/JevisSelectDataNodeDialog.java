@@ -53,6 +53,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 	ArrayList<String> components = new ArrayList<String>();
 	ArrayList<String> nodetypes = new ArrayList<String>();
 	ArrayList<String> attributes = new ArrayList<String>();
+	ArrayList<String> projects = new ArrayList<String>();
 
 	private static final Logger logger = LogManager.getLogger("SelectNdoeDialog");
 	
@@ -133,11 +134,13 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	JevisSelectDataNodeModel.logger.setLevel(NodeLogger.LEVEL.INFO);
     	JevisSelectDataNodeModel.logger.warn("Opening Configuration Window. Please be patient it may take a moment.");
     	connectingtojevis();
+    	getProjects(jevis, projects);
     	getnodetypes(jevis, nodefilter);
     	getdevicetypes(jevis, devicetypes);
     	getcomponents(jevis, components);
     	getAttributes(jevis, attributes);
     	
+
     	createNewGroup("Database Connection Settings");
     	setHorizontalPlacement(false);
     	addDialogComponent(new DialogComponentString(jhost, "Hostaddress"));
@@ -150,6 +153,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(new DialogComponentString(jevPW, "Jevis Password"));
     	closeCurrentGroup();
     	setDefaultTabTitle("Configure Connection");
+    	
     	
     	createNewTabAt("Filter Output",1);
     	createNewGroup("Search through Nodes");
@@ -181,7 +185,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 				m_project.setEnabled(m_enableProject.getBooleanValue());
 			}
 		});
-    	addDialogComponent(new DialogComponentString(m_project, "Project"));
+    	addDialogComponent(new DialogComponentStringSelection(m_project, "Project", projects));
+    	
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
     	addDialogComponent(new DialogComponentBoolean(m_enableLocation, "enable location search:"));
@@ -242,7 +247,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(new DialogComponentStringSelection(
     			m_AttributeSearch, "Select available Attribute", attributes));
     	
-    	
+    	createNewTab("Structure Search");
     	createNewGroup("Search with structure");
     	setHorizontalPlacement(false);
     	addDialogComponent(new DialogComponentBoolean(m_enableStructure, "Enable Structure Search"));
@@ -270,8 +275,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	closeCurrentGroup();
     	
     	addDialogComponent(new DialogComponentLabel("Search! "));
-    	
-    	
+    	    	
     }
     
     
@@ -279,7 +283,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	
 	    try{
 		//Connecting to Jevis with connection information
-		jevis = new JEVisDataSourceSQL(jhost.getStringValue(), jport.getStringValue(), jSchema.getStringValue(), jUser.getStringValue(), jPW.getStringValue());
+		jevis = new JEVisDataSourceSQL(jhost.getStringValue(), jport.getStringValue(), jSchema.getStringValue(),
+				jUser.getStringValue(), jPW.getStringValue());
 		jevis.connect(jevUser.getStringValue(), jevPW.getStringValue());
 		
 		
@@ -310,7 +315,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     						get(i).getName())){
     					devicetypes.add(jevis.getObjects(jevis.getJEVisClass("Data"), true).
     							get(i).getName());
-    
     				}
     			}
     			
@@ -360,6 +364,25 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     		e.printStackTrace();
     	}
     }
+    public void getProjects(JEVisDataSourceSQL jevis, ArrayList<String> projects){
+    	try{
+    		if(jevis.isConnectionAlive()){
+    			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
+    					JevisSelectDataNodeModel.configuration.projectLevelName), true).size();i++){
+    				if(!projects.contains(jevis.getObjects(jevis.getJEVisClass(
+    						JevisSelectDataNodeModel.configuration.projectLevelName), true).
+    						get(i).getName())){
+    					projects.add(jevis.getObjects(jevis.getJEVisClass(
+    							JevisSelectDataNodeModel.configuration.projectLevelName), true).
+    							get(i).getName());
     
+    				}
+    			}
+    		}
+    	}catch(JEVisException e){
+    		e.printStackTrace();
+    	}
+    	
+    }
 }
 

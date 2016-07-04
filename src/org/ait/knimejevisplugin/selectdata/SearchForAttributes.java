@@ -76,6 +76,7 @@ public class SearchForAttributes {
 		for(JEVisObject object :  jObject.getParents()){
 			if(SearchForNodes.checkLevel(object, projectLevelName)){
 				fillInList.add(object);
+				
 			}
 			else if(SearchForNodes.checkLevel(object, locationLevelName)){
 				fillInList.add(object);

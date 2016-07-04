@@ -2,12 +2,22 @@ package org.ait.knimejevisplugin.writedata;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.jevis.api.JEVisAttribute;
+import org.jevis.api.JEVisObject;
+import org.jevis.api.sql.AttributeTable;
+import org.jevis.api.sql.JEVisAttributeSQL;
+import org.jevis.api.sql.JEVisDataSourceSQL;
+import org.jevis.api.sql.JEVisSampleSQL;
+import org.jevis.commons.database.JEVisObjectDataManager;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DoubleValue;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
@@ -16,7 +26,10 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.defaultnodesettings.SettingsModel;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
+import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -34,34 +47,36 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public class JevisWriteDataNodeModel extends NodeModel {
     
+	JEVisDataSourceSQL jevis;
+	
+	final static int IN_PORT = 0;
+	
+	static String objID = "ObjectID";
+	static String updateDataPoint = "UpdateDataPoint";
+	static String newDataPoint = "NewDataPoint";
+	static String parentID = "ParentID";
+	 List<SettingsModel> settingsModels = new ArrayList<SettingsModel>();
+	
+	private final SettingsModelLong m_objID = new SettingsModelLong(objID, 0);	
+	private final SettingsModelBoolean m_update = new SettingsModelBoolean(updateDataPoint, false);
+	private final SettingsModelBoolean m_newDataPoint = new SettingsModelBoolean(newDataPoint, false);
+	private final SettingsModelLong m_parentID = new SettingsModelLong(parentID, 0);
+	
     // the logger instance
     private static final NodeLogger logger = NodeLogger
             .getLogger(JevisWriteDataNodeModel.class);
         
-    /** the settings key which is used to retrieve and 
-        store the settings (from the dialog or from a settings file)    
-       (package visibility to be usable from the dialog). */
-	static final String CFGKEY_COUNT = "Count";
-
-    /** initial default count value. */
-    static final int DEFAULT_COUNT = 100;
-
-    // example value: the models count variable filled from the dialog 
-    // and used in the models execution method. The default components of the
-    // dialog work with "SettingsModels".
-    private final SettingsModelIntegerBounded m_count =
-        new SettingsModelIntegerBounded(JevisWriteDataNodeModel.CFGKEY_COUNT,
-                    JevisWriteDataNodeModel.DEFAULT_COUNT,
-                    Integer.MIN_VALUE, Integer.MAX_VALUE);
-    
 
     /**
      * Constructor for the node model.
      */
     protected JevisWriteDataNodeModel() {
-    
         // TODO one incoming port and one outgoing port is assumed
         super(1, 0);
+       
+        settingsModels.add(m_update);
+        settingsModels.add(m_objID);
+        settingsModels.add(m_newDataPoint);
     }
 
     /**
@@ -71,46 +86,46 @@ public class JevisWriteDataNodeModel extends NodeModel {
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
 
+    	
         // TODO do something here
         logger.info("Node Model Stub... this is not yet implemented !");
+        	JEVisWriter writer = new JEVisWriter(jevis);
+        	
+        	if(m_update.getBooleanValue()){
+            	JEVisObject obj = jevis.getObject(m_objID.getLongValue());
+            	writer.updateObject(obj);
+        	}
+        	
+        	if(m_newDataPoint.getBooleanValue()){
+        		
+        	/*	BufferedDataTable table = inData[IN_PORT];
+        		int rowCount =table.getRowCount();
+        		
+        		for(DataRow row: table){
+            		for(int i = 0; i < row.getNumCells(); i++){
+            			DataCell cell = row.getCell(i);
+            			if(!cell.isMissing()){
+            				if(i== 1)
+            				cell.getType().getName();
+            				
+            			}
+            			
+            			
+            			AttributeTable atttable =
+            			JEVisAttribute attribute = new JEVisAttributeSQL(jevis, null);
+            			JEVisSampleSQL sample = new JEVisSampleSQL(
+            					jevis, attribute , ((DoubleValue)cell).getDoubleValue() , null);
+            		}
+            		
+        		}
 
-        
-        // the data table spec of the single output table, 
-        // the table will have three columns:
-        DataColumnSpec[] allColSpecs = new DataColumnSpec[3];
-        allColSpecs[0] = 
-            new DataColumnSpecCreator("Column 0", StringCell.TYPE).createSpec();
-        allColSpecs[1] = 
-            new DataColumnSpecCreator("Column 1", DoubleCell.TYPE).createSpec();
-        allColSpecs[2] = 
-            new DataColumnSpecCreator("Column 2", IntCell.TYPE).createSpec();
-        DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
-        // the execution context will provide us with storage capacity, in this
-        // case a data container to which we will add rows sequentially
-        // Note, this container can also handle arbitrary big data tables, it
-        // will buffer to disc if necessary.
-        BufferedDataContainer container = exec.createDataContainer(outputSpec);
-        // let's add m_count rows to it
-        for (int i = 0; i < m_count.getIntValue(); i++) {
-            RowKey key = new RowKey("Row " + i);
-            // the cells of the current row, the types of the cells must match
-            // the column spec (see above)
-            DataCell[] cells = new DataCell[3];
-            cells[0] = new StringCell("String_" + i); 
-            cells[1] = new DoubleCell(0.5 * i); 
-            cells[2] = new IntCell(i);
-            DataRow row = new DefaultRow(key, cells);
-            container.addRowToTable(row);
-            
-            // check if the execution monitor was canceled
-            exec.checkCanceled();
-            exec.setProgress(i / (double)m_count.getIntValue(), 
-                "Adding row " + i);
-        }
-        // once we are done, we close the container and return its table
-        container.close();
-        BufferedDataTable out = container.getTable();
-        return new BufferedDataTable[]{out};
+        		JEVisObject obj= null; 
+        		writer.writeObject(obj, m_parentID.getLongValue());
+        	}
+
+*/
+        	}
+        	return new BufferedDataTable[]{};
     }
 
     /**
@@ -146,9 +161,10 @@ public class JevisWriteDataNodeModel extends NodeModel {
     protected void saveSettingsTo(final NodeSettingsWO settings) {
 
         // TODO save user settings to the config object.
-        
-        m_count.saveSettingsTo(settings);
-
+  	  for(SettingsModel model : settingsModels){
+      	   model.saveSettingsTo(settings);
+         }
+       
     }
 
     /**
@@ -161,8 +177,9 @@ public class JevisWriteDataNodeModel extends NodeModel {
         // TODO load (valid) settings from the config object.
         // It can be safely assumed that the settings are valided by the 
         // method below.
-        
-        m_count.loadSettingsFrom(settings);
+    	  for(SettingsModel model : settingsModels){
+       	   model.loadSettingsFrom(settings);
+          }
 
     }
 
@@ -173,12 +190,16 @@ public class JevisWriteDataNodeModel extends NodeModel {
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
             
+    	
+  	  for(SettingsModel model : settingsModels){
+      	   model.validateSettings(settings);
+         }
         // TODO check if the settings could be applied to our model
         // e.g. if the count is in a certain range (which is ensured by the
         // SettingsModel).
         // Do not actually set any values of any member variables.
 
-        m_count.validateSettings(settings);
+       
 
     }
     

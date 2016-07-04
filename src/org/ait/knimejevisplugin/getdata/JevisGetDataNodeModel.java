@@ -394,16 +394,6 @@ public class JevisGetDataNodeModel extends NodeModel {
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
             throws InvalidSettingsException {
     	
-    	for(int i = 0; i< inSpecs[IN_PORT].getNumColumns(); i++){
-    		DataColumnSpec c = inSpecs[IN_PORT].getColumnSpec(i);
-    		if(i == 0){
-        		if(!c.getType().isCompatible(LongValue.class)){
-        	 		throw new InvalidSettingsException(
-            				"Invalid column type at first column"); 
-        		}
-    		}
-    	}
-    	
         // TODO: generated method stub
         return new DataTableSpec[]{null};
     }
