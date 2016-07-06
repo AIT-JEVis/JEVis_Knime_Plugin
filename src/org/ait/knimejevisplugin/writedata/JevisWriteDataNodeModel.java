@@ -32,6 +32,8 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DoubleValue;
 import org.knime.core.data.RowKey;
+import org.knime.core.data.StringValue;
+import org.knime.core.data.date.DateAndTimeValue;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
@@ -43,6 +45,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -68,22 +71,38 @@ public class JevisWriteDataNodeModel extends NodeModel {
 	static String updateDataPoint = "UpdateDataPoint";
 	static String newDataPoint = "NewDataPoint";
 	static String parentID = "ParentID";
-	 List<SettingsModel> settingsModels = new ArrayList<SettingsModel>();
+	static String objectName = "ObjectName";
 	
-		public static String host = "jevis3.ait.ac.at";
-	 	public static String port = "3306";
-	 	public static String sqlSchema = "jevis";
-	 	public static String sqlUser = "jevis";
-	 	public static String sqlPW = "vu5eS1ma";
+	List<SettingsModel> settingsModels = new ArrayList<SettingsModel>();
+	static String deleteDataPoint = "Delete DataPoint";
+	static String deleteDataPointNodeID = "Delete DataPoint NodeID";
+	//Jevis Connection Information
+	public static String host = "jevis3.ait.ac.at";
+	public static String port = "3306";
+	public static String sqlSchema = "jevis";
+	public static String sqlUser = "jevis";
+	public static String sqlPW = "vu5eS1ma";
 	 	
-	 	public static String jevisUser = "BerhnardM";
-	 	public static String jevisPW = "testpass01593"; 
+	public static String jevisUser = "BerhnardM";
+	public static String jevisPW = "testpass01593"; 
 	 
 	 
-	private final SettingsModelLong m_objID = new SettingsModelLong(objID, 0);	
-	private final SettingsModelBoolean m_update = new SettingsModelBoolean(updateDataPoint, false);
-	private final SettingsModelBoolean m_newDataPoint = new SettingsModelBoolean(newDataPoint, false);
-	private final SettingsModelLong m_parentID = new SettingsModelLong(parentID, 0);
+	private final SettingsModelLong m_objID = 
+			new SettingsModelLong(objID, 0);	
+	private final SettingsModelBoolean m_update = 
+			new SettingsModelBoolean(updateDataPoint, false);
+	
+	private final SettingsModelBoolean m_newDataPoint = 
+			new SettingsModelBoolean(newDataPoint, false);
+	private final SettingsModelLong m_parentID = 
+			new SettingsModelLong(parentID, 0);
+	private final SettingsModelString m_objectName =
+			new SettingsModelString(objectName, "unnamed_Data");
+	
+	private final SettingsModelBoolean m_deleteDataPoint =
+			new SettingsModelBoolean(deleteDataPoint, false);
+	private final SettingsModelLong m_deleteDataPointNodeID =
+			new SettingsModelLong(deleteDataPointNodeID, 0);
 	
     // the logger instance
     private static final NodeLogger logger = NodeLogger
@@ -94,12 +113,16 @@ public class JevisWriteDataNodeModel extends NodeModel {
      * Constructor for the node model.
      */
     protected JevisWriteDataNodeModel() {
-        // TODO one incoming port and one outgoing port is assumed
-        super(1, 0);
        
+        super(1, 0);
+        //TODO: Add all SettingsModells to List! 
         settingsModels.add(m_update);
         settingsModels.add(m_objID);
         settingsModels.add(m_newDataPoint);
+        settingsModels.add(m_parentID);
+        settingsModels.add(m_deleteDataPoint);
+        settingsModels.add(m_deleteDataPointNodeID);
+        
     }
 
     /**
@@ -110,27 +133,44 @@ public class JevisWriteDataNodeModel extends NodeModel {
             final ExecutionContext exec) throws Exception {
     	connectingtojevis();
     	if(jevis.isConnectionAlive()){
-        // TODO do something here
-        logger.info("Node Model Stub... this is not yet implemented !");
+
         	JEVisWriter writer = new JEVisWriter(jevis);
         	
+        	BufferedDataTable table = inData[IN_PORT];
+            int rowCount = table.getRowCount();
+            int currentRow = 0;
+   
         	if(m_update.getBooleanValue()){
-            	JEVisObject obj = jevis.getObject(m_objID.getLongValue());
-        		String name = "data";
-            	writer.createNewDatapointUnderParent(m_objID.getLongValue(), name);
-            	
-        	}
-        	
-        	if(m_newDataPoint.getBooleanValue()){
-       
-
-        
-        	
         		
+        		JEVisObject obj = jevis.getObject(m_objID.getLongValue());
+        		for(DataRow row : table) {
+                	// check if the user cancelled the execution
+                    exec.checkCanceled();
+                    // report progress
+                    exec.setProgress((double)currentRow / rowCount, 
+                           " processing row " + currentRow);
+                    DataCell cell0 = row.getCell(0);
+                    DataCell cell1 = row.getCell(1);
+                    DataCell cell2 = row.getCell(2);
+                    if (!cell0.isMissing() && !cell1.isMissing() && !cell2.isMissing()) {
+                    	DateTime date = 
+                    		new DateTime(((DateAndTimeValue)cell0).getUTCTimeInMillis());
+                       	 double value = ((DoubleValue) cell1).getDoubleValue();
+                       	 String unit = ((StringValue) cell2).getStringValue();
+                       	 writer.addData(obj, date, value, unit);
+                    }         	
+                }
+        	}
+        	if(m_newDataPoint.getBooleanValue()){
+        		
+            	long objID = writer.createNewDatapointUnderParent(
+            			m_parentID.getLongValue(), m_objectName.getStringValue());
+            	
+            	//TODO: Get Data from inData 
+            //	writer.addData(objID, date, value, unit);
+	
         	}
     	}
-
-        	
         	return new BufferedDataTable[]{};
     }
 
@@ -194,7 +234,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
 
-        // TODO save user settings to the config object.
+
   	  for(SettingsModel model : settingsModels){
       	   model.saveSettingsTo(settings);
          }
@@ -208,7 +248,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
             
-        // TODO load (valid) settings from the config object.
+        // load (valid) settings from the config object.
         // It can be safely assumed that the settings are valided by the 
         // method below.
     	  for(SettingsModel model : settingsModels){
@@ -228,7 +268,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
   	  for(SettingsModel model : settingsModels){
       	   model.validateSettings(settings);
          }
-        // TODO check if the settings could be applied to our model
+        // check if the settings could be applied to our model
         // e.g. if the count is in a certain range (which is ensured by the
         // SettingsModel).
         // Do not actually set any values of any member variables.

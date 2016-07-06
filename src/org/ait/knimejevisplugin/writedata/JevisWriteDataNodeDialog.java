@@ -5,10 +5,13 @@ import javax.swing.event.ChangeListener;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
+import org.knime.core.node.defaultnodesettings.DialogComponentLabel;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
+import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**
  * <code>NodeDialog</code> for the "JevisWriteData" Node.
@@ -40,6 +43,14 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 			JevisWriteDataNodeModel.newDataPoint, false);
 	private final SettingsModelLong m_parentID = new SettingsModelLong(
 			JevisWriteDataNodeModel.parentID, 0);
+	private final SettingsModelString m_objectName = new SettingsModelString(
+			JevisWriteDataNodeModel.objectName," ");
+	
+	private final SettingsModelBoolean m_deleteDataPoint =
+			new SettingsModelBoolean(JevisWriteDataNodeModel.deleteDataPoint, false);
+	private final SettingsModelLong m_deleteDataPointNodeID =
+			new SettingsModelLong(JevisWriteDataNodeModel.deleteDataPointNodeID, 0);
+	
     /**
      * New pane for configuring JevisWriteData node dialog.
      * This is just a suggestion to demonstrate possible default dialog
@@ -47,41 +58,56 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
      */
     protected JevisWriteDataNodeDialog() {
         super();
-        createNewGroup(label_update);
+        createNewGroup("Select option:");
         setHorizontalPlacement(true);
         addDialogComponent(new DialogComponentBoolean(m_update, label_update));
-        addDialogComponent(new DialogComponentNumber(m_objID, label_objID, 1));
+        addDialogComponent(new DialogComponentBoolean(m_newDataPoint,label_newDataPoint));
+        addDialogComponent(new DialogComponentBoolean(m_deleteDataPoint, label_delete));
+        closeCurrentGroup();
+
+        addDialogComponent(new DialogComponentNumber(m_objID, label_objID, 0));
         m_update.addChangeListener(new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
+				
 				if(m_update.getBooleanValue()){
-					m_update.setBooleanValue(!m_newDataPoint.getBooleanValue());
+					m_newDataPoint.setBooleanValue(!m_update.getBooleanValue());
+					m_deleteDataPoint.setBooleanValue(!m_update.getBooleanValue());
 					m_objID.setEnabled(m_update.getBooleanValue());
 				}
-
 			}
 		});
-        
 
-       
-        createNewGroup(label_newDataPoint);
-        addDialogComponent(new DialogComponentBoolean(m_newDataPoint,label_newDataPoint));
+        addDialogComponent(new DialogComponentNumber(m_parentID, label_newDataPoint, 0));
+        addDialogComponent(new DialogComponentString(m_objectName, label_newDataPoint));
         m_newDataPoint.addChangeListener(new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
+		
 				if(m_newDataPoint.getBooleanValue()){
-					m_newDataPoint.setBooleanValue(!m_update.getBooleanValue());
+					m_update.setBooleanValue(!m_newDataPoint.getBooleanValue());
+					m_deleteDataPoint.setBooleanValue(!m_newDataPoint.getBooleanValue());
 				}
-				
 			}
 		});
-        /*createNewGroup(label_delete);
-        addDialogComponent(new DialogComponentBoolean(m_deleteDataPoint, label_delete));
-        */
+        
+       
+        addDialogComponent(new DialogComponentNumber(m_deleteDataPointNodeID, label_delete, 0));
+        m_deleteDataPoint.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				if(m_deleteDataPoint.getBooleanValue()){
+					m_update.setBooleanValue(!m_deleteDataPoint.getBooleanValue());
+					m_newDataPoint.setBooleanValue(!m_deleteDataPoint.getBooleanValue());
+					
+				}
+			}
+		});
+        
     }
 }
 
