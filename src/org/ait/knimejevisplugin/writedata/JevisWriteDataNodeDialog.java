@@ -29,6 +29,9 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 	static String label_parentID = "Put in Parent NodeID";
 	static String label_newDataPoint = "New Datapoint";
 	
+	static String label_delete = "Delete DataPoint data";
+	
+	
 	private final SettingsModelLong m_objID = new SettingsModelLong(
 			JevisWriteDataNodeModel.objID, 0);	
 	private final SettingsModelBoolean m_update = new SettingsModelBoolean(
@@ -76,6 +79,9 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 				
 			}
 		});
+        /*createNewGroup(label_delete);
+        addDialogComponent(new DialogComponentBoolean(m_deleteDataPoint, label_delete));
+        */
     }
 }
 

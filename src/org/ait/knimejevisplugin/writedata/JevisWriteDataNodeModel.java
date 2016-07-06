@@ -7,7 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jevis.api.JEVisAttribute;
+import org.jevis.api.JEVisDataSource;
+import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisFile;
+import org.jevis.api.JEVisMultiSelection;
 import org.jevis.api.JEVisObject;
+import org.jevis.api.JEVisSample;
+import org.jevis.api.JEVisSelection;
+import org.jevis.api.JEVisType;
+import org.jevis.api.JEVisUnit;
 import org.jevis.api.sql.AttributeTable;
 import org.jevis.api.sql.JEVisAttributeSQL;
 import org.jevis.api.sql.JEVisDataSourceSQL;
@@ -16,6 +24,7 @@ import org.jevis.api.sql.JEVisSampleSQL;
 import org.jevis.commons.database.JEVisObjectDataManager;
 import org.jevis.commons.driver.JEVisImporter;
 import org.jevis.commons.driver.JEVisImporterAdapter;
+import org.joda.time.DateTime;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -61,6 +70,16 @@ public class JevisWriteDataNodeModel extends NodeModel {
 	static String parentID = "ParentID";
 	 List<SettingsModel> settingsModels = new ArrayList<SettingsModel>();
 	
+		public static String host = "jevis3.ait.ac.at";
+	 	public static String port = "3306";
+	 	public static String sqlSchema = "jevis";
+	 	public static String sqlUser = "jevis";
+	 	public static String sqlPW = "vu5eS1ma";
+	 	
+	 	public static String jevisUser = "BerhnardM";
+	 	public static String jevisPW = "testpass01593"; 
+	 
+	 
 	private final SettingsModelLong m_objID = new SettingsModelLong(objID, 0);	
 	private final SettingsModelBoolean m_update = new SettingsModelBoolean(updateDataPoint, false);
 	private final SettingsModelBoolean m_newDataPoint = new SettingsModelBoolean(newDataPoint, false);
@@ -89,60 +108,27 @@ public class JevisWriteDataNodeModel extends NodeModel {
     @Override
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
-
-    	
+    	connectingtojevis();
+    	if(jevis.isConnectionAlive()){
         // TODO do something here
         logger.info("Node Model Stub... this is not yet implemented !");
         	JEVisWriter writer = new JEVisWriter(jevis);
         	
         	if(m_update.getBooleanValue()){
             	JEVisObject obj = jevis.getObject(m_objID.getLongValue());
+        		String name = "data";
+            	writer.createNewDatapointUnderParent(m_objID.getLongValue(), name);
             	
-            	obj.getAttribute("Value").deleteAllSample();
-            	obj.getAttribute("Value").addSamples(arg0);
-            	writer.updateObject(obj);
         	}
         	
         	if(m_newDataPoint.getBooleanValue()){
-        		AttributeTable atttable = new AttributeTable(jevis);
-        		BufferedDataTable table = inData[IN_PORT];
-        		int rowCount =table.getRowCount();
+       
+
+        
+        	
         		
-        		for(DataRow row: table){
-            		for(int i = 0; i < row.getNumCells(); i++){
-            			DataCell cell = row.getCell(i);
-            			if(!cell.isMissing()){
-            				if(i== 1)
-            				cell.getType().getName();
-            				
-            				
-            				
-            				ResultSet rs = (ResultSet) jevis.getObjects(
-            						jevis.getJEVisClass("Data"), true).get(0);
-            				rs.findColumn("COLUMN_NAME");
-            				
-            				JEVisObject obj = new JEVisObjectSQL(jevis, rs);
-            				
-            				obj.getAttribute("Value").addSamples();
-            				
-            				
-            				JEVisAttribute attribute = new JEVisAttributeSQL(
-            						jevis,obj, obj.getAttribute("Value").getType());
-            				atttable.insert(attribute);
-            			}
-            			
-            			
-            			
-            			
-
-            		}
-            		
-        		}
-
-        		JEVisObject obj= null; 
-        		writer.writeObject(obj, m_parentID.getLongValue());
         	}
-
+    	}
 
         	
         	return new BufferedDataTable[]{};
@@ -174,6 +160,34 @@ public class JevisWriteDataNodeModel extends NodeModel {
         return new DataTableSpec[]{null};
     }
 
+  public void connectingtojevis(){
+    	
+    	//getting Connection information from selection node if existing
+    	if(getAvailableFlowVariables().containsKey("host")
+    			&& getAvailableFlowVariables().containsKey("port")
+    			&& getAvailableFlowVariables().containsKey("sqlSchema")
+    			&& getAvailableFlowVariables().containsKey("sqlUser")
+    			&& getAvailableFlowVariables().containsKey("sqlPW")){
+	    	
+	    	host = peekFlowVariableString("host");
+	    	port = peekFlowVariableString("port");
+	    	sqlSchema = peekFlowVariableString("sqlSchema");
+	    	sqlUser = peekFlowVariableString("sqlUser");
+	    	sqlPW = peekFlowVariableString("sqlPW");
+    	}
+    	
+    	try{
+    	//Connecting to Jevis with connection information
+    	jevis = new JEVisDataSourceSQL(host, port, sqlSchema, sqlUser, sqlPW);
+    	jevis.connect(jevisUser, jevisPW);
+    	}catch(JEVisException e){
+    		e.printStackTrace();
+    		logger.error("Connection error! Check Jevis settings and try again!");
+    	}
+    	
+    }
+    
+    
     /**
      * {@inheritDoc}
      */
