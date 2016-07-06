@@ -1,16 +1,11 @@
 package org.ait.knimejevisplugin.writedata;
 
-import java.sql.Array;
-import java.sql.ResultSet;
-import java.util.List;
 
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
-import org.jevis.api.JEVisSample;
-import org.jevis.api.JEVisUnit;
+
 import org.jevis.api.sql.JEVisDataSourceSQL;
-import org.jevis.api.sql.JEVisObjectSQL;
-import org.jevis.api.sql.ObjectTable;
+
 import org.joda.time.DateTime;
 
 public class JEVisWriter {
@@ -41,7 +36,7 @@ public class JEVisWriter {
 	}
 	
 	/*
-	 * adding Samples to the given JEVisObject. 
+	 * Adding Samples to the given JEVisObject. 
 	 */
 	protected void addData(JEVisObject obj, DateTime date, Double value, String unit )
 			throws JEVisException{

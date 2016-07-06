@@ -133,42 +133,24 @@ public class JevisWriteDataNodeModel extends NodeModel {
             final ExecutionContext exec) throws Exception {
     	connectingtojevis();
     	if(jevis.isConnectionAlive()){
-
-        	JEVisWriter writer = new JEVisWriter(jevis);
-        	
         	BufferedDataTable table = inData[IN_PORT];
-            int rowCount = table.getRowCount();
-            int currentRow = 0;
+        	JEVisWriter writer = new JEVisWriter(jevis);
    
         	if(m_update.getBooleanValue()){
-        		
-        		JEVisObject obj = jevis.getObject(m_objID.getLongValue());
-        		for(DataRow row : table) {
-                	// check if the user cancelled the execution
-                    exec.checkCanceled();
-                    // report progress
-                    exec.setProgress((double)currentRow / rowCount, 
-                           " processing row " + currentRow);
-                    DataCell cell0 = row.getCell(0);
-                    DataCell cell1 = row.getCell(1);
-                    DataCell cell2 = row.getCell(2);
-                    if (!cell0.isMissing() && !cell1.isMissing() && !cell2.isMissing()) {
-                    	DateTime date = 
-                    		new DateTime(((DateAndTimeValue)cell0).getUTCTimeInMillis());
-                       	 double value = ((DoubleValue) cell1).getDoubleValue();
-                       	 String unit = ((StringValue) cell2).getStringValue();
-                       	 writer.addData(obj, date, value, unit);
-                    }         	
-                }
+            	JEVisObject obj = jevis.getObject(m_objID.getLongValue());
+        		fetchingInformationFromInPut(table, writer, obj);
+
         	}
         	if(m_newDataPoint.getBooleanValue()){
         		
             	long objID = writer.createNewDatapointUnderParent(
             			m_parentID.getLongValue(), m_objectName.getStringValue());
-            	
-            	//TODO: Get Data from inData 
-            //	writer.addData(objID, date, value, unit);
+            	JEVisObject obj = jevis.getObject(objID);
+            	fetchingInformationFromInPut(table, writer, obj);
 	
+        	}
+        	if(m_deleteDataPoint.getBooleanValue()){
+        		writer.clearDataPointData(m_deleteDataPointNodeID.getLongValue());
         	}
     	}
         	return new BufferedDataTable[]{};
@@ -226,6 +208,24 @@ public class JevisWriteDataNodeModel extends NodeModel {
     	}
     	
     }
+  
+  private void fetchingInformationFromInPut(BufferedDataTable table, JEVisWriter writer, JEVisObject obj) throws JEVisException{
+      
+		for(DataRow row : table) {
+            DataCell cell0 = row.getCell(0);
+            DataCell cell1 = row.getCell(1);
+            DataCell cell2 = row.getCell(2);
+            if (!cell0.isMissing() && !cell1.isMissing() && !cell2.isMissing()) {
+            	
+            	//TODO: Change String to DateAndTimeValue
+            	DateTime date = 
+            		new DateTime(((DateAndTimeValue)cell0).getUTCTimeInMillis());
+               	 double value = ((DoubleValue) cell1).getDoubleValue();
+               	 String unit = ((StringValue) cell2).getStringValue();
+               	 writer.addData(obj, date, value, unit);
+            }         	
+        }
+  }
     
     
     /**
