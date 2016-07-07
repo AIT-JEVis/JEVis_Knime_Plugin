@@ -199,6 +199,9 @@ public class JevisSelectDataNodeModel extends NodeModel {
     					m_parents.getBooleanValue(), m_children.getBooleanValue(),
     					m_siblings.getBooleanValue(), m_allChildren.getBooleanValue(),
     					m_enableNodeSearch.getBooleanValue());
+    			buf = structuresearcher.fillTableWithStructureSearchResult(buf, structureResult);
+    			
+    			/*
     			SearchForNodes nodetypesearcher = new SearchForNodes(jevis, m_project.getStringValue(),
         				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
         				m_component.getStringValue(), m_enableProject.getBooleanValue(),
@@ -206,7 +209,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
         				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
         				structureResult);
     			buf = nodetypesearcher.searchforInformation(structuresearcher.searchForStructure(), buf);
+    		*/
+    			
     		}
+    		
     		if(m_enableNodeType.getBooleanValue()){
     			buf = exec.createDataContainer(createOuputTableSpecforStructure());
     			DataTableSpec spec = createOuputTableSpecforStructure();
@@ -224,10 +230,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     					configuration.componentLevelName, m_enableNodeType.getBooleanValue(), 
     					m_nodeType.getStringValue(), spec);
     			buf = searcher.searchForNodetypes(buf);
-    		}
-    		    		
+    		}		    		
     	}
-    	
     	
     	buf.close();
     	BufferedDataTable out = buf.getTable();
@@ -265,7 +269,6 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		e.printStackTrace();
     		logger.error("Connection error! Check Jevis settings and try again!");
     	}
-    	
     }
  
     

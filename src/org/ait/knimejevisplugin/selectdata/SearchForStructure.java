@@ -48,6 +48,11 @@ public class SearchForStructure {
 			cells[0] = new LongCell(foundObject.getID());
 			cells[1] = new StringCell(foundObject.getName());
 			cells[2] = new StringCell(foundObject.getJEVisClass().getName());
+			for( int i = 0; i < cells.length; i++ ){
+				if(cells[i]== null){
+					cells[i] = new StringCell(" ");
+				}
+			}
 			counter++;
 			DataRow row = new DefaultRow("Row"+ counter, cells);
 			buf.addRowToTable(row);
