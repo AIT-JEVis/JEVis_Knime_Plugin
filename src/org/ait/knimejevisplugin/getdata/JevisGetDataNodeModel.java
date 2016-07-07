@@ -49,6 +49,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
@@ -71,6 +72,8 @@ public class JevisGetDataNodeModel extends NodeModel {
             .getLogger("GetDataLogger");
 	
 	private JEVisObject jObject;
+	
+	private List<SettingsModel> settingsmodels;
 	
 	//Dialog information
 	static final int nodeID = 494;
@@ -122,6 +125,22 @@ public class JevisGetDataNodeModel extends NodeModel {
     protected JevisGetDataNodeModel() {
            //one input and one output table
         super(1, 1);
+        settingsmodels.add(m_endDate);
+        settingsmodels.add(m_endDateDay);
+        settingsmodels.add(m_endDateMonth);
+        settingsmodels.add(m_endDateYear);
+        settingsmodels.add(m_endHour);
+        settingsmodels.add(m_endMinute);
+        settingsmodels.add(m_endSeconds);
+        settingsmodels.add(m_nodeID);
+        settingsmodels.add(m_startDate);
+        settingsmodels.add(m_startDateDay);
+        settingsmodels.add(m_startDateMonth);
+        settingsmodels.add(m_startDateYear);
+        settingsmodels.add(m_startMinute);
+        settingsmodels.add(m_startHour);
+        settingsmodels.add(m_startSeconds);
+        
     }
 
 
@@ -374,7 +393,6 @@ public class JevisGetDataNodeModel extends NodeModel {
 		    }
 	        
 		} catch (JEVisException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}    	
     }
@@ -404,7 +422,6 @@ public class JevisGetDataNodeModel extends NodeModel {
     		}
     	}
     	
-        // TODO: generated method stub
         return new DataTableSpec[]{null};
     }
 
@@ -413,25 +430,9 @@ public class JevisGetDataNodeModel extends NodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-         // TODO: generated method stub
-    	m_nodeID.saveSettingsTo(settings);
-    	//m_startTime.saveSettingsTo(settings);
-    	//m_endTime.saveSettingsTo(settings);
-    	
-    	m_startDateYear.saveSettingsTo(settings);
-    	m_startDateMonth.saveSettingsTo(settings);
-    	m_startDateDay.saveSettingsTo(settings);
-    	m_startHour.saveSettingsTo(settings);
-    	m_startMinute.saveSettingsTo(settings);
-    	m_startSeconds.saveSettingsTo(settings);
-    	
-    	m_endDateYear.saveSettingsTo(settings);
-    	m_endDateMonth.saveSettingsTo(settings);
-    	m_endDateDay.saveSettingsTo(settings);
-    	m_endHour.saveSettingsTo(settings);
-    	m_endMinute.saveSettingsTo(settings);
-    	m_endSeconds.saveSettingsTo(settings);
-    	
+    	for(SettingsModel settingsmodel : settingsmodels){
+    		settingsmodel.saveSettingsTo(settings);
+    	}
     }
 
     /**
@@ -440,24 +441,9 @@ public class JevisGetDataNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        // TODO: generated method stub
-    	m_nodeID.loadSettingsFrom(settings);
-    	//m_startTime.loadSettingsFrom(settings);
-    	//m_endTime.loadSettingsFrom(settings);
-    	
-    	m_startDateYear.loadSettingsFrom(settings);
-    	m_startDateMonth.loadSettingsFrom(settings);
-    	m_startDateDay.loadSettingsFrom(settings);
-    	m_startHour.loadSettingsFrom(settings);
-    	m_startMinute.loadSettingsFrom(settings);
-    	m_startSeconds.loadSettingsFrom(settings);
-    	
-    	m_endDateYear.loadSettingsFrom(settings);
-    	m_endDateMonth.loadSettingsFrom(settings);
-    	m_endDateDay.loadSettingsFrom(settings);
-    	m_endHour.loadSettingsFrom(settings);
-    	m_endMinute.loadSettingsFrom(settings);
-    	m_endSeconds.loadSettingsFrom(settings);
+    	for(SettingsModel settingsmodel : settingsmodels){
+    		settingsmodel.loadSettingsFrom(settings);
+    	}
     }
 
     /**
@@ -466,24 +452,10 @@ public class JevisGetDataNodeModel extends NodeModel {
     @Override
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        // TODO: generated method stub
-    	m_nodeID.validateSettings(settings);
-    	//m_startTime.validateSettings(settings);
-    	//m_endTime.validateSettings(settings);
     	
-    	m_startDateYear.validateSettings(settings);
-    	m_startDateMonth.validateSettings(settings);
-    	m_startDateDay.validateSettings(settings);
-    	m_startHour.validateSettings(settings);
-    	m_startMinute.validateSettings(settings);
-    	m_startSeconds.validateSettings(settings);
-    	
-    	m_endDateYear.validateSettings(settings);
-    	m_endDateMonth.validateSettings(settings);
-    	m_endDateDay.validateSettings(settings);
-    	m_endHour.validateSettings(settings);
-    	m_endMinute.validateSettings(settings);
-    	m_endSeconds.validateSettings(settings);
+    	for(SettingsModel settingsmodel : settingsmodels){
+    		settingsmodel.validateSettings(settings);
+    	}
     	
     }
     
