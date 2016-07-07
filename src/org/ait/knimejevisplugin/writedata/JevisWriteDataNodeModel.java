@@ -2,48 +2,25 @@ package org.ait.knimejevisplugin.writedata;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jevis.api.JEVisAttribute;
-import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
-import org.jevis.api.JEVisFile;
-import org.jevis.api.JEVisMultiSelection;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisSample;
-import org.jevis.api.JEVisSelection;
-import org.jevis.api.JEVisType;
-import org.jevis.api.JEVisUnit;
-import org.jevis.api.sql.AttributeTable;
-import org.jevis.api.sql.JEVisAttributeSQL;
 import org.jevis.api.sql.JEVisDataSourceSQL;
-import org.jevis.api.sql.JEVisObjectSQL;
-import org.jevis.api.sql.JEVisSampleSQL;
-import org.jevis.commons.database.JEVisObjectDataManager;
-import org.jevis.commons.driver.JEVisImporter;
-import org.jevis.commons.driver.JEVisImporterAdapter;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DoubleValue;
-import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
-import org.knime.core.data.date.DateAndTimeValue;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.data.def.DoubleCell;
-import org.knime.core.data.def.IntCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.ExecutionContext;
@@ -70,12 +47,13 @@ public class JevisWriteDataNodeModel extends NodeModel {
 	static String objID = "ObjectID";
 	static String updateDataPoint = "UpdateDataPoint";
 	static String newDataPoint = "NewDataPoint";
-	static String parentID = "ParentID";
 	static String objectName = "ObjectName";
+	static String newDataPointClass = "newDataPointClass";
+	
 	
 	List<SettingsModel> settingsModels = new ArrayList<SettingsModel>();
 	static String deleteDataPoint = "Delete DataPoint";
-	static String deleteDataPointNodeID = "Delete DataPoint NodeID";
+
 	//Jevis Connection Information
 	public static String host = "jevis3.ait.ac.at";
 	public static String port = "3306";
@@ -94,35 +72,35 @@ public class JevisWriteDataNodeModel extends NodeModel {
 	
 	private final SettingsModelBoolean m_newDataPoint = 
 			new SettingsModelBoolean(newDataPoint, false);
-	private final SettingsModelLong m_parentID = 
-			new SettingsModelLong(parentID, 0);
 	private final SettingsModelString m_objectName =
 			new SettingsModelString(objectName, "unnamed_Data");
+	private final SettingsModelString m_newDataPointClass = 
+			new SettingsModelString(newDataPointClass, "Data");
 	
 	private final SettingsModelBoolean m_deleteDataPoint =
 			new SettingsModelBoolean(deleteDataPoint, false);
-	private final SettingsModelLong m_deleteDataPointNodeID =
-			new SettingsModelLong(deleteDataPointNodeID, 0);
+
 	
     // the logger instance
-    private static final NodeLogger logger = NodeLogger
+    static final NodeLogger logger = NodeLogger
             .getLogger(JevisWriteDataNodeModel.class);
         
 
     /**
      * Constructor for the node model.
      */
-    protected JevisWriteDataNodeModel() {
+    @SuppressWarnings({ "static-access", "deprecation" })
+	protected JevisWriteDataNodeModel() {
        
         super(1, 0);
         //TODO: Add all SettingsModells to List! 
         settingsModels.add(m_update);
         settingsModels.add(m_objID);
         settingsModels.add(m_newDataPoint);
-        settingsModels.add(m_parentID);
         settingsModels.add(m_deleteDataPoint);
-        settingsModels.add(m_deleteDataPointNodeID);
         
+        
+       logger.setLevel(NodeLogger.LEVEL.INFO);
     }
 
     /**
@@ -132,27 +110,45 @@ public class JevisWriteDataNodeModel extends NodeModel {
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
     	connectingtojevis();
+    	try{
     	if(jevis.isConnectionAlive()){
         	BufferedDataTable table = inData[IN_PORT];
         	JEVisWriter writer = new JEVisWriter(jevis);
-   
+        	try{
         	if(m_update.getBooleanValue()){
             	JEVisObject obj = jevis.getObject(m_objID.getLongValue());
         		fetchingInformationFromInPut(table, writer, obj);
-
+        		obj.commit();
+        		if(obj.getAttribute("Value").hasSample()){
+        			logger.info("Samples updated");
+        		}
         	}
         	if(m_newDataPoint.getBooleanValue()){
         		
             	long objID = writer.createNewDatapointUnderParent(
-            			m_parentID.getLongValue(), m_objectName.getStringValue());
+            			m_objID.getLongValue(), m_objectName.getStringValue(), 
+            			m_newDataPointClass.getStringValue());
             	JEVisObject obj = jevis.getObject(objID);
             	fetchingInformationFromInPut(table, writer, obj);
-	
+            	obj.commit();
+        		if(obj.getAttribute("Value").hasSample()){
+        			logger.info("New Object build!");
+        		}
         	}
         	if(m_deleteDataPoint.getBooleanValue()){
-        		writer.clearDataPointData(m_deleteDataPointNodeID.getLongValue());
+        		writer.clearDataPointData(m_objID.getLongValue());
+        	}}
+        	catch(Exception e){
+        		e.printStackTrace();
+        		logger.error("Error while trying Operation");
+        		
         	}
     	}
+    	}catch(JEVisException je){
+    		je.printStackTrace();
+    		logger.error("Connection to JEVis Lost");
+    	}
+    	
         	return new BufferedDataTable[]{};
     }
 
@@ -210,21 +206,25 @@ public class JevisWriteDataNodeModel extends NodeModel {
     }
   
   private void fetchingInformationFromInPut(BufferedDataTable table, JEVisWriter writer, JEVisObject obj) throws JEVisException{
-      
+	  List<JEVisSample> samples = new ArrayList<>();
 		for(DataRow row : table) {
             DataCell cell0 = row.getCell(0);
             DataCell cell1 = row.getCell(1);
             DataCell cell2 = row.getCell(2);
             if (!cell0.isMissing() && !cell1.isMissing() && !cell2.isMissing()) {
-            	
-            	//TODO: Change String to DateAndTimeValue
-            	DateTime date = 
-            		new DateTime(((DateAndTimeValue)cell0).getUTCTimeInMillis());
-               	 double value = ((DoubleValue) cell1).getDoubleValue();
-               	 String unit = ((StringValue) cell2).getStringValue();
-               	 writer.addData(obj, date, value, unit);
+            		
+            	DateTimeFormatter mformatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
+ 	           	String timestamp = ((StringValue)cell0).getStringValue();
+ 	           	DateTime date = mformatter.parseDateTime(timestamp);
+ 	           	double value = ((DoubleValue) cell1).getDoubleValue();
+ 	           	String unit = ((StringValue) cell2).getStringValue();
+ 	           	logger.info(timestamp + " "+ value + " "+ unit);
+ 	           	writer.addData(obj, date, value, unit, samples);
+            
             }         	
         }
+		obj.getAttribute("Value").addSamples(samples);
+		obj.commit();
   }
     
     

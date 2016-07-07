@@ -31,6 +31,8 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 	
 	static String label_parentID = "Put in Parent NodeID";
 	static String label_newDataPoint = "New Datapoint";
+	static String label_newDataPointClass = "Select datapoint class:";
+	
 	
 	static String label_delete = "Delete DataPoint data";
 	
@@ -41,21 +43,17 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 			JevisWriteDataNodeModel.updateDataPoint, false);
 	private final SettingsModelBoolean m_newDataPoint = new SettingsModelBoolean(
 			JevisWriteDataNodeModel.newDataPoint, false);
-	private final SettingsModelLong m_parentID = new SettingsModelLong(
-			JevisWriteDataNodeModel.parentID, 0);
+
 	private final SettingsModelString m_objectName = new SettingsModelString(
 			JevisWriteDataNodeModel.objectName," ");
+	private final SettingsModelString m_newDataPointClass = new SettingsModelString(
+			JevisWriteDataNodeModel.newDataPointClass, "Data");
+	
 	
 	private final SettingsModelBoolean m_deleteDataPoint =
 			new SettingsModelBoolean(JevisWriteDataNodeModel.deleteDataPoint, false);
-	private final SettingsModelLong m_deleteDataPointNodeID =
-			new SettingsModelLong(JevisWriteDataNodeModel.deleteDataPointNodeID, 0);
+
 	
-    /**
-     * New pane for configuring JevisWriteData node dialog.
-     * This is just a suggestion to demonstrate possible default dialog
-     * components.
-     */
     protected JevisWriteDataNodeDialog() {
         super();
         createNewGroup("Select option:");
@@ -64,8 +62,11 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
         addDialogComponent(new DialogComponentBoolean(m_newDataPoint,label_newDataPoint));
         addDialogComponent(new DialogComponentBoolean(m_deleteDataPoint, label_delete));
         closeCurrentGroup();
-
+        createNewGroup("Put in Information:");
         addDialogComponent(new DialogComponentNumber(m_objID, label_objID, 0));
+        addDialogComponent(new DialogComponentString(m_objectName, label_newDataPoint));
+        addDialogComponent(new DialogComponentString(
+        		m_newDataPointClass,label_newDataPointClass));
         m_update.addChangeListener(new ChangeListener() {
 			
 			@Override
@@ -74,13 +75,14 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 				if(m_update.getBooleanValue()){
 					m_newDataPoint.setBooleanValue(!m_update.getBooleanValue());
 					m_deleteDataPoint.setBooleanValue(!m_update.getBooleanValue());
-					m_objID.setEnabled(m_update.getBooleanValue());
+					m_objectName.setEnabled(false);
+					m_newDataPointClass.setEnabled(false);
+					
 				}
 			}
 		});
 
-        addDialogComponent(new DialogComponentNumber(m_parentID, label_newDataPoint, 0));
-        addDialogComponent(new DialogComponentString(m_objectName, label_newDataPoint));
+        
         m_newDataPoint.addChangeListener(new ChangeListener() {
 			
 			@Override
@@ -89,12 +91,13 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 				if(m_newDataPoint.getBooleanValue()){
 					m_update.setBooleanValue(!m_newDataPoint.getBooleanValue());
 					m_deleteDataPoint.setBooleanValue(!m_newDataPoint.getBooleanValue());
+					m_objectName.setEnabled(true);
+					m_newDataPointClass.setEnabled(true);
 				}
 			}
 		});
         
        
-        addDialogComponent(new DialogComponentNumber(m_deleteDataPointNodeID, label_delete, 0));
         m_deleteDataPoint.addChangeListener(new ChangeListener() {
 			
 			@Override
@@ -103,7 +106,8 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 				if(m_deleteDataPoint.getBooleanValue()){
 					m_update.setBooleanValue(!m_deleteDataPoint.getBooleanValue());
 					m_newDataPoint.setBooleanValue(!m_deleteDataPoint.getBooleanValue());
-					
+					m_objectName.setEnabled(false);
+					m_newDataPointClass.setEnabled(false);
 				}
 			}
 		});
