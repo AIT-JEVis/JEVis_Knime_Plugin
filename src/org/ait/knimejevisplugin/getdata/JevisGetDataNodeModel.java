@@ -73,7 +73,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 	
 	private JEVisObject jObject;
 	
-	private List<SettingsModel> settingsmodels;
+	private List<SettingsModel> settingsmodels= new ArrayList<SettingsModel>();
 	
 	//Dialog information
 	static final int nodeID = 494;
@@ -125,7 +125,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     protected JevisGetDataNodeModel() {
            //one input and one output table
         super(1, 1);
-        settingsmodels.add(m_endDate);
+        
         settingsmodels.add(m_endDateDay);
         settingsmodels.add(m_endDateMonth);
         settingsmodels.add(m_endDateYear);
@@ -133,14 +133,13 @@ public class JevisGetDataNodeModel extends NodeModel {
         settingsmodels.add(m_endMinute);
         settingsmodels.add(m_endSeconds);
         settingsmodels.add(m_nodeID);
-        settingsmodels.add(m_startDate);
+        
         settingsmodels.add(m_startDateDay);
         settingsmodels.add(m_startDateMonth);
         settingsmodels.add(m_startDateYear);
         settingsmodels.add(m_startMinute);
         settingsmodels.add(m_startHour);
         settingsmodels.add(m_startSeconds);
-        
     }
 
 
@@ -411,7 +410,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
             throws InvalidSettingsException {
-    	
+    	/*
     	for(int i = 0; i< inSpecs[IN_PORT].getNumColumns(); i++){
     		DataColumnSpec c = inSpecs[IN_PORT].getColumnSpec(i);
     		if(i == 0){
@@ -420,7 +419,7 @@ public class JevisGetDataNodeModel extends NodeModel {
             				"Invalid column type at first column"); 
         		}
     		}
-    	}
+    	}*/
     	
         return new DataTableSpec[]{null};
     }
