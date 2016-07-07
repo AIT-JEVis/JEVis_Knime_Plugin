@@ -33,6 +33,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
@@ -47,13 +48,42 @@ import javafx.scene.control.DateCell;
  * @author Monschiebl
  */
 public class JevisSelectDataNodeModel extends NodeModel {
-    /**
+    List<SettingsModel> settingsmodels = new ArrayList<SettingsModel>();
+	
+	/**
      * Constructor for the node model.
      */
     protected JevisSelectDataNodeModel() {
     
         // TODO: Specify the amount of input and output ports needed.
         super(0, 1);
+        settingsmodels.add(jSchema);
+        settingsmodels.add(jevPW);
+        settingsmodels.add(jUser);
+        settingsmodels.add(jevUser);
+        settingsmodels.add(m_AttributeSearch);
+        settingsmodels.add(m_allChildren);
+        settingsmodels.add(m_children);
+        settingsmodels.add(m_component);
+        settingsmodels.add(m_devicetype);
+        settingsmodels.add(m_enableAttribute);
+        settingsmodels.add(m_enableDevice);
+        settingsmodels.add(m_enableComponent);
+        settingsmodels.add(m_enableLocation);
+        settingsmodels.add(m_enableNodeSearch);
+        settingsmodels.add(m_enableNodeType);
+        settingsmodels.add(m_enableProject);
+        settingsmodels.add(m_enableStructure);
+        settingsmodels.add(m_nodeId);
+        settingsmodels.add(m_nodeType);
+        settingsmodels.add(m_parents);
+        settingsmodels.add(m_project);
+        settingsmodels.add(jPW);
+        settingsmodels.add(jhost); 
+        settingsmodels.add(jport);
+        settingsmodels.add(m_location);
+        settingsmodels.add(m_siblings);
+        
     }
 
     static final NodeLogger logger = NodeLogger
@@ -337,34 +367,9 @@ public class JevisSelectDataNodeModel extends NodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-        //Saving ConnectionSettings
-    	jhost.saveSettingsTo(settings);
-    	jport.saveSettingsTo(settings);
-    	jSchema.saveSettingsTo(settings);
-    	jUser.saveSettingsTo(settings);
-    	jPW.saveSettingsTo(settings);
-    	jevUser.saveSettingsTo(settings);
-    	jevPW.saveSettingsTo(settings);
-    	//Saving Search Settings
-    	m_project.saveSettingsTo(settings);
-    	m_location.saveSettingsTo(settings);
-    	m_nodeType.saveSettingsTo(settings);
-    	m_devicetype.saveSettingsTo(settings);
-    	m_component.saveSettingsTo(settings);
-    	
-    	m_nodeId.saveSettingsTo(settings);
-    	m_parents.saveSettingsTo(settings);
-    	m_children.saveSettingsTo(settings);
-    	m_siblings.saveSettingsTo(settings);
-    	m_allChildren.saveSettingsTo(settings);
-    	
-    	m_enableNodeSearch.saveSettingsTo(settings);
-    	m_enableComponent.saveSettingsTo(settings);
-    	m_enableDevice.saveSettingsTo(settings);
-    	m_enableLocation.saveSettingsTo(settings);
-    	m_enableNodeType.saveSettingsTo(settings);
-    	m_enableProject.saveSettingsTo(settings);
-    	m_enableStructure.saveSettingsTo(settings);
+	     for(SettingsModel settingsmodel : settingsmodels){
+	    	 settingsmodel.saveSettingsTo(settings);
+	     }
     }
 
     /**
@@ -373,34 +378,9 @@ public class JevisSelectDataNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        // TODO: generated method stub
-    	jhost.loadSettingsFrom(settings);
-    	jport.loadSettingsFrom(settings);
-    	jSchema.loadSettingsFrom(settings);
-    	jUser.loadSettingsFrom(settings);
-    	jPW.loadSettingsFrom(settings);
-    	jevUser.loadSettingsFrom(settings);
-    	jevPW.loadSettingsFrom(settings);
-    	
-    	m_project.loadSettingsFrom(settings);
-    	m_location.loadSettingsFrom(settings);
-    	m_nodeType.loadSettingsFrom(settings);
-    	m_devicetype.loadSettingsFrom(settings);
-    	m_component.loadSettingsFrom(settings);
-    	
-    	m_nodeId.loadSettingsFrom(settings);
-    	m_parents.loadSettingsFrom(settings);
-    	m_children.loadSettingsFrom(settings);
-    	m_siblings.loadSettingsFrom(settings);
-    	m_allChildren.loadSettingsFrom(settings);
-    	
-    	m_enableNodeSearch.loadSettingsFrom(settings);
-    	m_enableComponent.loadSettingsFrom(settings);
-    	m_enableDevice.loadSettingsFrom(settings);
-    	m_enableLocation.loadSettingsFrom(settings);
-    	m_enableNodeType.loadSettingsFrom(settings);
-    	m_enableProject.loadSettingsFrom(settings);
-    	m_enableStructure.loadSettingsFrom(settings);
+        for(SettingsModel settingsmodel : settingsmodels){
+	    	 settingsmodel.loadSettingsFrom(settings);
+	     }
     }
 
     /**
@@ -409,34 +389,9 @@ public class JevisSelectDataNodeModel extends NodeModel {
     @Override
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        // TODO: generated method stub
-    	jhost.validateSettings(settings);
-    	jport.validateSettings(settings);
-    	jSchema.validateSettings(settings);
-    	jUser.validateSettings(settings);
-    	jPW.validateSettings(settings);
-    	jevUser.validateSettings(settings);
-    	jevPW.validateSettings(settings);
-    	
-    	m_project.validateSettings(settings);
-    	m_location.validateSettings(settings);
-    	m_nodeType.validateSettings(settings);
-    	m_devicetype.validateSettings(settings);
-    	m_component.validateSettings(settings);
-    	
-    	m_nodeId.validateSettings(settings);
-    	m_parents.validateSettings(settings);
-    	m_children.validateSettings(settings);
-    	m_siblings.validateSettings(settings);
-    	m_allChildren.validateSettings(settings);
-
-    	m_enableNodeSearch.validateSettings(settings);
-    	m_enableComponent.validateSettings(settings);
-    	m_enableDevice.validateSettings(settings);
-    	m_enableLocation.validateSettings(settings);
-    	m_enableNodeType.validateSettings(settings);
-    	m_enableProject.validateSettings(settings);
-    	m_enableStructure.validateSettings(settings);
+        for(SettingsModel settingsmodel : settingsmodels){
+	    	 settingsmodel.validateSettings(settings);
+	     }
     	
     	
     }

@@ -214,7 +214,7 @@ public class SearchForNodes {
 		}
 		
 		return list_nodetype;
-		}
+	}
 	
 	private void getParentData(JEVisObject node, List<JEVisObject> list_nodeType) throws JEVisException{
 		if(!checkLevel(node, JevisSelectDataNodeModel.configuration.projectLevelName)){
