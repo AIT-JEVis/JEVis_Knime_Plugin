@@ -150,24 +150,30 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	DialogComponentStringSelection diac_nodeType = new DialogComponentStringSelection(
     			m_nodeType, "NodeType", nodefilter);
     	
+    	DialogComponentStringSelection diac_projects = 
+    			new DialogComponentStringSelection(m_project, 
+    			"Project", projects);
+    	
     	DialogComponentButton connectBtn= new DialogComponentButton("Connect to Jevis");
     	connectBtn.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(" Button works");
+				
 		    	connectingtojevis();
 		    	try {
 					if(jevis.isConnectionAlive()){
 						projects.clear();
 						getProjects(jevis, projects);
-						JevisSelectDataNodeModel.logger.warn("Connecting to Jevis.");
+			        	diac_projects.replaceListItems(projects, null);
+						JevisSelectDataNodeModel.logger.warn("Connecting to Jevis. "
+								+ "May Take a while!");
 						//Just for the moment there. 
 			        	getnodetypes(jevis, nodefilter);
 			        	getdevicetypes(jevis, devicetypes);
 			        	getcomponents(jevis, components);
 			        	getAttributes(jevis, attributes);
-			        	diac_nodeType.replaceListItems(projects, null);
+
 					}
 				} catch (JEVisException e1) {
 					// TODO Auto-generated catch block
@@ -224,8 +230,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 				m_project.setEnabled(m_enableProject.getBooleanValue());
 			}
 		});
-    	addDialogComponent(new DialogComponentStringSelection(m_project, 
-    			"Project", projects));
+    	addDialogComponent(diac_projects);
     	
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
@@ -316,7 +321,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(new DialogComponentBoolean(m_allChildren, "AllChildren"));
     	closeCurrentGroup();
     	
-    	addDialogComponent(new DialogComponentLabel("Search! "));
+    	addDialogComponent(new DialogComponentLabel("Search!"));
     	    	
     }
     
