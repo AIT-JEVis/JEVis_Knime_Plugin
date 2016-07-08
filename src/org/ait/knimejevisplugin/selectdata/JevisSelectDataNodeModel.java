@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.ait.knimejevisplugin.DataBaseConfiguration;
 import org.ait.knimejevisplugin.getdata.JevisGetDataNodeModel;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
@@ -118,49 +119,47 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static String allChildren = "allChildren";
    	public static String siblings = "siblings";
    	
-   	public static SearchConfiguration configuration = new SearchConfiguration();
-   	
    	private JEVisDataSourceSQL jevis;
    	//Processing variables
 	private BufferedDataContainer buf;
 	
 	//Settingsmodells
     private final SettingsModelString jhost = new SettingsModelString(
-    		JevisSelectDataNodeModel.configuration.hostModelName,
-    		JevisSelectDataNodeModel.configuration.DEFAULT_Host);
+    		DataBaseConfiguration.hostModelName,
+    		DataBaseConfiguration.DEFAULT_Host);
     private final SettingsModelString jport = new SettingsModelString(
-    		JevisSelectDataNodeModel.configuration.portModelName,
-    		JevisSelectDataNodeModel.configuration.DEFAULT_port);
+    		DataBaseConfiguration.portModelName,
+    		DataBaseConfiguration.DEFAULT_port);
    	private final SettingsModelString jSchema = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.sqlSchemaModelName,
-   			JevisSelectDataNodeModel.configuration.DEFAULT_sqlShema);
+   			DataBaseConfiguration.sqlSchemaModelName,
+   			DataBaseConfiguration.DEFAULT_sqlShema);
    	private final SettingsModelString jUser = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.sqlUserModelName,
-   			JevisSelectDataNodeModel.configuration.DEFAULT_sqlUserName);
+   			DataBaseConfiguration.sqlUserModelName,
+   			DataBaseConfiguration.DEFAULT_sqlUserName);
    	private final SettingsModelString jPW = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.sqlPWModelName, 
-   			JevisSelectDataNodeModel.configuration.DEFAULT_sqlPW);
+   			DataBaseConfiguration.sqlPWModelName, 
+   			DataBaseConfiguration.DEFAULT_sqlPW);
    	
    	private final SettingsModelString jevUser = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.jevisUserModelName, 
-   			JevisSelectDataNodeModel.configuration.DEFAULT_jevisUserName);
+   			DataBaseConfiguration.jevisUserModelName, 
+   			DataBaseConfiguration.DEFAULT_jevisUserName);
    	private final SettingsModelString jevPW = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.jevisPWModelName,
-   			JevisSelectDataNodeModel.configuration.DEFAULT_jevisPW);
+   			DataBaseConfiguration.jevisPWModelName,
+   			DataBaseConfiguration.DEFAULT_jevisPW);
    	
    	private final SettingsModelBoolean m_enableNodeSearch = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableNodeSearch, true);
    	
    	private final SettingsModelString m_project = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.projectModelName," ");
+   			DataBaseConfiguration.projectModelName," ");
    	private final SettingsModelString m_location = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.locationModelName," ");
+   			DataBaseConfiguration.locationModelName," ");
    	private final SettingsModelString m_nodeType = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.nodeType," ");
+   			DataBaseConfiguration.nodeType," ");
    	private final SettingsModelString m_devicetype = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.deviceModelName," ");
+   			DataBaseConfiguration.deviceModelName," ");
    	private final SettingsModelString m_component = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.componentModelName," ");
+   			DataBaseConfiguration.componentModelName," ");
    	
    	private final SettingsModelBoolean m_enableProject = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableProject, true);
@@ -197,12 +196,12 @@ public class JevisSelectDataNodeModel extends NodeModel {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings({ "static-access", "deprecation" })
+    @SuppressWarnings({ "deprecation" })
 	@Override
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
     	
-    	logger.setLevel(NodeLogger.LEVEL.INFO);
+    	NodeLogger.setLevel(NodeLogger.LEVEL.INFO);
     	
     	connectingtojevis();
     	
@@ -255,9 +254,9 @@ public class JevisSelectDataNodeModel extends NodeModel {
     			buf = nodetypesearcher.fillTableWithNodetypeSearchResult(buf);
     			*/
     			SearchForAttributes searcher = new SearchForAttributes(jevis, m_enableProject.getBooleanValue(),
-    					configuration.projectLevelName, m_enableLocation.getBooleanValue(),
-    					configuration.locationLevelName, m_enableComponent.getBooleanValue(),
-    					configuration.componentLevelName, m_enableNodeType.getBooleanValue(), 
+    					DataBaseConfiguration.projectLevelName, m_enableLocation.getBooleanValue(),
+    					DataBaseConfiguration.locationLevelName, m_enableComponent.getBooleanValue(),
+    					DataBaseConfiguration.componentLevelName, m_enableNodeType.getBooleanValue(), 
     					m_nodeType.getStringValue(), spec);
     			buf = searcher.searchForNodetypes(buf);
     		}		    		
@@ -306,13 +305,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator(
     			"NodeID", LongCell.TYPE).createSpec();
     	DataColumnSpec deviceTypeSpec = new DataColumnSpecCreator(
-    			configuration.deviceModelName, StringCell.TYPE).createSpec();
+    			DataBaseConfiguration.deviceModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec componentTypeSpec = new DataColumnSpecCreator(
-    			configuration.projectModelName, StringCell.TYPE).createSpec();
+    			DataBaseConfiguration.projectModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec locationSpec = new DataColumnSpecCreator(
-    			configuration.locationModelName, StringCell.TYPE).createSpec();
+    			DataBaseConfiguration.locationModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec projectSpec = new DataColumnSpecCreator(
-    			configuration.componentModelName, StringCell.TYPE).createSpec();
+    			DataBaseConfiguration.componentModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec floorSpec = new DataColumnSpecCreator(
     			"Floor", StringCell.TYPE).createSpec();
     	DataColumnSpec firstTsSpec = new DataColumnSpecCreator(
@@ -331,11 +330,11 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator("NodeID", LongCell.TYPE).createSpec();
     	DataColumnSpec nameSpec = new DataColumnSpecCreator("Name", StringCell.TYPE).createSpec();
     	DataColumnSpec projectTypeSpec = new DataColumnSpecCreator(
-    			configuration.projectModelName, StringCell.TYPE).createSpec();
+    			DataBaseConfiguration.projectModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec locationSpec = new DataColumnSpecCreator(
-    			configuration.locationModelName, StringCell.TYPE).createSpec();
+    			DataBaseConfiguration.locationModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec componentSpec = new DataColumnSpecCreator(
-    			configuration.componentModelName, StringCell.TYPE).createSpec();
+    			DataBaseConfiguration.componentModelName, StringCell.TYPE).createSpec();
 
     	DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, nameSpec, projectTypeSpec,
     			locationSpec, componentSpec);

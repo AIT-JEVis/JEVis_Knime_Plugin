@@ -1,5 +1,7 @@
 package org.ait.knimejevisplugin.selectdata;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Map;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.ait.knimejevisplugin.DataBaseConfiguration;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
@@ -23,6 +26,7 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
+import org.knime.core.node.defaultnodesettings.DialogComponentButton;
 import org.knime.core.node.defaultnodesettings.DialogComponentLabel;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
@@ -32,6 +36,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObjectSpec;
+
+import com.sun.media.sound.ModelChannelMixer;
 
 import javafx.scene.control.DialogPane;
 
@@ -60,41 +66,41 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 	private JEVisDataSourceSQL jevis;
 	
     private final SettingsModelString jhost = new SettingsModelString(
-    		JevisSelectDataNodeModel.configuration.hostModelName,
-    		JevisSelectDataNodeModel.configuration.DEFAULT_Host);
+    		DataBaseConfiguration.hostModelName,
+    		DataBaseConfiguration.DEFAULT_Host);
     private final SettingsModelString jport = new SettingsModelString(
-    		JevisSelectDataNodeModel.configuration.portModelName,
-    		JevisSelectDataNodeModel.configuration.DEFAULT_port);
+    		DataBaseConfiguration.portModelName,
+    		DataBaseConfiguration.DEFAULT_port);
    	private final SettingsModelString jSchema = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.sqlSchemaModelName,
-   			JevisSelectDataNodeModel.configuration.DEFAULT_sqlShema);
+   			DataBaseConfiguration.sqlSchemaModelName,
+   			DataBaseConfiguration.DEFAULT_sqlShema);
    	private final SettingsModelString jUser = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.sqlUserModelName,
-   			JevisSelectDataNodeModel.configuration.DEFAULT_sqlUserName);
+   			DataBaseConfiguration.sqlUserModelName,
+   			DataBaseConfiguration.DEFAULT_sqlUserName);
    	private final SettingsModelString jPW = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.sqlPWModelName, 
-   			JevisSelectDataNodeModel.configuration.DEFAULT_sqlPW);
+   			DataBaseConfiguration.sqlPWModelName, 
+   			DataBaseConfiguration.DEFAULT_sqlPW);
    	
    	private final SettingsModelString jevUser = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.jevisUserModelName, 
-   			JevisSelectDataNodeModel.configuration.DEFAULT_jevisUserName);
+   			DataBaseConfiguration.jevisUserModelName, 
+   			DataBaseConfiguration.DEFAULT_jevisUserName);
    	private final SettingsModelString jevPW = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.jevisPWModelName,
-   			JevisSelectDataNodeModel.configuration.DEFAULT_jevisPW);
+   			DataBaseConfiguration.jevisPWModelName,
+   			DataBaseConfiguration.DEFAULT_jevisPW);
 	
    	private final SettingsModelBoolean m_enableNodeSearch = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableNodeSearch, true);
    	
    	private final SettingsModelString m_project = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.projectModelName,"");
+   			DataBaseConfiguration.projectModelName,"");
    	private final SettingsModelString m_location = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.locationModelName," ");
+   			DataBaseConfiguration.locationModelName," ");
    	private final SettingsModelString m_nodeType = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.nodeType," ");
+   			DataBaseConfiguration.nodeType," ");
    	private final SettingsModelString m_devicetype = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.deviceModelName," ");
+   			DataBaseConfiguration.deviceModelName," ");
    	private final SettingsModelString m_component = new SettingsModelString(
-   			JevisSelectDataNodeModel.configuration.componentModelName," ");
+   			DataBaseConfiguration.componentModelName," ");
    	
    	private final SettingsModelBoolean m_enableProject = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableProject, true);
@@ -129,16 +135,46 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    			JevisSelectDataNodeModel.allChildren, false);
     /**
      * New pane for configuring the JevisSelectData node.
+     * @throws JEVisException 
      */
-    protected JevisSelectDataNodeDialog() {
+    protected JevisSelectDataNodeDialog() throws JEVisException {
     	JevisSelectDataNodeModel.logger.setLevel(NodeLogger.LEVEL.INFO);
-    	JevisSelectDataNodeModel.logger.warn("Opening Configuration Window. Please be patient it may take a moment.");
-    	connectingtojevis();
-    	getProjects(jevis, projects);
-    	getnodetypes(jevis, nodefilter);
-    	getdevicetypes(jevis, devicetypes);
-    	getcomponents(jevis, components);
-    	getAttributes(jevis, attributes);
+    	JevisSelectDataNodeModel.logger.warn("Opening Configuration Window. "
+    			+ "Please be patient it may take a moment.");
+    	projects.add(" ");
+		nodefilter.add(" ");
+		devicetypes.add(" ");
+		components.add(" ");
+		attributes.add(" ");
+        	
+    	DialogComponentStringSelection diac_nodeType = new DialogComponentStringSelection(
+    			m_nodeType, "NodeType", nodefilter);
+    	
+    	DialogComponentButton connectBtn= new DialogComponentButton("Connect to Jevis");
+    	connectBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(" Button works");
+		    	connectingtojevis();
+		    	try {
+					if(jevis.isConnectionAlive()){
+						projects.clear();
+						getProjects(jevis, projects);
+						JevisSelectDataNodeModel.logger.warn("Connecting to Jevis.");
+						//Just for the moment there. 
+			        	getnodetypes(jevis, nodefilter);
+			        	getdevicetypes(jevis, devicetypes);
+			        	getcomponents(jevis, components);
+			        	getAttributes(jevis, attributes);
+			        	diac_nodeType.replaceListItems(projects, null);
+					}
+				} catch (JEVisException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
     	
 
     	createNewGroup("Database Connection Settings");
@@ -151,13 +187,16 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	createNewGroup("Jevis User Information");
     	addDialogComponent(new DialogComponentString(jevUser, "JevisUser Name"));
     	addDialogComponent(new DialogComponentString(jevPW, "Jevis Password"));
+    	
+    	addDialogComponent(connectBtn);
     	closeCurrentGroup();
     	setDefaultTabTitle("Configure Connection");
     	
     	
     	createNewTabAt("Filter Output",1);
     	createNewGroup("Search through Nodes");
-    	addDialogComponent(new DialogComponentBoolean(m_enableNodeSearch, "enable Specific Node Search"));
+    	addDialogComponent(new DialogComponentBoolean(m_enableNodeSearch, 
+    			"enable Specific Node Search"));
     	m_enableNodeSearch.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -171,12 +210,12 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		    	
 			}
 		});
-    	DialogComponentStringSelection diac_nodeType = new DialogComponentStringSelection(
-    			m_nodeType, "NodeType", nodefilter);
+
     	
     	//Searching for Attributes like project, location, nodeType, device and component
     	setHorizontalPlacement(true);
-    	addDialogComponent(new DialogComponentBoolean(m_enableProject, "enable Project search:"));
+    	addDialogComponent(new DialogComponentBoolean(m_enableProject, 
+    			"enable Project search:"));
     	m_enableProject.addChangeListener(new ChangeListener() {
 			
 			@Override
@@ -185,11 +224,13 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 				m_project.setEnabled(m_enableProject.getBooleanValue());
 			}
 		});
-    	addDialogComponent(new DialogComponentStringSelection(m_project, "Project", projects));
+    	addDialogComponent(new DialogComponentStringSelection(m_project, 
+    			"Project", projects));
     	
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
-    	addDialogComponent(new DialogComponentBoolean(m_enableLocation, "enable location search:"));
+    	addDialogComponent(new DialogComponentBoolean(m_enableLocation, 
+    			"enable location search:"));
     	m_enableLocation.addChangeListener(new ChangeListener() {
 			
 			@Override
@@ -237,6 +278,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			public void stateChanged(ChangeEvent e) {
 				
 				m_nodeType.setEnabled(m_enableNodeType.getBooleanValue());
+				
 			}
 		});
     	addDialogComponent(diac_nodeType);
@@ -368,12 +410,12 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	try{
     		if(jevis.isConnectionAlive()){
     			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
-    					JevisSelectDataNodeModel.configuration.projectLevelName), true).size();i++){
+    					DataBaseConfiguration.projectLevelName), true).size();i++){
     				if(!projects.contains(jevis.getObjects(jevis.getJEVisClass(
-    						JevisSelectDataNodeModel.configuration.projectLevelName), true).
+    						DataBaseConfiguration.projectLevelName), true).
     						get(i).getName())){
     					projects.add(jevis.getObjects(jevis.getJEVisClass(
-    							JevisSelectDataNodeModel.configuration.projectLevelName), true).
+    							DataBaseConfiguration.projectLevelName), true).
     							get(i).getName());
     
     				}
