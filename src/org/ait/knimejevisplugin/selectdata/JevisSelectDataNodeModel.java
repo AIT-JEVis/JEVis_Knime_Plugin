@@ -209,17 +209,21 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	if(jevis.isConnectionAlive()){
     		logger.info("Connection Alive!");
     		
-    		
+    		ResultTable result = new ResultTable();
+			DataTableSpec resultspec = result.createOutputTableSpecforDatapoints();
+			SearchForNodes searcher = new SearchForNodes(jevis, m_project.getStringValue(),
+    				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
+    				m_component.getStringValue(), m_enableProject.getBooleanValue(),
+    				m_enableLocation.getBooleanValue(), m_enableNodeType.getBooleanValue(),
+    				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
+    				resultspec);
     		if(m_enableNodeSearch.getBooleanValue()){
     			buf = exec.createDataContainer(createOutputTableSpecforDatapoints());
-    			DataTableSpec datapointResult = createOutputTableSpecforDatapoints();
-        		SearchForNodes datapointsearcher = new SearchForNodes(jevis, m_project.getStringValue(),
-        				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
-        				m_component.getStringValue(), m_enableProject.getBooleanValue(),
-        				m_enableLocation.getBooleanValue(), m_enableNodeType.getBooleanValue(),
-        				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
-        				datapointResult);
-        		buf = datapointsearcher.searchforDataPoints(buf);
+    	
+        		searcher.searchforDataPoints();
+        		result.fillResultTable(buf, resultspec, searcher.list_projects, 
+        				searcher.list_location,searcher.list_component,
+        				searcher.list_datapoint);
     		}
     		if(m_enableStructure.getBooleanValue()){
     			buf = exec.createDataContainer(createOuputTableSpecforStructure());
@@ -244,21 +248,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		
     		if(m_enableNodeType.getBooleanValue()){
     			buf = exec.createDataContainer(createOuputTableSpecforStructure());
-    			DataTableSpec spec = createOuputTableSpecforStructure();
-    			/*SearchForNodes nodetypesearcher = new SearchForNodes(jevis, m_project.getStringValue(),
-        				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
-        				m_component.getStringValue(), m_enableProject.getBooleanValue(),
-        				m_enableLocation.getBooleanValue(), m_enableNodeType.getBooleanValue(),
-        				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
-        				nodeTypeResult);
-    			buf = nodetypesearcher.fillTableWithNodetypeSearchResult(buf);
-    			*/
-    			SearchForAttributes searcher = new SearchForAttributes(jevis, m_enableProject.getBooleanValue(),
-    					DataBaseConfiguration.projectLevelName, m_enableLocation.getBooleanValue(),
-    					DataBaseConfiguration.locationLevelName, m_enableComponent.getBooleanValue(),
-    					DataBaseConfiguration.componentLevelName, m_enableNodeType.getBooleanValue(), 
-    					m_nodeType.getStringValue(), spec);
-    			buf = searcher.searchForNodetypes(buf);
+    			searcher.searchForNodeType();
+    			result.fillResultTable(buf, resultspec, searcher.list_projects, 
+    					searcher.list_location, searcher.list_component, 
+    					searcher.list_datapoint);
     		}		    		
     	}
     	

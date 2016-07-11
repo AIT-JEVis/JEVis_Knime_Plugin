@@ -60,6 +60,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 	ArrayList<String> nodetypes = new ArrayList<String>();
 	ArrayList<String> attributes = new ArrayList<String>();
 	ArrayList<String> projects = new ArrayList<String>();
+	ArrayList<String> locations = new ArrayList<String>();
 
 	private static final Logger logger = LogManager.getLogger("SelectNdoeDialog");
 	
@@ -146,6 +147,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		devicetypes.add(" ");
 		components.add(" ");
 		attributes.add(" ");
+		locations.add(" ");
         	
     	DialogComponentStringSelection diac_nodeType = new DialogComponentStringSelection(
     			m_nodeType, "NodeType", nodefilter);
@@ -153,6 +155,17 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	DialogComponentStringSelection diac_projects = 
     			new DialogComponentStringSelection(m_project, 
     			"Project", projects);
+    	
+    	DialogComponentStringSelection diac_location = 
+    			new DialogComponentStringSelection(m_location, "Location", locations);
+    	
+    	DialogComponentStringSelection diac_deviceType = 
+    			new DialogComponentStringSelection(m_devicetype, "Device", devicetypes);
+    	
+    	DialogComponentStringSelection diac_component = 
+    			new DialogComponentStringSelection(m_component, "Component", components);
+    	
+    	
     	
     	DialogComponentButton connectBtn= new DialogComponentButton("Connect to Jevis");
     	connectBtn.addActionListener(new ActionListener() {
@@ -170,6 +183,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 								+ "May Take a while!");
 						//Just for the moment there. 
 			        	getnodetypes(jevis, nodefilter);
+			        	diac_nodeType.replaceListItems(nodefilter, null);
 			        	getdevicetypes(jevis, devicetypes);
 			        	getcomponents(jevis, components);
 			        	getAttributes(jevis, attributes);
@@ -244,7 +258,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 				m_location.setEnabled(m_enableLocation.getBooleanValue());
 			}
 		});
-    	addDialogComponent(new DialogComponentString(m_location, "Location"));
+    	addDialogComponent(diac_location);
 
     	//addDialogComponent(new DialogComponentString(m_searchNodeType," "));
     	setHorizontalPlacement(false);
@@ -258,7 +272,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 				m_devicetype.setEnabled(m_enableDevice.getBooleanValue());
 			}
 		});
-    	addDialogComponent(new DialogComponentStringSelection(m_devicetype, "Device", devicetypes));
+    	addDialogComponent(diac_deviceType);
     	//addDialogComponent(new DialogComponentString(m_searchDeviceType, " "));
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
@@ -271,7 +285,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 				m_component.setEnabled(m_enableComponent.getBooleanValue());
 			}
 		});
-    	addDialogComponent(new DialogComponentStringSelection(m_component, "Component", components));
+    	addDialogComponent(diac_component);
     	//addDialogComponent(new DialogComponentString(m_searchComponentType, " "));
     	createNewGroup("Search for specific Nodetype");
     	setHorizontalPlacement(false);

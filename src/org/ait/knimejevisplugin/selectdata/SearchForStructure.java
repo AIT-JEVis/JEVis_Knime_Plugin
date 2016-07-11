@@ -3,6 +3,7 @@ package org.ait.knimejevisplugin.selectdata;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ait.knimejevisplugin.DataBaseConfiguration;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
@@ -26,9 +27,7 @@ public class SearchForStructure {
 	boolean enabledAttributes;
 
 	List<JEVisObject> resultlist = new ArrayList<JEVisObject>();
-	
-	
-	
+
 	public SearchForStructure(JEVisDataSourceSQL jevis, long nodeID, boolean parent, boolean children,
 			boolean siblings, boolean allChildren, boolean enabledAttributes) {
 		super();
@@ -63,7 +62,7 @@ public class SearchForStructure {
 	public List<JEVisObject> searchForStructure() throws JEVisException{
 
 		JEVisObject startingObject = jevis.getObject(nodeID);
-		JevisSelectDataNodeModel.configuration.fillLevel();
+		DataBaseConfiguration.fillLevel();
 		List<JEVisObject> foundObjects = new ArrayList<JEVisObject>();
 		searchelement(startingObject, foundObjects);
 		return resultlist;
@@ -73,7 +72,7 @@ public class SearchForStructure {
 	
 		if(parent){
 			if(!startingObject.getJEVisClass().equals(jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.projectLevelName))){
+					DataBaseConfiguration.projectLevelName))){
 				List<JEVisObject> list_parents = startingObject.getParents();
 				List<JEVisObject> listUsefulParents = getUsefullParent(list_parents, foundObjects);
 				fillResultList(listUsefulParents);
@@ -87,7 +86,7 @@ public class SearchForStructure {
 		}
 		if(children){
 			if(!startingObject.getJEVisClass().equals(jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.deviceLevelName))){
+					DataBaseConfiguration.deviceLevelName))){
 				List<JEVisObject> list_children = startingObject.getChildren();
 				List<JEVisObject> listUsefulChildren = getUsefullChildren(list_children, foundObjects);
 				fillResultList(listUsefulChildren);
@@ -109,7 +108,6 @@ public class SearchForStructure {
 			fillResultList(getAllChildren(list_allChildren, foundObjects));
 		}
 		
-		
 	}
 	
 	private void fillResultList(List<JEVisObject> listUseful){
@@ -122,7 +120,7 @@ public class SearchForStructure {
 			throws JEVisException{
 		boolean haslevel = false;
 		for(JEVisObject parent : list_parents){
-			for(String level : JevisSelectDataNodeModel.configuration.levels){
+			for(String level :DataBaseConfiguration.levels){
 				if(parent.getJEVisClass().equals(jevis.getJEVisClass(level))){					
 					foundObjects.add(parent);
 					haslevel = true;
@@ -139,7 +137,7 @@ public class SearchForStructure {
 			List<JEVisObject> foundObjects) throws JEVisException{
 		boolean haslevel = false;
 		for(JEVisObject child : list_children){
-			for(String level : JevisSelectDataNodeModel.configuration.levels){
+			for(String level : DataBaseConfiguration.levels){
 				if(child.getJEVisClass().equals(jevis.getJEVisClass(level))){
 					foundObjects.add(child);
 					haslevel = true;
@@ -156,7 +154,7 @@ public class SearchForStructure {
 			throws JEVisException{
 
 		for(JEVisObject child : list_allChildren){
-			for(String level : JevisSelectDataNodeModel.configuration.levels){
+			for(String level : DataBaseConfiguration.levels){
 				if(child.getJEVisClass().equals(jevis.getJEVisClass(level))){
 					foundObjects.add(child);
 				}
@@ -166,9 +164,5 @@ public class SearchForStructure {
 		return foundObjects;
 		
 	}
-	
-	
 
-	
-	
 }
