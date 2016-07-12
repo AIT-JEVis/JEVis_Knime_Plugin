@@ -88,7 +88,6 @@ public class SearchForNodes {
 
 		computeResultTable(projects);
 		
-		
 	}
 	
 

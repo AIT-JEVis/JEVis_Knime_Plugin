@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import org.ait.knimejevisplugin.DataBaseConfiguration;
 import org.ait.knimejevisplugin.getdata.JevisGetDataNodeModel;
 import org.jevis.api.JEVisException;
@@ -85,6 +88,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
         settingsmodels.add(m_location);
         settingsmodels.add(m_siblings);
         
+        
     }
 
     static final NodeLogger logger = NodeLogger
@@ -148,7 +152,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
    			DataBaseConfiguration.DEFAULT_jevisPW);
    	
    	private final SettingsModelBoolean m_enableNodeSearch = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableNodeSearch, true);
+   			JevisSelectDataNodeModel.enableNodeSearch, false);
    	
    	private final SettingsModelString m_project = new SettingsModelString(
    			DataBaseConfiguration.projectModelName," ");
@@ -162,24 +166,24 @@ public class JevisSelectDataNodeModel extends NodeModel {
    			DataBaseConfiguration.componentModelName," ");
    	
    	private final SettingsModelBoolean m_enableProject = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableProject, true);
+   			JevisSelectDataNodeModel.enableProject, false);
    	private final SettingsModelBoolean m_enableLocation = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableLocation, true);
+   			JevisSelectDataNodeModel.enableLocation, false);
    	private final SettingsModelBoolean m_enableNodeType = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableNodeType, true);
+   			JevisSelectDataNodeModel.enableNodeType, false);
    	private final SettingsModelBoolean m_enableComponent = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableComponent, true);
+   			JevisSelectDataNodeModel.enableComponent, false);
    	private final SettingsModelBoolean m_enableDevice = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableDevice, true);
+   			JevisSelectDataNodeModel.enableDevice, false);
    	
    	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableAttributeSearch, true);
-   	
+   			JevisSelectDataNodeModel.enableAttributeSearch, false);
+   
    	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
    			JevisSelectDataNodeModel.attributeModelName, " ");
    	
    	private final SettingsModelBoolean m_enableStructure = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableStructure, true);
+   			JevisSelectDataNodeModel.enableStructure, false);
    	
    	private final SettingsModelLong m_nodeId = new SettingsModelLong(
    			JevisSelectDataNodeModel.nodeID , 0);
@@ -202,6 +206,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
             final ExecutionContext exec) throws Exception {
     	
     	NodeLogger.setLevel(NodeLogger.LEVEL.INFO);
+    	
+
+    	
+    	
     	
     	connectingtojevis();
     	
@@ -247,11 +255,24 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		}
     		
     		if(m_enableNodeType.getBooleanValue()){
+    			
     			buf = exec.createDataContainer(createOuputTableSpecforStructure());
-    			searcher.searchForNodeType();
+    			
+    			SearchForAttributes attributesearcher = new SearchForAttributes(
+    					jevis, m_enableProject.getBooleanValue(),
+    					DataBaseConfiguration.projectLevelName, m_enableLocation.getBooleanValue(),
+    					DataBaseConfiguration.locationLevelName, m_enableComponent.getBooleanValue(),
+    					DataBaseConfiguration.componentLevelName, m_enableNodeType.getBooleanValue(),
+    					m_nodeType.getStringValue(), createOuputTableSpecforStructure());
+    			attributesearcher.searchForNodetypes(buf);
+/*
+ * 				searcher.searchForNodeType();
     			result.fillResultTable(buf, resultspec, searcher.list_projects, 
     					searcher.list_location, searcher.list_component, 
     					searcher.list_datapoint);
+     		
+ */
+    			
     		}		    		
     	}
     	

@@ -16,7 +16,7 @@ import org.knime.core.node.BufferedDataContainer;
 
 public class SearchForAttributes {
 
-	int counter;
+	int counter= 0;
 	JEVisDataSourceSQL jevis;
 	
 	boolean enabledProject;
@@ -124,7 +124,6 @@ public class SearchForAttributes {
 	
 	private BufferedDataContainer fillTableWithBasicObjectInfo(JEVisObject child, BufferedDataContainer buf){
 
-		
 		cells[0] = new LongCell(child.getID());
 		cells[1] = new StringCell(child.getName());
 		buf = fillBufferedDataContainer(buf);
@@ -143,5 +142,5 @@ public class SearchForAttributes {
 		buf.addRowToTable(row);
         return buf;
 	}
-
+	
 }

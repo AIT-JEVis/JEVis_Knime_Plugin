@@ -2,6 +2,8 @@ package org.ait.knimejevisplugin.selectdata;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.ait.knimejevisplugin.DataBaseConfiguration;
 import org.jevis.api.JEVisException;
@@ -69,41 +71,28 @@ public class ResultTable {
 	}
 	
 	private void fillTableWithDateTime(JEVisObject child) throws JEVisException{
-        if(child.getAttributes()== null){
-        	cells[6] = new DateAndTimeCell(0, 0, 0);
-        	cells[7]= new DateAndTimeCell(0, 0, 0);
-        }
-        else if(child.getAttribute(DataBaseConfiguration.valueAttributeName) != null){
-        	if(child.getAttribute(DataBaseConfiguration.valueAttributeName).hasSample()){
+        if(child.getAttribute(DataBaseConfiguration.valueAttributeName)!= null && 
+        		child.getAttribute(DataBaseConfiguration.valueAttributeName).hasSample())
+			{
+        	            
+        		GregorianCalendar cal =  child.getAttribute(
+         				DataBaseConfiguration.valueAttributeName)
+        					.getTimestampFromFirstSample().toGregorianCalendar();
+                GregorianCalendar calLas =  child.getAttribute(
+         				DataBaseConfiguration.valueAttributeName)
+        					.getTimestampFromLastSample().toGregorianCalendar();
         		cells[6] = new DateAndTimeCell(
-		 	            		child.getAttribute(
-		 	            				DataBaseConfiguration.valueAttributeName)
-		 	            					.getTimestampFromFirstSample().getYear(),
-		 	            		child.getAttribute(
-		 	            				DataBaseConfiguration.valueAttributeName)
-		 	            					.getTimestampFromFirstSample().getMonthOfYear(), 
-		 	            		child.getAttribute(
-		 	            				DataBaseConfiguration.valueAttributeName)
-		 	            					.getTimestampFromFirstSample().getDayOfMonth());
+		 	            		cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+		 	            		cal.get(Calendar.DAY_OF_MONTH));
          		cells[7] = new DateAndTimeCell(
-		 	            		child.getAttribute(
-		 	            				DataBaseConfiguration.valueAttributeName)
-		 	            					.getTimestampFromLastSample().getYear(),
-		 	            		child.getAttribute(
-		 	            				DataBaseConfiguration.valueAttributeName)
-		 	            					.getTimestampFromLastSample().getMonthOfYear(), 
-		 	            		child.getAttribute(
-		 	            				DataBaseConfiguration.valueAttributeName)
-		 	            					.getTimestampFromLastSample().getDayOfMonth());
+         				calLas.get(Calendar.YEAR), calLas.get(Calendar.MONTH),
+ 	            		calLas.get(Calendar.DAY_OF_MONTH));
+
          	}
          	else{
 	            cells[6] = new DateAndTimeCell(0, 0, 0);
 	            cells[7] = new DateAndTimeCell(0, 0, 0);
          	}
-        }else{
-         		cells[6] = new DateAndTimeCell(0, 0, 0);
-         		cells[7] = new DateAndTimeCell(0, 0, 0);
-        }
 	}
 	
 	private BufferedDataContainer fillTable(BufferedDataContainer buf){
