@@ -156,37 +156,42 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     			new DialogComponentStringSelection(m_project, 
     			"Project", projects);
     	
-    	DialogComponentStringSelection diac_location = 
-    			new DialogComponentStringSelection(m_location, "Location", locations);
+    	DialogComponentStringSelection diac_location = new DialogComponentStringSelection(
+    					m_location, "Location", locations);
     	
-    	DialogComponentStringSelection diac_deviceType = 
-    			new DialogComponentStringSelection(m_devicetype, "Device", devicetypes);
+    	DialogComponentStringSelection diac_deviceType = new DialogComponentStringSelection(
+    			m_devicetype, "Device", devicetypes);
     	
-    	DialogComponentStringSelection diac_component = 
-    			new DialogComponentStringSelection(m_component, "Component", components);
+    	DialogComponentStringSelection diac_component = new DialogComponentStringSelection(
+    			m_component, "Component", components);
     	
     	
+    	DialogComponentStringSelection diac_attribute = new DialogComponentStringSelection(
+    			m_AttributeSearch, "Select available Attribute", attributes);
+    	
+    	DialogComponentLabel diac_con =new DialogComponentLabel("Disconnected!");
     	
     	DialogComponentButton connectBtn= new DialogComponentButton("Connect to Jevis");
     	connectBtn.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				diac_con.setText("Trying to connect!");
 		    	connectingtojevis();
 		    	try {
 					if(jevis.isConnectionAlive()){
+						
 						projects.clear();
 						getProjects(jevis, projects);
 			        	diac_projects.replaceListItems(projects, null);
 						JevisSelectDataNodeModel.logger.warn("Connecting to Jevis. "
 								+ "May Take a while!");
-						//Just for the moment there. 
+				
 			        	getnodetypes(jevis, nodefilter);
 			        	diac_nodeType.replaceListItems(nodefilter, null);
-			        	getdevicetypes(jevis, devicetypes);
-			        	getcomponents(jevis, components);
 			        	getAttributes(jevis, attributes);
+			        	diac_attribute.replaceListItems(attributes, null);
+			        	diac_con.setText("Connected!");
 
 					}
 				} catch (JEVisException e1) {
@@ -207,8 +212,10 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	createNewGroup("Jevis User Information");
     	addDialogComponent(new DialogComponentString(jevUser, "JevisUser Name"));
     	addDialogComponent(new DialogComponentString(jevPW, "Jevis Password"));
-    	
+    	setHorizontalPlacement(true);
     	addDialogComponent(connectBtn);
+    	addDialogComponent(diac_con);
+    	setHorizontalPlacement(false);
     	closeCurrentGroup();
     	setDefaultTabTitle("Configure Connection");
     	
@@ -222,12 +229,14 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				
-		    	m_nodeType.setEnabled(m_enableNodeSearch.getBooleanValue());
+		    	//m_nodeType.setEnabled(m_enableNodeSearch.getBooleanValue());
 		    	m_devicetype.setEnabled(m_enableNodeSearch.getBooleanValue());
 		    	m_component.setEnabled(m_enableNodeSearch.getBooleanValue());
 		    	m_location.setEnabled(m_enableNodeSearch.getBooleanValue());
 		    	m_project.setEnabled(m_enableNodeSearch.getBooleanValue());
-		    	
+		    	m_enableComponent.setEnabled(m_enableNodeSearch.getBooleanValue());
+		    	m_enableProject.setEnabled(m_enableNodeSearch.getBooleanValue());
+		    	m_enableDevice.setEnabled(m_enableNodeSearch.getBooleanValue());
 			}
 		});
 
@@ -245,7 +254,17 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			}
 		});
     	addDialogComponent(diac_projects);
-    	
+    	m_project.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+	        	getdevicetypes(jevis, devicetypes);
+	        	diac_deviceType.replaceListItems(devicetypes, null);
+	        	getcomponents(jevis, components);
+	        	diac_component.replaceListItems(components, null);
+			}
+		});
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
     	addDialogComponent(new DialogComponentBoolean(m_enableLocation, 
@@ -305,8 +324,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	createNewGroup("Search for Specific Attribute");
     	setHorizontalPlacement(true);
     	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Enable Attribute Search"));
-    	addDialogComponent(new DialogComponentStringSelection(
-    			m_AttributeSearch, "Select available Attribute", attributes));
+    	addDialogComponent(diac_attribute);
     	
     	createNewTab("Structure Search");
     	createNewGroup("Search with structure");
@@ -371,9 +389,10 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	try{
     		if(jevis.isConnectionAlive()){
     			//filling device type string selection list:
-    			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass("Data"), true).size();i++){
-    				if(!devicetypes.contains(jevis.getObjects(jevis.getJEVisClass("Data"), true).
-    						get(i).getName())){
+    			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
+    					"Data"), true).size();i++){
+    				if(!devicetypes.contains(jevis.getObjects(
+    						jevis.getJEVisClass("Data"), true).get(i).getName())){
     					devicetypes.add(jevis.getObjects(jevis.getJEVisClass("Data"), true).
     							get(i).getName());
     				}
@@ -389,9 +408,10 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	
     	try{
     		if(jevis.isConnectionAlive()){
-    			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass("Device"), true).size();i++){
-    				if(!components.contains(jevis.getObjects(jevis.getJEVisClass("Device"), true).
-    						get(i).getName())){
+    			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
+    					"Device"), true).size();i++){
+    				if(!components.contains(jevis.getObjects(
+    						jevis.getJEVisClass("Device"), true).get(i).getName())){
     					components.add(jevis.getObjects(jevis.getJEVisClass("Device"), true).
     							get(i).getName());
     
