@@ -42,6 +42,8 @@ public class SearchForNodes {
 	List<JEVisObject> list_component = new ArrayList<JEVisObject>();
 	List<JEVisObject> list_datapoint = new ArrayList<JEVisObject>();
 	
+	List<JEVisObject> list_nodetype = new ArrayList<JEVisObject>();
+	
 	List<JEVisObject> searchresult;
 	JEVisObject projectObject;
 	JEVisObject locationObject;
@@ -86,13 +88,11 @@ public class SearchForNodes {
 		List<JEVisObject> projects = jevis.getObjects(jevis.getJEVisClass(
 				DataBaseConfiguration.projectLevelName), true);
 
-		computeResultTable(projects);
+		computeResult(projects);
 		
 	}
 	
-
-	
-	public void computeResultTable(List<JEVisObject> children)
+	public void computeResult(List<JEVisObject> children)
 			throws JEVisException{
 		
 		for(JEVisObject child : children){			
@@ -104,12 +104,12 @@ public class SearchForNodes {
 					if(child.getName().equals(project)){
 						
 						organization = child;
-						computeResultTable(child.getChildren());					
+						computeResult(child.getChildren());					
 					}
 				}else{
 
 					organization = child;
-					computeResultTable(child.getChildren());
+					computeResult(child.getChildren());
 				}
 			}
 
@@ -119,11 +119,11 @@ public class SearchForNodes {
 				if(enabledLocation){
 					if(child.getName().equals(location)){
 						building = child;
-						computeResultTable(child.getChildren());
+						computeResult(child.getChildren());
 					}
 				}else{
 					building = child;
-					computeResultTable(child.getChildren());
+					computeResult(child.getChildren());
 					
 				}
 			}
@@ -133,11 +133,11 @@ public class SearchForNodes {
 				if(enabledComponent){
 					if(child.getName().equals(component)){
 						componentlevel = child;
-						computeResultTable(child.getChildren());
+						computeResult(child.getChildren());
 					}
 				}else{
 					componentlevel = child;
-					computeResultTable(child.getChildren());
+					computeResult(child.getChildren());
 				}
 			}
 			else if(child.getJEVisClass()== jevis.getJEVisClass(
@@ -163,65 +163,92 @@ public class SearchForNodes {
 			}
 
 			else{
-				computeResultTable(child.getChildren());				
+				computeResult(child.getChildren());				
 			}
-			
 		}
-	
 	}
 	
 /*
  * Search for a specific Nodetype and filtering after Project, Location, or Component	
  */
 	
-	public List<JEVisObject> searchForNodeType() throws JEVisException{
-		List<JEVisObject> liste = searchNodetype();
-		return liste;
-	}
-
-	public List<JEVisObject> searchNodetype() throws JEVisException{
-		List<JEVisObject> list_nodetype = jevis.getObjects(jevis.getJEVisClass(nodeType), true);
-		for(JEVisObject node : list_nodetype){
-			getParentData(node, list_nodetype);
-		}
+	public void searchForNodeType2() throws JEVisException{
+		List<JEVisObject> projects = jevis.getObjects(jevis.getJEVisClass(
+				DataBaseConfiguration.projectLevelName), true);
 		
-		return list_nodetype;
+		computeResultNodeType(projects);
 	}
 	
-	private void getParentData(JEVisObject node, List<JEVisObject> list_nodeType) 
-			throws JEVisException{
-		if(!checkLevel(node, DataBaseConfiguration.projectLevelName)){
-			if(checkLevel(node, DataBaseConfiguration.locationLevelName)){
-				searchNodeTypeList(node, enabledLocation, location, 
-						list_nodeType, list_location);
-			}
-			else if(checkLevel(node, DataBaseConfiguration.componentLevelName)){
-				searchNodeTypeList(node, enabledComponent, component, 
-						list_nodeType, list_component);
-			}
-			else{
-				for(JEVisObject parent : node.getParents()){
-					getParentData(parent, list_nodeType);
+	
+	public void computeResultNodeType(List<JEVisObject> children) throws JEVisException{
+		for(JEVisObject child : children){			
+			
+			if(child.getJEVisClass() == jevis.getJEVisClass(
+					DataBaseConfiguration.projectLevelName)){
+				System.out.println("Project:" + child.getName());
+				if(enabledProject){
+					if(child.getName().equals(project)){
+						
+						organization = child;
+						computeResultNodeType(child.getChildren());					
+					}
+				}else{
+
+					organization = child;
+					computeResultNodeType(child.getChildren());
 				}
 			}
-		}else{
-			searchNodeTypeList(node, enabledProject, project, list_nodeType, list_projects);
+
+			else if(child.getJEVisClass()==jevis.getJEVisClass(
+					DataBaseConfiguration.locationLevelName)){
+				System.out.println("Location:" + child.getName());
+				if(enabledLocation){
+					if(child.getName().equals(location)){
+						building = child;
+						computeResultNodeType(child.getChildren());
+					}
+				}else{
+					building = child;
+					computeResultNodeType(child.getChildren());
+					
+				}
+			}
+			else if(child.getJEVisClass()==jevis.getJEVisClass(
+					DataBaseConfiguration.componentLevelName)){
+				System.out.println("Component:" + child.getName());
+				if(enabledComponent){
+					if(child.getName().equals(component)){
+						componentlevel = child;
+						computeResultNodeType(child.getChildren());
+					}
+				}else{
+					componentlevel = child;
+					computeResultNodeType(child.getChildren());
+				}
+			}
+			else if(child.getJEVisClass() == jevis.getJEVisClass(nodeType)){
+				list_nodetype.add(child);
+				if(componentlevel != null){
+					list_component.add(componentlevel);
+				}
+				if(organization !=null){
+					list_projects.add(organization);
+				}
+				if(building != null){
+					list_location.add(building);
+				}
+			}
+			else{
+				computeResultNodeType(child.getChildren());
+			}
 		}
 	}
 	
-	private void searchNodeTypeList(
-			JEVisObject object, boolean enabled, String objectName, 
-			List<JEVisObject> list_nodeType, List<JEVisObject> list_Level) 
-			throws JEVisException{
-		if(enabled){
-			if(!object.getName().equals(objectName)){
-				list_nodeType.remove(object);
-			}
-			else{
-				list_Level.add(object);
-			}
-		}
-	}
+	
+	
+	
+ 
+	
 	
 	/*
 	 * Main Search function for information

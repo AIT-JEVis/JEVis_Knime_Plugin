@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.ait.knimejevisplugin.DataBaseConfiguration;
+import org.eclipse.ui.contexts.EnabledSubmission;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.knime.core.data.DataCell;
@@ -58,11 +59,23 @@ public class ResultTable {
 		for(int i= 0; i< list_datapoint.size();i++ ){
 			cells[0] = new LongCell(list_datapoint.get(i).getID());
 	        cells[1] = new StringCell(list_datapoint.get(i).getName());
-			cells[2] = new StringCell(list_projects.get(i).getName());
-			cells[3] = new StringCell(list_location.get(i).getName());
-			cells[4] = new StringCell(list_component.get(i).getName());
-	        cells[5] = new StringCell(" ");
-	        fillTableWithDateTime(list_datapoint.get(i));
+	        try{
+	        	cells[2] = new StringCell(list_projects.get(i).getName());
+				cells[3] = new StringCell(list_location.get(i).getName());
+				cells[4] = new StringCell(list_component.get(i).getName());
+				cells[5] = new StringCell(" ");
+				fillTableWithDateTime(list_datapoint.get(i));
+	        }catch(Exception e){
+	        	handleemptylistexception(list_projects, 2, "String");
+	        	handleemptylistexception(list_location, 3, "String");
+	        	handleemptylistexception(list_component, 4, "String");
+	        	
+	        	cells[6] = new DateAndTimeCell(0,0,0);
+	        	cells[7] = new DateAndTimeCell(0,0,0);
+	        }
+	        
+	        
+
 	        fillTable(buf);
 	        
 		}
@@ -105,5 +118,11 @@ public class ResultTable {
 		DataRow row = new DefaultRow("Row"+counter, cells);
 		buf.addRowToTable(row);
         return buf;
+	}
+	
+	private void handleemptylistexception(List<JEVisObject> list, int column, String type){
+		if(list.isEmpty()&& type == "String"){
+			cells[column] = new StringCell(" ");
+		}
 	}
 }

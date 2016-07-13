@@ -256,22 +256,22 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		
     		if(m_enableNodeType.getBooleanValue()){
     			
-    			buf = exec.createDataContainer(createOuputTableSpecforStructure());
-    			
+    			buf = exec.createDataContainer(createOutputTableSpecforDatapoints());
+    			/*
+    			DataTableSpec spec= createOuputTableSpecforStructure();
     			SearchForAttributes attributesearcher = new SearchForAttributes(
     					jevis, m_enableProject.getBooleanValue(),
     					DataBaseConfiguration.projectLevelName, m_enableLocation.getBooleanValue(),
     					DataBaseConfiguration.locationLevelName, m_enableComponent.getBooleanValue(),
     					DataBaseConfiguration.componentLevelName, m_enableNodeType.getBooleanValue(),
-    					m_nodeType.getStringValue(), createOuputTableSpecforStructure());
+    					m_nodeType.getStringValue(), spec);
     			attributesearcher.searchForNodetypes(buf);
-/*
- * 				searcher.searchForNodeType();
+*/
+
+ 				searcher.searchForNodeType2();
     			result.fillResultTable(buf, resultspec, searcher.list_projects, 
     					searcher.list_location, searcher.list_component, 
-    					searcher.list_datapoint);
-     		
- */
+    					searcher.list_nodetype);
     			
     		}		    		
     	}

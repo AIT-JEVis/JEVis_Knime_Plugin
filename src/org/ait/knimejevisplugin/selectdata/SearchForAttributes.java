@@ -33,7 +33,7 @@ public class SearchForAttributes {
  
 	DataTableSpec spec;
 	
-	DataCell[] cells= new DataCell[spec.getNumColumns()];;
+	DataCell[] cells;
 	
 	List<JEVisObject> fillInList = new ArrayList<JEVisObject>();
 	
@@ -60,6 +60,7 @@ public class SearchForAttributes {
 	 * Methods for Nodetype Search:
 	 */
 	public BufferedDataContainer searchForNodetypes(BufferedDataContainer buf) throws JEVisException{
+		cells= new DataCell[spec.getNumColumns()];
 		List<JEVisObject> list_nodetype = jevis.getObjects(jevis.getJEVisClass(nodeType), true);
 		for(JEVisObject nodeTypeObject : list_nodetype){
 			findAllImportantParents(nodeTypeObject);
@@ -75,8 +76,7 @@ public class SearchForAttributes {
 		
 		for(JEVisObject object :  jObject.getParents()){
 			if(SearchForNodes.checkLevel(object, projectLevelName)){
-				fillInList.add(object);
-				
+				fillInList.add(object);	
 			}
 			else if(SearchForNodes.checkLevel(object, locationLevelName)){
 				fillInList.add(object);
@@ -90,6 +90,7 @@ public class SearchForAttributes {
 				findAllImportantParents(object);
 			}
 		}
+		JevisSelectDataNodeModel.logger.info("Size: "+fillInList.size());
 	}
 	
 	BufferedDataContainer fillInInformation(BufferedDataContainer buf) throws JEVisException{
@@ -142,5 +143,7 @@ public class SearchForAttributes {
 		buf.addRowToTable(row);
         return buf;
 	}
+	
+	
 	
 }
