@@ -62,6 +62,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 	ArrayList<String> attributes = new ArrayList<String>();
 	ArrayList<String> projects = new ArrayList<String>();
 	ArrayList<String> locations = new ArrayList<String>();
+	
+	ArrayList<String> attributesfiltered = new ArrayList<String>();
 
 	private static final Logger logger = LogManager.getLogger("SelectNdoeDialog");
 	
@@ -117,9 +119,29 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    	
    	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableAttributeSearch, false);
+
    	
    	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
    			JevisSelectDataNodeModel.attributeModelName, " ");
+
+   	private final SettingsModelString m_attributeModelList1 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelList1, " ");
+   	private final SettingsModelString m_attributeModelList2 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelList2, " ");
+   	private final SettingsModelString m_attributeModelList4 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelList4, " ");
+   	private final SettingsModelString m_attributeModelList3 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelList3, " ");
+   	
+   	private final SettingsModelString m_attributeModelValue1 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelValue1, " ");
+   	private final SettingsModelString m_attributeModelValue2 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelValue2, " ");
+   	private final SettingsModelString m_attributeModelValue3 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelValue3, " ");
+   	private final SettingsModelString m_attributeModelValue4 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelValue4, " ");
+   	
    	
    	private final SettingsModelBoolean m_enableStructure = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableStructure, false);
@@ -149,7 +171,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		components.add(" ");
 		attributes.add(" ");
 		locations.add(" ");
-        
+        attributesfiltered.add(" ");
 		
 		//m_project.setEnabled(m_enableProject.getBooleanValue());
 		m_project.setEnabled(false);
@@ -176,6 +198,24 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	
     	DialogComponentStringSelection diac_attribute = new DialogComponentStringSelection(
     			m_AttributeSearch, "Select available Attribute", attributes);
+    	
+    	DialogComponentStringSelection diac_attribute1 = new DialogComponentStringSelection(
+    			m_attributeModelList1, " ", attributesfiltered);
+    	DialogComponentStringSelection diac_attribute2 = new DialogComponentStringSelection(
+    			m_attributeModelList2, " ", attributesfiltered);
+    	DialogComponentStringSelection diac_attribute3 = new DialogComponentStringSelection(
+    			m_attributeModelList3, " ", attributesfiltered);
+    	DialogComponentStringSelection diac_attribute4 = new DialogComponentStringSelection(
+    			m_attributeModelList4, " ", attributesfiltered);
+    	
+    	DialogComponentString diac_attributevalue1 = new DialogComponentString(
+    			m_attributeModelValue1, "Value: ");
+    	DialogComponentString diac_attributevalue2 = new DialogComponentString(
+    			m_attributeModelValue2, "Value: ");
+    	DialogComponentString diac_attributevalue3 = new DialogComponentString(
+    			m_attributeModelValue3, "Value: ");
+    	DialogComponentString diac_attributevalue4 = new DialogComponentString(
+    			m_attributeModelValue4, "Value: ");
     	
     	DialogComponentLabel diac_con = new DialogComponentLabel("Disconnected!");
     	
@@ -313,10 +353,29 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		});
     	addDialogComponent(diac_nodeType);
     	
+    	createNewTab("Attribute Search");
     	createNewGroup("Search for Specific Attribute");
     	setHorizontalPlacement(true);
     	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Enable Attribute Search"));
     	addDialogComponent(diac_attribute);
+    	
+    	createNewGroup("Search for Attibutes and Values:");
+    	setHorizontalPlacement(false);
+    	setHorizontalPlacement(true);
+    	addDialogComponent(diac_attribute1);
+    	addDialogComponent(diac_attributevalue1);
+    	setHorizontalPlacement(false);
+    	setHorizontalPlacement(true);
+    	addDialogComponent(diac_attribute2);
+    	addDialogComponent(diac_attributevalue2);
+    	setHorizontalPlacement(false);
+    	setHorizontalPlacement(true);
+    	addDialogComponent(diac_attribute3);
+    	addDialogComponent(diac_attributevalue3);
+    	setHorizontalPlacement(false);
+    	setHorizontalPlacement(true);
+    	addDialogComponent(diac_attribute4);
+    	addDialogComponent(diac_attributevalue4);
     	
     	createNewTab("Structure Search");
     	createNewGroup("Search with structure");
@@ -423,7 +482,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     				if(!jevis.getObjects(jclass,true).isEmpty()){
     					JEVisObject jObject = jevis.getObjects(jclass, true).get(0);
     					List<JEVisAttribute> jAttributes = jObject.getAttributes();
-    					for(JEVisAttribute jattribute :jAttributes){
+    					for(JEVisAttribute jattribute : jAttributes){
     						if(!attributes.contains(jattribute.getName())){
     							attributes.add(jattribute.getName());
     						}

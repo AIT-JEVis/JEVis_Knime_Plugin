@@ -116,6 +116,18 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	
    	public static String attributeModelName = "Attribute";
    	
+   	public static String attributeModelList1 = "Attribute Type 1";
+   	public static String attributeModelList2 = "Attribute Type 2";
+   	public static String attributeModelList3 = "Attribute Type 3";
+   	public static String attributeModelList4 = "Attribute Type 4";
+   	
+   	public static String attributeModelValue1 = "Attribute value 1";
+   	public static String attributeModelValue2 = "Attribute value 2";
+   	public static String attributeModelValue3 = "Attribute value 3";
+   	public static String attributeModelValue4 = "Attribute value 4";
+   	
+   	
+   	
    	public static String enableStructure = "enableStructureSearch";
    	
    	public static String parent = "parent";
@@ -182,6 +194,25 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
    			JevisSelectDataNodeModel.attributeModelName, " ");
    	
+   	private final SettingsModelString m_attributeModelList1 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelList1, " ");
+   	private final SettingsModelString m_attributeModelList2 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelList2, " ");
+   	private final SettingsModelString m_attributeModelList4 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelList4, " ");
+   	private final SettingsModelString m_attributeModelList3 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelList3, " ");
+   	
+   	private final SettingsModelString m_attributeModelValue1 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelValue1, " ");
+   	private final SettingsModelString m_attributeModelValue2 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelValue2, " ");
+   	private final SettingsModelString m_attributeModelValue3 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelValue3, " ");
+   	private final SettingsModelString m_attributeModelValue4 = new SettingsModelString(
+   			JevisSelectDataNodeModel.attributeModelValue4, " ");
+   	
+   	
    	private final SettingsModelBoolean m_enableStructure = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableStructure, false);
    	
@@ -220,7 +251,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		ResultTable result = new ResultTable();
 			DataTableSpec resultspec = result.createOutputTableSpecforDatapoints();
 			SearchForNodes searcher = new SearchForNodes(jevis, m_project.getStringValue(),
-    				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
+    				m_location.getStringValue(),m_nodeType.getStringValue(),
+    				m_devicetype.getStringValue(),
     				m_component.getStringValue(), m_enableProject.getBooleanValue(),
     				m_enableLocation.getBooleanValue(), m_enableNodeType.getBooleanValue(),
     				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
@@ -236,37 +268,19 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		if(m_enableStructure.getBooleanValue()){
     			buf = exec.createDataContainer(createOuputTableSpecforStructure());
     			DataTableSpec structureResult = createOuputTableSpecforStructure();
-    			SearchForStructure structuresearcher = new SearchForStructure(jevis, m_nodeId.getLongValue(),
+    			SearchForStructure structuresearcher = new SearchForStructure(
+    					jevis, m_nodeId.getLongValue(),
     					m_parents.getBooleanValue(), m_children.getBooleanValue(),
     					m_siblings.getBooleanValue(), m_allChildren.getBooleanValue(),
     					m_enableNodeSearch.getBooleanValue());
-    			buf = structuresearcher.fillTableWithStructureSearchResult(buf, structureResult);
-    			
-    			/*
-    			SearchForNodes nodetypesearcher = new SearchForNodes(jevis, m_project.getStringValue(),
-        				m_location.getStringValue(),m_nodeType.getStringValue(),m_devicetype.getStringValue(),
-        				m_component.getStringValue(), m_enableProject.getBooleanValue(),
-        				m_enableLocation.getBooleanValue(), m_enableNodeType.getBooleanValue(),
-        				m_enableDevice.getBooleanValue(), m_enableComponent.getBooleanValue(),
-        				structureResult);
-    			buf = nodetypesearcher.searchforInformation(structuresearcher.searchForStructure(), buf);
-    		*/
+    			buf = structuresearcher.fillTableWithStructureSearchResult(
+    					buf, structureResult);
     			
     		}
     		
     		if(m_enableNodeType.getBooleanValue()){
     			
     			buf = exec.createDataContainer(createOutputTableSpecforDatapoints());
-    			/*
-    			DataTableSpec spec= createOuputTableSpecforStructure();
-    			SearchForAttributes attributesearcher = new SearchForAttributes(
-    					jevis, m_enableProject.getBooleanValue(),
-    					DataBaseConfiguration.projectLevelName, m_enableLocation.getBooleanValue(),
-    					DataBaseConfiguration.locationLevelName, m_enableComponent.getBooleanValue(),
-    					DataBaseConfiguration.componentLevelName, m_enableNodeType.getBooleanValue(),
-    					m_nodeType.getStringValue(), spec);
-    			attributesearcher.searchForNodetypes(buf);
-*/
 
  				searcher.searchForNodeType2();
     			result.fillResultTable(buf, resultspec, searcher.list_projects, 
@@ -300,7 +314,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	
     	try{
     	//Connecting to Jevis with connection information
-    	jevis = new JEVisDataSourceSQL(jhost.getStringValue(), jport.getStringValue(), jSchema.getStringValue(), jUser.getStringValue(), jPW.getStringValue());
+    	jevis = new JEVisDataSourceSQL(jhost.getStringValue(), jport.getStringValue(),
+    			jSchema.getStringValue(), jUser.getStringValue(), jPW.getStringValue());
     	jevis.connect(jevUser.getStringValue(), jevPW.getStringValue());
     	
     	pushFlowVariableString("host", jhost.getStringValue());
@@ -333,16 +348,19 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	DataColumnSpec lastTSSpec = new DataColumnSpecCreator(
     			"Last Timestamp", DateAndTimeCell.TYPE).createSpec();
     	
-    	DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, deviceTypeSpec, componentTypeSpec,
-    			locationSpec, projectSpec, floorSpec, firstTsSpec, lastTSSpec);
+    	DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, deviceTypeSpec,
+    			componentTypeSpec, locationSpec, projectSpec, floorSpec, firstTsSpec,
+    			lastTSSpec);
     	
     	return outputTableSpec;
     }
     
     private DataTableSpec createOuputTableSpecforStructure(){
     	
-    	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator("NodeID", LongCell.TYPE).createSpec();
-    	DataColumnSpec nameSpec = new DataColumnSpecCreator("Name", StringCell.TYPE).createSpec();
+    	DataColumnSpec nodeIDSpec = new DataColumnSpecCreator(
+    			"NodeID", LongCell.TYPE).createSpec();
+    	DataColumnSpec nameSpec = new DataColumnSpecCreator(
+    			"Name", StringCell.TYPE).createSpec();
     	DataColumnSpec projectTypeSpec = new DataColumnSpecCreator(
     			DataBaseConfiguration.projectModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec locationSpec = new DataColumnSpecCreator(
@@ -350,8 +368,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	DataColumnSpec componentSpec = new DataColumnSpecCreator(
     			DataBaseConfiguration.componentModelName, StringCell.TYPE).createSpec();
 
-    	DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, nameSpec, projectTypeSpec,
-    			locationSpec, componentSpec);
+    	DataTableSpec outputTableSpec = new DataTableSpec(
+    			nodeIDSpec, nameSpec, projectTypeSpec, locationSpec, componentSpec);
 		return outputTableSpec;
     	
     }
