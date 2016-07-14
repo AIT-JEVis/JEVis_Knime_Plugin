@@ -87,8 +87,14 @@ public class JevisSelectDataNodeModel extends NodeModel {
         settingsmodels.add(jport);
         settingsmodels.add(m_location);
         settingsmodels.add(m_siblings);
-        
-        
+        settingsmodels.add(m_attributeModelList1);
+        settingsmodels.add(m_attributeModelList2);
+        settingsmodels.add(m_attributeModelList3);
+        settingsmodels.add(m_attributeModelList4);
+        settingsmodels.add(m_attributeModelValue1);
+        settingsmodels.add(m_attributeModelValue2);
+        settingsmodels.add(m_attributeModelValue3);
+        settingsmodels.add(m_attributeModelValue4);
     }
 
     static final NodeLogger logger = NodeLogger
@@ -238,13 +244,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	
     	NodeLogger.setLevel(NodeLogger.LEVEL.INFO);
     	
-
-    	
-    	
-    	
     	connectingtojevis();
-    	
-    	
+    	   	
     	if(jevis.isConnectionAlive()){
     		logger.info("Connection Alive!");
     		
@@ -263,7 +264,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
         		searcher.searchforDataPoints();
         		result.fillResultTable(buf, resultspec, searcher.list_projects, 
         				searcher.list_location,searcher.list_component,
-        				searcher.list_datapoint);
+        				searcher.list_datapoint, null);
     		}
     		if(m_enableStructure.getBooleanValue()){
     			buf = exec.createDataContainer(createOuputTableSpecforStructure());
@@ -285,14 +286,36 @@ public class JevisSelectDataNodeModel extends NodeModel {
  				searcher.searchForNodeType2();
     			result.fillResultTable(buf, resultspec, searcher.list_projects, 
     					searcher.list_location, searcher.list_component, 
-    					searcher.list_nodetype);
+    					searcher.list_nodetype, null);
     			
-    		}		    		
+    		}
+    		if(m_enableAttribute.getBooleanValue()){
+    			buf = exec.createDataContainer(createOutputTableSpecforDatapoints());
+    		
+    			SearchForAttributes attributesearcher = new SearchForAttributes(jevis,
+    					m_enableProject.getBooleanValue(), m_project.getStringValue(),
+    					m_enableLocation.getBooleanValue(), m_location.getStringValue(),
+    					m_enableComponent.getBooleanValue(), m_component.getStringValue(),
+    					m_attributeModelList1.getStringValue(), 
+    					m_attributeModelList2.getStringValue(),
+    					m_attributeModelList3.getStringValue(),
+    					m_attributeModelList4.getStringValue(),
+    					m_attributeModelValue1.getStringValue(),
+    					m_attributeModelValue2.getStringValue(),
+    					m_attributeModelValue3.getStringValue(),
+    					m_attributeModelValue4.getStringValue(),
+    					resultspec);
+    			    			attributesearcher.searchforAttributesEntry();
+    			exec.checkCanceled();
+    			result.fillResultTable(buf, resultspec, attributesearcher.list_projects,
+    					attributesearcher.list_location, attributesearcher.list_component,
+    					attributesearcher.list_attributes, attributesearcher.list_comment);
+    		}
     	}
     	
     	buf.close();
     	BufferedDataTable out = buf.getTable();
-        // TODO: Return a BufferedDataTable for each output port 
+
         return new BufferedDataTable[]{out};
     }
 

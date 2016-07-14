@@ -37,21 +37,21 @@ public class ResultTable {
 				DataBaseConfiguration.locationModelName, StringCell.TYPE).createSpec();
 		DataColumnSpec projectSpec = new DataColumnSpecCreator(
 				DataBaseConfiguration.componentModelName, StringCell.TYPE).createSpec();
-		DataColumnSpec floorSpec = new DataColumnSpecCreator(
-				"Floor", StringCell.TYPE).createSpec();
+		DataColumnSpec commentSpec = new DataColumnSpecCreator(
+				"Comment", StringCell.TYPE).createSpec();
 		DataColumnSpec firstTsSpec = new DataColumnSpecCreator(
 				"First Timestamp", DateAndTimeCell.TYPE).createSpec();
 		DataColumnSpec lastTSSpec = new DataColumnSpecCreator(
 				"Last Timestamp", DateAndTimeCell.TYPE).createSpec();
 	    	
 		DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, deviceTypeSpec, componentTypeSpec,
-				locationSpec, projectSpec, floorSpec, firstTsSpec, lastTSSpec);
+				locationSpec, projectSpec, commentSpec, firstTsSpec, lastTSSpec);
 	    	
 		return outputTableSpec;
 	    }
 	
 	protected BufferedDataContainer fillResultTable(BufferedDataContainer buf, DataTableSpec spec, List<JEVisObject> list_projects,
-			List<JEVisObject> list_location, List<JEVisObject> list_component, List<JEVisObject> list_datapoint ) throws JEVisException{
+			List<JEVisObject> list_location, List<JEVisObject> list_component, List<JEVisObject> list_datapoint, List<String> list_Comment) throws JEVisException{
 		
 		counter = 0;
 		cells = new DataCell[spec.getNumColumns()];
@@ -63,18 +63,18 @@ public class ResultTable {
 	        	cells[2] = new StringCell(list_projects.get(i).getName());
 				cells[3] = new StringCell(list_location.get(i).getName());
 				cells[4] = new StringCell(list_component.get(i).getName());
-				cells[5] = new StringCell(" ");
+				cells[5] = new StringCell(list_Comment.get(i));
+				
 				fillTableWithDateTime(list_datapoint.get(i));
 	        }catch(Exception e){
-	        	handleemptylistexception(list_projects, 2, "String");
-	        	handleemptylistexception(list_location, 3, "String");
-	        	handleemptylistexception(list_component, 4, "String");
+	        	handleEmptyObjectListException(list_projects, 2, "String");
+	        	handleEmptyObjectListException(list_location, 3, "String");
+	        	handleEmptyObjectListException(list_component, 4, "String");
+	        	handleEmptyStringListException(list_Comment, 5);
 	        	
 	        	cells[6] = new DateAndTimeCell(0,0,0);
 	        	cells[7] = new DateAndTimeCell(0,0,0);
 	        }
-	        
-	        
 
 	        fillTable(buf);
 	        
@@ -120,8 +120,13 @@ public class ResultTable {
         return buf;
 	}
 	
-	private void handleemptylistexception(List<JEVisObject> list, int column, String type){
+	private void handleEmptyObjectListException(List<JEVisObject> list, int column, String type){
 		if(list.isEmpty()&& type == "String"){
+			cells[column] = new StringCell(" ");
+		}
+	}
+	private void handleEmptyStringListException(List<String> list, int column){
+		if(list.isEmpty()){
 			cells[column] = new StringCell(" ");
 		}
 	}

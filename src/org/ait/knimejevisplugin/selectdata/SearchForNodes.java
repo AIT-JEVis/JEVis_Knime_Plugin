@@ -1,7 +1,6 @@
 package org.ait.knimejevisplugin.selectdata;
 
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,16 +9,8 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
-import org.jevis.commons.cli.CommonCLIOptions.JEVis;
-import org.joda.time.DateTime;
 import org.knime.core.data.DataCell;
-import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.date.DateAndTimeCell;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.data.def.LongCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataContainer;
 
 public class SearchForNodes {
 	

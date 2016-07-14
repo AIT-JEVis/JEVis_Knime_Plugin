@@ -161,7 +161,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
      * New pane for configuring the JevisSelectData node.
      * @throws JEVisException 
      */
-    protected JevisSelectDataNodeDialog() throws JEVisException {
+    @SuppressWarnings({ "static-access", "deprecation" })
+	protected JevisSelectDataNodeDialog() throws JEVisException {
     	JevisSelectDataNodeModel.logger.setLevel(NodeLogger.LEVEL.INFO);
     	JevisSelectDataNodeModel.logger.warn("Opening Configuration Window. "
     			+ "Please be patient it may take a moment.");
@@ -234,8 +235,12 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			        	diac_projects.replaceListItems(projects, null);
 						JevisSelectDataNodeModel.logger.warn("Connecting to Jevis. "
 								+ "May Take a while!");
+						getAttributes(jevis, attributesfiltered);
+						diac_attribute1.replaceListItems(attributesfiltered, null);
+						diac_attribute2.replaceListItems(attributesfiltered, null);
+						diac_attribute3.replaceListItems(attributesfiltered, null);
+						diac_attribute4.replaceListItems(attributesfiltered, null);
 						
-				
 			        	getnodetypes(jevis, nodefilter);
 			        	diac_nodeType.replaceListItems(nodefilter, null);
 			        	getAttributes(jevis, attributes);
@@ -244,7 +249,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 
 					}
 				} catch (JEVisException e1) {
-					// TODO Auto-generated catch block
+	
 					e1.printStackTrace();
 				}
 			}
@@ -257,7 +262,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(new DialogComponentString(jport, "Port"));
     	addDialogComponent(new DialogComponentString(jSchema, "SqlSchema"));
     	addDialogComponent(new DialogComponentString(jUser,"SqlUser"));
-    	addDialogComponent(new DialogComponentString(jPW, "SqlPassword"));
+    	addDialogComponent(new DialogComponentPasswordField(jPW, "SqlPassword"));
     	createNewGroup("Jevis User Information");
     	addDialogComponent(new DialogComponentString(jevUser, "JevisUser Name"));
     	addDialogComponent(new DialogComponentPasswordField(jevPW, "Jevis Password"));
@@ -332,7 +337,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
 				m_component.setEnabled(m_enableComponent.getBooleanValue());
 			}
 		});
@@ -356,9 +360,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	createNewTab("Attribute Search");
     	createNewGroup("Search for Specific Attribute");
     	setHorizontalPlacement(true);
-    	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Enable Attribute Search"));
+    	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Enable Attribute Search"));    	
     	addDialogComponent(diac_attribute);
-    	
     	createNewGroup("Search for Attibutes and Values:");
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
