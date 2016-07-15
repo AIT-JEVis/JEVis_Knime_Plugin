@@ -1,5 +1,7 @@
 package org.ait.knimejevisplugin.selectdata;
 
+import org.ait.knimejevisplugin.DataBaseConfiguration;
+import org.jevis.api.JEVisException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
@@ -18,7 +20,7 @@ public class JevisSelectDataNodeFactory
      */
     @Override
     public JevisSelectDataNodeModel createNodeModel() {
-    	SearchConfiguration configuration = new SearchConfiguration();
+    	DataBaseConfiguration configuration = new DataBaseConfiguration();
         return new JevisSelectDataNodeModel();
     }
 
@@ -52,7 +54,13 @@ public class JevisSelectDataNodeFactory
      */
     @Override
     public NodeDialogPane createNodeDialogPane() {
-        return new JevisSelectDataNodeDialog();
+        try {
+			return new JevisSelectDataNodeDialog();
+		} catch (JEVisException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return null;
     }
 
 }

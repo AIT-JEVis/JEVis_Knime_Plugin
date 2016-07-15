@@ -1,24 +1,16 @@
 package org.ait.knimejevisplugin.selectdata;
 
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ait.knimejevisplugin.DataBaseConfiguration;
+import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
-import org.jevis.commons.cli.CommonCLIOptions.JEVis;
-import org.joda.time.DateTime;
 import org.knime.core.data.DataCell;
-import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.date.DateAndTimeCell;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.data.def.LongCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataContainer;
 
 public class SearchForNodes {
 	
@@ -30,11 +22,30 @@ public class SearchForNodes {
 	String component;
 	int nodeID;
 
-	boolean enabledProject;
-	boolean enabledLocation;
 	boolean enabledNodeType;
-	boolean enableddeviceType; 
-	boolean enabledComponent;
+
+	boolean enabledAttribute;
+	
+	List<JEVisObject> list_projects = new ArrayList<JEVisObject>();
+	List<JEVisObject> list_location = new ArrayList<JEVisObject>();
+	List<JEVisObject> list_component = new ArrayList<JEVisObject>();
+	List<JEVisObject> list_datapoint = new ArrayList<JEVisObject>();
+	List<JEVisObject> list_attributes = new ArrayList<JEVisObject>();
+	
+	List<String> list_comment = new ArrayList<String>();
+	
+	
+	String attribute1; 
+	String attribute2;
+	String attribute3; 
+	String attribute4;
+	
+	String attributevalue1;
+	String attributevalue2;
+	String attributevalue3;
+	String attributevalue4;
+	
+	List<JEVisObject> list_nodetype = new ArrayList<JEVisObject>();
 	
 	List<JEVisObject> searchresult;
 	JEVisObject projectObject;
@@ -45,12 +56,24 @@ public class SearchForNodes {
 	DataCell[]cells;
 	int counter = 0;
 	
+	JEVisObject organization= null;
+	JEVisObject building = null;
+	JEVisObject componentlevel = null;
+
+	
 	ArrayList<String> list_levels = new ArrayList<String>();
 	
-	public SearchForNodes(JEVisDataSourceSQL jevis, String project, String location,
-			String nodeType, String devicetype,	String component, 
-			boolean enabledProject, boolean enabledLocation, boolean enabledNodeType,
-			boolean enableddeviceType, boolean enabledComponent, DataTableSpec result) {
+
+	
+public SearchForNodes(JEVisDataSourceSQL jevis, 
+		String project, String location, 
+		String nodeType, String devicetype, String component,
+			int nodeID, boolean enabledNodeType, //boolean enabledAttribute,
+			String attribute1, String attribute2,
+			String attribute3, String attribute4, 
+			String attributevalue1, String attributevalue2,
+			String attributevalue3, String attributevalue4, 
+			DataTableSpec spec) {
 		super();
 		this.jevis = jevis;
 		this.project = project;
@@ -58,201 +81,223 @@ public class SearchForNodes {
 		this.nodeType = nodeType;
 		this.devicetype = devicetype;
 		this.component = component;
-		this.enabledProject = enabledProject;
-		this.enabledLocation = enabledLocation;
+		this.nodeID = nodeID;
 		this.enabledNodeType = enabledNodeType;
-		this.enableddeviceType = enableddeviceType;
-		this.enabledComponent = enabledComponent;
-		this.result = result;
-
+		//this.enabledAttribute = enabledAttribute;
+		this.attribute1 = attribute1;
+		this.attribute2 = attribute2;
+		this.attribute3 = attribute3;
+		this.attribute4 = attribute4;
+		this.attributevalue1 = attributevalue1;
+		this.attributevalue2 = attributevalue2;
+		this.attributevalue3 = attributevalue3;
+		this.attributevalue4 = attributevalue4;
+		this.result= spec;
 	}
-	
-/*
+
+	/*
  * Search for Datapoints in Specific Projects, Locations, Components and Devices 
  */
-	public BufferedDataContainer searchforDataPoints(BufferedDataContainer buf) throws JEVisException{
-		counter = 0;
-		cells = new DataCell[result.getNumColumns()];
+	public void searchforDataPoints() throws JEVisException{
+
 		List<JEVisObject> projects = jevis.getObjects(jevis.getJEVisClass(
-				JevisSelectDataNodeModel.configuration.projectLevelName), true);
-		computeResultTable(projects,buf);
-		return buf;
+				DataBaseConfiguration.projectLevelName), true);
+
+		computeResult(projects);
 		
 	}
 	
-	public BufferedDataContainer computeResultTable(List<JEVisObject> children, BufferedDataContainer buf)
+	public void computeResult(List<JEVisObject> children)
 			throws JEVisException{
 		
-		for(JEVisObject child : children){
+		for(JEVisObject child : children){			
+			
+			/*if(enabledAttribute){
+				startAttributesCheck(child);
+			}*/
+			
+			startAttributesCheck(child);
 			
 			if(child.getJEVisClass() == jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.projectLevelName)){
+					DataBaseConfiguration.projectLevelName)){
 				System.out.println("Project:" + child.getName());
-				if(enabledProject){
+				//checknodeLevelInformation(child, project, organization);
+				if(!project.equals(" ")){
 					if(child.getName().equals(project)){
-				
-						cells[2] = new StringCell(child.getName());
-						computeResultTable(child.getChildren(), buf);					
+						organization = child;
+						
+						computeResult(child.getChildren());
 					}
 				}else{
-					cells[2] = new StringCell(child.getName());		
-					computeResultTable(child.getChildren(), buf);
-				}
-			}
-
-			else if(child.getJEVisClass()==jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.locationLevelName)){
-				System.out.println("Location:" + child.getName());
-				if(enabledLocation){
-					if(child.getName().equals(location)){
-						cells[3] = new StringCell(child.getName());
-						computeResultTable(child.getChildren(), buf);
-					}
-				}else{
-					cells[3] = new StringCell(child.getName());
-					computeResultTable(child.getChildren(), buf);
+					organization = child;
+					computeResult(child.getChildren());
 					
 				}
 			}
-			else if(child.getJEVisClass()==jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.componentLevelName)){
-				System.out.println("Component:" + child.getName());
-				if(enabledComponent){
-					if(child.getName().equals(component)){
-						cells[4] = new StringCell(child.getName());
-						computeResultTable(child.getChildren(), buf);
+			else if(child.getJEVisClass().equals(jevis.getJEVisClass(
+					DataBaseConfiguration.locationLevelName))){
+				System.out.println("Location:" + child.getName());
+			//checknodeLevelInformation(child, location, building);
+				if(!location.equals(" ")){
+					if(child.getName().equals(location)){
+						building = child;
+						
+						computeResult(child.getChildren());
 					}
 				}else{
-					cells[4] = new StringCell(child.getName());
-					computeResultTable(child.getChildren(), buf);
+					building = child;
+					computeResult(child.getChildren());
+					
+				}
+				
+			}
+			else if(child.getJEVisClass()==jevis.getJEVisClass(
+					DataBaseConfiguration.componentLevelName)){
+				System.out.println("Component:" + child.getName());
+				//checknodeLevelInformation(child, component, componentlevel);
+				if(!component.equals(" ")){
+					if(child.getName().equals(component)){
+						componentlevel = child;
+						
+						computeResult(child.getChildren());
+					}
+				}else{
+					componentlevel = child;
+					computeResult(child.getChildren());
+					
 				}
 			}
 			else if(child.getJEVisClass()== jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.deviceLevelName)){
+					DataBaseConfiguration.deviceLevelName)){
 				System.out.println("Data:" + child.getName());
-				if(enableddeviceType){
-					if(child.getName().equals(devicetype)){
-			          buf = fillTableWithDatapointInformation(child, buf);
+				
+				if(!enabledAttribute){
+					if(!devicetype.equals(" ")){
+						if(child.getName().equals(devicetype)){
+							list_projects.add(organization);
+							list_datapoint.add(child);
+							list_location.add(building);
+							list_component.add(componentlevel);
+						}else{
+							System.out.println("No Datapoint found");
+						}
 					}else{
-						System.out.println("No Datapoint found");
-					}
-				}else{
-					buf = fillTableWithDatapointInformation(child, buf);
-				}	
+						list_projects.add(organization);
+						list_datapoint.add(child);
+						list_location.add(building);
+						list_component.add(componentlevel);
+					}	
+				}
+				else{
+					list_projects.add(organization);
+					list_location.add(building);
+					list_component.add(componentlevel);
+				}
 			}
-
 			else{
-				computeResultTable(child.getChildren(), buf);				
+				computeResult(child.getChildren());				
 			}
+		}
+	}
+/*	
+	private void checknodeLevelInformation(JEVisObject child, String nodeName,
+			JEVisObject informationObject) throws JEVisException{
+		if(!nodeName.equals(" ")){
+			if(child.getName().equals(nodeName)){
+				informationObject = child;
+				
+				computeResult(child.getChildren());
+			}
+		}else{
+			informationObject = child;
+			computeResult(child.getChildren());
 			
 		}
-		return buf;
 	}
-	
-	private BufferedDataContainer fillTableWithDatapointInformation(
-			JEVisObject child, BufferedDataContainer buf ) throws JEVisException{
-		cells[0] = new LongCell(child.getID());
-        cells[1] = new StringCell(child.getName());
-        cells[5] = new StringCell(" ");
-        if(child.getAttributes()== null){
-        	cells[6] = new DateAndTimeCell(0, 0, 0);
-        	cells[7]= new DateAndTimeCell(0, 0, 0);
-        }
-        else if(child.getAttribute(JevisSelectDataNodeModel.configuration.valueAttributeName) != null){
-        	if(child.getAttribute(JevisSelectDataNodeModel.configuration.valueAttributeName).hasSample()){
-        		cells[6] = new DateAndTimeCell(
-		 	            		child.getAttribute(
-		 	            				JevisSelectDataNodeModel.configuration.valueAttributeName)
-		 	            					.getTimestampFromFirstSample().getYear(),
-		 	            		child.getAttribute(
-		 	            				JevisSelectDataNodeModel.configuration.valueAttributeName)
-		 	            					.getTimestampFromFirstSample().getMonthOfYear(), 
-		 	            		child.getAttribute(
-		 	            				JevisSelectDataNodeModel.configuration.valueAttributeName)
-		 	            					.getTimestampFromFirstSample().getDayOfMonth());
-         		cells[7] = new DateAndTimeCell(
-		 	            		child.getAttribute(
-		 	            				JevisSelectDataNodeModel.configuration.valueAttributeName)
-		 	            					.getTimestampFromLastSample().getYear(),
-		 	            		child.getAttribute(
-		 	            				JevisSelectDataNodeModel.configuration.valueAttributeName)
-		 	            					.getTimestampFromLastSample().getMonthOfYear(), 
-		 	            		child.getAttribute(
-		 	            				JevisSelectDataNodeModel.configuration.valueAttributeName)
-		 	            					.getTimestampFromLastSample().getDayOfMonth());
-         	}
-         	else{
-	            cells[6] = new DateAndTimeCell(0, 0, 0);
-	            cells[7] = new DateAndTimeCell(0, 0, 0);
-         	}
-        }else{
-         		cells[6] = new DateAndTimeCell(0, 0, 0);
-         		cells[7] = new DateAndTimeCell(0, 0, 0);
-        }
-		fillTable(buf);
-		return buf;
-	}
-	
-
-
-	
+	*/
 /*
  * Search for a specific Nodetype and filtering after Project, Location, or Component	
  */
 	
-	public BufferedDataContainer fillTableWithNodetypeSearchResult(BufferedDataContainer buf) throws JEVisException{
-		buf = searchforInformation(searchNodetype(), buf);
-		return buf;
+	public void searchForNodeType() throws JEVisException{
+		List<JEVisObject> projects = jevis.getObjects(jevis.getJEVisClass(
+				DataBaseConfiguration.projectLevelName), true);
+		
+		computeResultNodeType(projects);
 	}
 	
-	
-	
-	public List<JEVisObject> searchNodetype() throws JEVisException{
-		List<JEVisObject> list_nodetype = jevis.getObjects(jevis.getJEVisClass(nodeType), true);
-		for(JEVisObject node : list_nodetype){
-			getParentData(node, list_nodetype);
-		}
-		
-		return list_nodetype;
-		}
-	
-	private void getParentData(JEVisObject node, List<JEVisObject> list_nodeType) throws JEVisException{
-		if(!checkLevel(node, JevisSelectDataNodeModel.configuration.projectLevelName)){
-			if(checkLevel(node, JevisSelectDataNodeModel.configuration.locationLevelName)){
-				searchNodeTypeList(node, enabledLocation, location, list_nodeType);
-			}
-			else if(checkLevel(node, JevisSelectDataNodeModel.configuration.componentLevelName)){
-				searchNodeTypeList(node, enabledComponent, component, list_nodeType);
-			}
-			else{
-				for(JEVisObject parent : node.getParents()){
-					getParentData(parent, list_nodeType);
+	public void computeResultNodeType(List<JEVisObject> children) throws JEVisException{
+		for(JEVisObject child : children){			
+
+			if(child.getJEVisClass() == jevis.getJEVisClass(
+					DataBaseConfiguration.projectLevelName)){
+				System.out.println("Project:" + child.getName());
+				if(!project.equals(" ")){
+					if(child.getName().equals(project)){
+						
+						organization = child;
+						computeResultNodeType(child.getChildren());					
+					}
+				}else{
+
+					organization = child;
+					computeResultNodeType(child.getChildren());
 				}
 			}
-		}else{
-			searchNodeTypeList(node, enabledProject, project, list_nodeType);
-		}
-	}
-	
-	private void searchNodeTypeList(
-			JEVisObject object, boolean enabled, String objectName, List<JEVisObject> list_nodeType) 
-			throws JEVisException{
-		if(enabled){
-			if(!object.getName().equals(objectName)){
-				list_nodeType.remove(object);
+
+			else if(child.getJEVisClass()==jevis.getJEVisClass(
+					DataBaseConfiguration.locationLevelName)){
+				System.out.println("Location:" + child.getName());
+				if(!location.equals(" ")){
+					if(child.getName().equals(location)){
+						building = child;
+						computeResultNodeType(child.getChildren());
+					}
+				}else{
+					building = child;
+					computeResultNodeType(child.getChildren());					
+				}
+			}
+			else if(child.getJEVisClass()==jevis.getJEVisClass(
+					DataBaseConfiguration.componentLevelName)){
+				System.out.println("Component:" + child.getName());
+				if(!component.equals(" ")){
+					if(child.getName().equals(component)){
+						componentlevel = child;
+						computeResultNodeType(child.getChildren());
+					}
+				}else{
+					componentlevel = child;
+					computeResultNodeType(child.getChildren());
+				}
+			}
+			else if(child.getJEVisClass() == jevis.getJEVisClass(nodeType)){
+				list_nodetype.add(child);
+				if(componentlevel != null){
+					list_component.add(componentlevel);
+				}
+				if(organization !=null){
+					list_projects.add(organization);
+				}
+				if(building != null){
+					list_location.add(building);
+				}
+			}
+			else{
+				computeResultNodeType(child.getChildren());
 			}
 		}
 	}
-	
+
 	/*
 	 * Main Search function for information
 	 */
-	private List<JEVisObject> findParents(JEVisObject jObject, List<JEVisObject> list) throws JEVisException{
+/*	private List<JEVisObject> findParents(JEVisObject jObject, List<JEVisObject> list) throws JEVisException{
 
 		list= jObject.getParents();
 		for(JEVisObject listObject : list){			
 			if(listObject.getJEVisClass().equals(jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.projectLevelName))){
+					DataBaseConfiguration.projectLevelName))){
 				return list;
 			}
 			else{
@@ -261,87 +306,39 @@ public class SearchForNodes {
 		}
 		return list;
 	}
+*/	
+	// search for Attributes in Nodes:
 	
-	public BufferedDataContainer searchforInformation(List<JEVisObject> inlist, BufferedDataContainer buf) throws JEVisException{
-		List<JEVisObject> parentlist = new ArrayList<JEVisObject>();
-		List<JEVisObject> searchlist = new ArrayList<JEVisObject>();
-		List<JEVisObject> outlist = new ArrayList<JEVisObject>();
-		outlist.clear();
-		counter = 0;
-		cells = new DataCell[result.getNumColumns()];
-		for(JEVisObject inlistObject : inlist){
-			System.out.println("Object: "+ inlistObject.getName());
-			searchlist =  findParents(inlistObject, parentlist);
-			for(JEVisObject found : searchlist){
-				outlist.add(found);
-			}
+	 protected void startAttributesCheck(JEVisObject child) throws JEVisException{
+		List<JEVisAttribute> attributes = child.getAttributes();
+		for(JEVisAttribute attribute : attributes){
+			checkAttribute(child, attribute, attributevalue1, attribute1);
+			checkAttribute(child, attribute, attributevalue2, attribute2);
+			checkAttribute(child, attribute, attributevalue3, attribute3);
+			checkAttribute(child, attribute, attributevalue4, attribute4);
 		}
-		for(JEVisObject outlistObject :outlist){
-			System.out.println("Object 2: "+ outlistObject.getName());
-			buf = fillInformation(outlist, buf, inlist, outlistObject);
-		}
-		
-		return buf;
 	}
 	
-	
-	private BufferedDataContainer fillInformation(
-			List<JEVisObject> children, BufferedDataContainer buf, List<JEVisObject> inlist,
-			JEVisObject jObject) throws JEVisException{
-		for(JEVisObject child : children){
-			
-			if(child.getJEVisClass() == jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.projectLevelName)){
-				System.out.println("Project:" + child.getName());
-				if(enabledProject){
-					if(child.getName().equals(project)){
-				
-						cells[2] = new StringCell(child.getName());
-						fillInformation(child.getChildren(), buf, inlist, jObject);					
-					}
-				}else{
-					cells[2] = new StringCell(child.getName());		
-					fillInformation(child.getChildren(), buf, inlist, jObject);
+	private void checkAttribute(JEVisObject child,
+			JEVisAttribute attribute, String attributevalue, String attributeName) 
+					throws JEVisException{
+		
+		if(attribute.getName().equals(attributeName)){
+			if(attribute.hasSample()){
+				if((!list_attributes.contains(child)) && 
+						attribute.getLatestSample().getValue().toString()
+						.equals(attributevalue.trim())){
+					list_attributes.add(child);
+					list_comment.add(attribute.getLatestSample().getValueAsString());
 				}
-			}
-
-			else if(child.getJEVisClass()==jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.locationLevelName)){
-				System.out.println("Location:" + child.getName());
-				if(enabledLocation){
-					if(child.getName().equals(location)){
-						cells[3] = new StringCell(child.getName());
-						fillInformation(child.getChildren(), buf, inlist, jObject);
-					}
-				}else{
-					cells[3] = new StringCell(child.getName());
-					fillInformation(child.getChildren(), buf, inlist, jObject);
-					
-				}
-			}
-			else if(child.getJEVisClass()==jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.componentLevelName)){
-				System.out.println("Component:" + child.getName());
-				if(enabledComponent){
-					if(child.getName().equals(component)){
-						cells[4] = new StringCell(child.getName());
-						fillInformation(child.getChildren(), buf, inlist, jObject);
-					}
-				}else{
-					cells[4] = new StringCell(child.getName());
-					fillInformation(child.getChildren(), buf, inlist, jObject);
-				}
-			}
-			else if(child.getJEVisClass() == jevis.getJEVisClass(
-					JevisSelectDataNodeModel.configuration.deviceLevelName)){
-					buf = fillTableWithBasicInfo(jObject, buf);
 			}
 			else{
-				fillInformation(child.getChildren(), buf, inlist, jObject);				
+				if(!list_attributes.contains(child)){	
+					list_attributes.add(child);
+					list_comment.add("No Sample in attribute");
+				}
 			}
-			
 		}
-		return buf;
 	}
 	
 	/*
@@ -354,26 +351,8 @@ public class SearchForNodes {
 		}
 		return false;
 	}
+
+
+
 	
-	
-	private BufferedDataContainer fillTable(BufferedDataContainer buf){
-		counter++;
-		for( int i = 0; i < cells.length; i++ ){
-			if(cells[i]== null){
-				cells[i] = new StringCell(" ");
-			}
-		}
-		DataRow row = new DefaultRow("Row"+counter, cells);
-		buf.addRowToTable(row);
-        return buf;
-	}
-	
-	private BufferedDataContainer fillTableWithBasicInfo(JEVisObject child, BufferedDataContainer buf){
-		
-			cells[0] = new LongCell(child.getID());
-			cells[1] = new StringCell(child.getName());
-			buf = fillTable( buf);
-		
-		return buf;
-	}	
 }

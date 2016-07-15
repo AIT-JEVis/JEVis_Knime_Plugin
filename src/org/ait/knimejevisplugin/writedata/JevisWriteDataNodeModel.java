@@ -223,6 +223,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
             
             }         	
         }
+		
 		obj.getAttribute("Value").addSamples(samples);
 		obj.commit();
   }
