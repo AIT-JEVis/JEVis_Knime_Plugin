@@ -206,7 +206,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     		
     		if(jObject.getAttribute(attributeName) != null){
     			
-    			/*
+    			
     			if(!m_startDateMonth.getStringValue().matches("\\d\\d")){
     				m_startDateMonth.setStringValue("0"+ m_startDateMonth.getStringValue());
     			}
@@ -262,7 +262,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     				//yyyy-MM-dd HH:mm:ss.s"
     				logger.info("Matching");
     			}
-    			*/
+    			
 	    		//Specifying outport TableSpec
 	    		DataColumnSpec tsCol = new DataColumnSpecCreator(
 	    				"Timestamp", DateAndTimeCell.TYPE).createSpec();
