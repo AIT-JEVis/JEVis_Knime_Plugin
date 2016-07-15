@@ -133,7 +133,7 @@ public class SearchForAttributes {
 	}
 	
 	
-	private void checkAttributes(JEVisObject child) throws JEVisException{
+	 protected void checkAttributes(JEVisObject child) throws JEVisException{
 		List<JEVisAttribute> attributes = child.getAttributes();
 		for(JEVisAttribute attribute : attributes){
 			attributesValueCheck(child, attribute, attributevalue1, attribute1);
@@ -144,11 +144,12 @@ public class SearchForAttributes {
 	}
 	
 	private void attributesValueCheck(JEVisObject child,
-			JEVisAttribute attribute, String attributevalue, String attributeName){
+			JEVisAttribute attribute, String attributevalue, String attributeName) 
+					throws JEVisException{
 		if(attribute.getName().equals(attributeName)){
 			if(attribute.hasSample()){
-				if(!list_attributes.contains(child)&& 
-						attribute.getLatestSample().equals(attributevalue)){
+				if((!list_attributes.contains(child)) && 
+						attribute.getLatestSample().getValue().equals(attributevalue)){
 					list_attributes.add(child);
 					list_comment.add(" ");
 				}		
@@ -157,7 +158,7 @@ public class SearchForAttributes {
 				if(!list_attributes.contains(child)){	
 					list_attributes.add(child);
 					list_comment.add("No Sample in attribute");
-					}
+				}
 			}
 		}
 	}

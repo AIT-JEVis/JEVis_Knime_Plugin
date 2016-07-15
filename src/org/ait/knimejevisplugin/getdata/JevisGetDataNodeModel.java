@@ -292,7 +292,9 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    		//Pushing basic information of table into flow variables
 	    		pushFlowVariableString("sensorname", jObject.getParents().get(0).getName());
 	    		pushFlowVariableDouble("DataNodeID",jObject.getID());
-		
+	    		//ParentNode ID
+	    		//Project, Location, Building,
+	    		
 					//filling Table with data
 	    			logger.info("Values found!");
 	    			fillingTable(jObject, result);

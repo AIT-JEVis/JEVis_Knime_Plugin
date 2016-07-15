@@ -61,25 +61,40 @@ public class ResultTable {
 	        cells[1] = new StringCell(list_datapoint.get(i).getName());
 	        try{
 	        	cells[2] = new StringCell(list_projects.get(i).getName());
-				cells[3] = new StringCell(list_location.get(i).getName());
-				cells[4] = new StringCell(list_component.get(i).getName());
-				cells[5] = new StringCell(list_Comment.get(i));
-				
-				fillTableWithDateTime(list_datapoint.get(i));
 	        }catch(Exception e){
 	        	handleEmptyObjectListException(list_projects, 2, "String");
-	        	handleEmptyObjectListException(list_location, 3, "String");
-	        	handleEmptyObjectListException(list_component, 4, "String");
-	        	handleEmptyStringListException(list_Comment, 5);
-	        	
-	        	cells[6] = new DateAndTimeCell(0,0,0);
-	        	cells[7] = new DateAndTimeCell(0,0,0);
 	        }
-
+	        try{
+				cells[3] = new StringCell(list_location.get(i).getName());
+	        }catch(Exception e){
+	        	handleEmptyObjectListException(list_location, 3, "String");
+	        }
+	        try{
+	        	cells[4] = new StringCell(list_component.get(i).getName());
+	        }catch(Exception e){
+	        	handleEmptyObjectListException(list_component, 4, "String");
+	        }
+	        try{
+	        	cells[5] = new StringCell(list_Comment.get(i));
+	        }catch(Exception e){
+	        	handleEmptyStringListException(list_Comment, 5);
+	        }
+	        try{
+				fillTableWithDateTime(list_datapoint.get(i));
+	        }catch(Exception e){
+	        	if(list_datapoint.get(i).getAttribute(
+	        			DataBaseConfiguration.valueAttributeName) != null && 
+	        			list_datapoint.get(i).getAttribute(
+	        					DataBaseConfiguration.valueAttributeName).hasSample()){	        		
+	        		fillTableWithDateTime(list_datapoint.get(i));
+	        	}
+	        	else{
+		        	cells[6] = new DateAndTimeCell(0,0,0);
+		        	cells[7] = new DateAndTimeCell(0,0,0);
+	        	}
+	        }
 	        fillTable(buf);
-	        
 		}
-		
 		return buf;
 	}
 	
