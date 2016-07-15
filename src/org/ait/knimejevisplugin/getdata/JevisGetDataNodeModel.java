@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -205,6 +206,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     		
     		if(jObject.getAttribute(attributeName) != null){
     			
+    			/*
     			if(!m_startDateMonth.getStringValue().matches("\\d\\d")){
     				m_startDateMonth.setStringValue("0"+ m_startDateMonth.getStringValue());
     			}
@@ -220,7 +222,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     			if(!m_startSeconds.getStringValue().matches("\\d\\d")){
     				m_startSeconds.setStringValue("0"+ m_startSeconds.getStringValue());
     			}
-    			
+    		
     			startTime = m_startDateYear.getStringValue()+"-"+
     				m_startDateMonth.getStringValue()+"-"+
     				m_startDateDay.getStringValue()+" "+
@@ -259,10 +261,11 @@ public class JevisGetDataNodeModel extends NodeModel {
     					"\\d\\d\\d\\d-\\d\\d-\\d\\d\\s\\d\\d:\\d\\d:\\d\\d.\\d")){
     				//yyyy-MM-dd HH:mm:ss.s"
     				logger.info("Matching");
-    			
+    			}
+    			*/
 	    		//Specifying outport TableSpec
 	    		DataColumnSpec tsCol = new DataColumnSpecCreator(
-	    				"Timestamp", StringCell.TYPE).createSpec();
+	    				"Timestamp", DateAndTimeCell.TYPE).createSpec();
 	    		DataColumnSpec valueCol;
 	    		//setting type of Value Column as type of value in Jevis.
 	    		if(jObject.getAttribute(attributeName).getPrimitiveType() == 0){
@@ -298,10 +301,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 					//filling Table with data
 	    			logger.info("Values found!");
 	    			fillingTable(jObject, result);
-	    			exec.checkCanceled();
-    			}else{
-    				logger.error("Time not matches Type");
-    			}    			
+	    			exec.checkCanceled();  			
     		}else{
     			logger.error("Check NodeID! NodeID don't has an attribute called Value! "
     					+ " Or node doesn't exist.");    			
@@ -358,16 +358,17 @@ public class JevisGetDataNodeModel extends NodeModel {
 	        }
 	        for(JEVisSample value : list_timefilvalue){
 	        	
-	            DateTime timestampString = value.getTimestamp();
-	            DateTimeFormatter mformatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
-	            String timestamp = mformatter.print(timestampString);
+//	            DateTime timestampString = value.getTimestamp();
+	            //DateTimeFormatter mformatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
+	            //String timestamp = mformatter.print(timestampString);
 	            //logger.info("Working on Timestamp: "+ timestamp);                     
 	            //Filling the rows of the table
-	            
+	            GregorianCalendar cal = value.getTimestamp().toGregorianCalendar();
 	           //Put here the Greogrian Calendar
 	            
 	            DataCell[]cells = new DataCell[result.getNumColumns()];
-	            cells[0] = new StringCell(timestamp);
+	            cells[0] = new DateAndTimeCell(cal.get(Calendar.YEAR), 
+	            		cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 	            cells[1] = new DoubleCell(value.getValueAsDouble());
 	            cells[2] = new StringCell("");
 	            counter++;
