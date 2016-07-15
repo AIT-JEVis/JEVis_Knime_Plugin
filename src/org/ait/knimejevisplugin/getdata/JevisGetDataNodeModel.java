@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.text.DateFormatter;
@@ -33,6 +34,7 @@ import org.knime.core.data.IntValue;
 import org.knime.core.data.LongValue;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.container.RearrangeColumnsTable;
+import org.knime.core.data.date.DateAndTimeCell;
 import org.knime.core.data.date.DateAndTimeValue;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DefaultRow;
@@ -361,6 +363,9 @@ public class JevisGetDataNodeModel extends NodeModel {
 	            String timestamp = mformatter.print(timestampString);
 	            //logger.info("Working on Timestamp: "+ timestamp);                     
 	            //Filling the rows of the table
+	            
+	           //Put here the Greogrian Calendar
+	            
 	            DataCell[]cells = new DataCell[result.getNumColumns()];
 	            cells[0] = new StringCell(timestamp);
 	            cells[1] = new DoubleCell(value.getValueAsDouble());
