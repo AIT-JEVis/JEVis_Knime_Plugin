@@ -23,7 +23,6 @@ public class SearchForNodes {
 	int nodeID;
 
 	boolean enabledNodeType;
-
 	boolean enabledAttribute;
 	
 	List<JEVisObject> list_projects = new ArrayList<JEVisObject>();
@@ -34,11 +33,15 @@ public class SearchForNodes {
 	
 	List<String> list_comment = new ArrayList<String>();
 	
-	
 	String attribute1; 
 	String attribute2;
 	String attribute3; 
 	String attribute4;
+	
+	String operator1;
+	String operator2;
+	String operator3;
+	String operator4;
 	
 	String attributevalue1;
 	String attributevalue2;
@@ -63,7 +66,6 @@ public class SearchForNodes {
 	
 	ArrayList<String> list_levels = new ArrayList<String>();
 	
-
 	
 public SearchForNodes(JEVisDataSourceSQL jevis, 
 		String project, String location, 
@@ -71,6 +73,8 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 			int nodeID, boolean enabledNodeType, //boolean enabledAttribute,
 			String attribute1, String attribute2,
 			String attribute3, String attribute4, 
+			String operator1, String operator2,
+			String operator3, String operator4,
 			String attributevalue1, String attributevalue2,
 			String attributevalue3, String attributevalue4, 
 			DataTableSpec spec) {
@@ -88,6 +92,10 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 		this.attribute2 = attribute2;
 		this.attribute3 = attribute3;
 		this.attribute4 = attribute4;
+		this.operator1 = operator1;
+		this.operator2 = operator2;
+		this.operator3 = operator3;
+		this.operator4 = operator4;
 		this.attributevalue1 = attributevalue1;
 		this.attributevalue2 = attributevalue2;
 		this.attributevalue3 = attributevalue3;
@@ -244,7 +252,6 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 					computeResultNodeType(child.getChildren());
 				}
 			}
-
 			else if(child.getJEVisClass()==jevis.getJEVisClass(
 					DataBaseConfiguration.locationLevelName)){
 				System.out.println("Location:" + child.getName());
@@ -257,7 +264,7 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 					building = child;
 					computeResultNodeType(child.getChildren());					
 				}
-			}
+			}			
 			else if(child.getJEVisClass()==jevis.getJEVisClass(
 					DataBaseConfiguration.componentLevelName)){
 				System.out.println("Component:" + child.getName());
@@ -292,7 +299,8 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 	/*
 	 * Main Search function for information
 	 */
-/*	private List<JEVisObject> findParents(JEVisObject jObject, List<JEVisObject> list) throws JEVisException{
+/*	private List<JEVisObject> findParents(JEVisObject jObject, List<JEVisObject> list)
+ *  throws JEVisException{
 
 		list= jObject.getParents();
 		for(JEVisObject listObject : list){			
@@ -312,31 +320,42 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 	 protected void startAttributesCheck(JEVisObject child) throws JEVisException{
 		List<JEVisAttribute> attributes = child.getAttributes();
 		for(JEVisAttribute attribute : attributes){
-			checkAttribute(child, attribute, attributevalue1, attribute1);
-			checkAttribute(child, attribute, attributevalue2, attribute2);
-			checkAttribute(child, attribute, attributevalue3, attribute3);
-			checkAttribute(child, attribute, attributevalue4, attribute4);
+			checkAttribute(child, attribute, attributevalue1, attribute1, operator1);
+			checkAttribute(child, attribute, attributevalue2, attribute2, operator2);
+			checkAttribute(child, attribute, attributevalue3, attribute3, operator3);
+			checkAttribute(child, attribute, attributevalue4, attribute4, operator4);
 		}
 	}
 	
 	private void checkAttribute(JEVisObject child,
-			JEVisAttribute attribute, String attributevalue, String attributeName) 
+			JEVisAttribute attribute, String attributevalue, String attributeName,
+			String operator) 
 					throws JEVisException{
 		
 		if(attribute.getName().equals(attributeName)){
 			if(attribute.hasSample()){
+				
+				if((!list_attributes.contains(child)) && 
+						attribute.getLatestSample().getValue().toString().
+						matches(".*"+attributevalue.trim()+ ".*")
+						&& operator.equals("contains") ){
+					list_attributes.add(child);
+					list_comment.add(attribute.getLatestSample().getValueAsString());
+				}
 				if((!list_attributes.contains(child)) && 
 						attribute.getLatestSample().getValue().toString()
-						.equals(attributevalue.trim())){
+						.equals(attributevalue.trim()) && operator.equals("equals")){
 					list_attributes.add(child);
 					list_comment.add(attribute.getLatestSample().getValueAsString());
 				}
 			}
 			else{
+				/*
 				if(!list_attributes.contains(child)){	
 					list_attributes.add(child);
 					list_comment.add("No Sample in attribute");
-				}
+					
+				}*/
 			}
 		}
 	}
@@ -352,7 +371,4 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 		return false;
 	}
 
-
-
-	
 }

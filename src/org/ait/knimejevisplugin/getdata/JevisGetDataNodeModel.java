@@ -351,9 +351,7 @@ public class JevisGetDataNodeModel extends NodeModel {
         List<JEVisSample> valueList;
 		try {
 			valueList = my_Object.getAttribute(attributeName).getAllSamples();
-			
-			
-			
+
 	        for (JEVisSample value : valueList) {
 	        //Getting the data of value for input in table
 	        	filterDate(value);

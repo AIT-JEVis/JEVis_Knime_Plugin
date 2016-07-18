@@ -294,10 +294,11 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	setDefaultTabTitle("Configure Connection");
     	
     	createNewTabAt("Attribute and DataPoint Search",1);
-    	createNewGroup("Search through Nodes");
+    	createNewGroup("Select Search:");
+    	setHorizontalPlacement(true);
     	addDialogComponent(new DialogComponentBoolean(m_enableNodeSearch, 
     			"enable Specific Node Search"));
-     	
+    	addDialogComponent(new DialogComponentBoolean(m_enableNodeType, "Enable Nodetype"));
     	//Searching for Attributes like project, location, nodeType, device and component
     	setHorizontalPlacement(true);
 /*    	addDialogComponent(new DialogComponentBoolean(m_enableProject, 
@@ -311,6 +312,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			}
 		});
 */    	
+    	createNewGroup("Filter for Levels in Database. ");
     	addDialogComponent(diac_projects);
     	m_project.addChangeListener(new ChangeListener() {
 			
@@ -399,7 +401,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	createNewGroup("Search for specific Nodetype");
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
-    	addDialogComponent(new DialogComponentBoolean(m_enableNodeType, "Enable Nodetype"));
+    	
     	m_enableNodeType.addChangeListener(new ChangeListener() {
 			
 			@Override

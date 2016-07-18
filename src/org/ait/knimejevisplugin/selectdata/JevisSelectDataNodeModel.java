@@ -95,6 +95,11 @@ public class JevisSelectDataNodeModel extends NodeModel {
         settingsmodels.add(m_attributeModelValue2);
         settingsmodels.add(m_attributeModelValue3);
         settingsmodels.add(m_attributeModelValue4);
+        settingsmodels.add(m_operator1);
+        settingsmodels.add(m_operator2);
+        settingsmodels.add(m_operator3);
+        settingsmodels.add(m_operator4);
+        
     }
 
     static final NodeLogger logger = NodeLogger
@@ -272,6 +277,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
 					m_attributeModelList2.getStringValue(), 
 					m_attributeModelList3.getStringValue(),
 					m_attributeModelList4.getStringValue(),
+					m_operator1.getStringValue(),
+					m_operator2.getStringValue(),
+					m_operator3.getStringValue(),
+					m_operator4.getStringValue(),
 					m_attributeModelValue1.getStringValue(),
 					m_attributeModelValue2.getStringValue(),
 					m_attributeModelValue3.getStringValue(),
@@ -282,16 +291,25 @@ public class JevisSelectDataNodeModel extends NodeModel {
     			buf = exec.createDataContainer(resultspec);
     	
         		searcher.searchforDataPoints();
-        		if(m_enableNodeSearch.getBooleanValue()){        
+        		
+        		if((m_attributeModelList1.getStringValue().equals(" "))){        			
+       /*
+        			|| (m_attributeModelList2.getStringValue().equals(" "))
+        			|| (m_attributeModelList3.getStringValue().equals(" "))
+        			|| (m_attributeModelList4.getStringValue().equals(" "))){
+       */
         			result.fillResultTable(buf, resultspec, searcher.list_projects, 
-        				searcher.list_location,searcher.list_component,
-        				searcher.list_datapoint, searcher.list_comment);
+            				searcher.list_location,searcher.list_component,
+            				searcher.list_datapoint, searcher.list_comment);
+
         		}
+        		else{
         			result.fillResultTable(buf, resultspec, searcher.list_projects, 
             				searcher.list_location,searcher.list_component,
             				searcher.list_attributes, searcher.list_comment);
+        		}
+	
     		}
-    	
     
     		else if(m_enableStructure.getBooleanValue()){
     			buf = exec.createDataContainer(createOuputTableSpecforStructure());
