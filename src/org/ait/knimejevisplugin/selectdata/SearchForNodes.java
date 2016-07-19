@@ -87,7 +87,7 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 		this.component = component;
 		this.nodeID = nodeID;
 		this.enabledNodeType = enabledNodeType;
-		//this.enabledAttribute = enabledAttribute;
+//		this.enabledAttribute = enabledAttribute;
 		this.attribute1 = attribute1;
 		this.attribute2 = attribute2;
 		this.attribute3 = attribute3;
@@ -120,11 +120,11 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 		
 		for(JEVisObject child : children){			
 			
-			/*if(enabledAttribute){
+/*			if(enabledAttribute){
 				startAttributesCheck(child);
-			}*/
-			
-			startAttributesCheck(child);
+			}
+*/			
+			//startAttributesCheck(child);
 			
 			if(child.getJEVisClass() == jevis.getJEVisClass(
 					DataBaseConfiguration.projectLevelName)){
@@ -132,14 +132,17 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 				//checknodeLevelInformation(child, project, organization);
 				if(!project.equals(" ")){
 					if(child.getName().equals(project)){
-						organization = child;
-						
+						organization = child;			
 						computeResult(child.getChildren());
 					}
-				}else{
+				}
+				else if(startAttributeCheckforDatapoint(child)){
 					organization = child;
 					computeResult(child.getChildren());
-					
+				}
+				else{
+					organization = child;
+					computeResult(child.getChildren());					
 				}
 			}
 			else if(child.getJEVisClass().equals(jevis.getJEVisClass(
@@ -149,10 +152,14 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 				if(!location.equals(" ")){
 					if(child.getName().equals(location)){
 						building = child;
-						
 						computeResult(child.getChildren());
 					}
-				}else{
+				}
+				else if(startAttributeCheckforDatapoint(child)){
+					building= child;
+					computeResult(child.getChildren());
+				}
+				else{
 					building = child;
 					computeResult(child.getChildren());
 					
@@ -166,10 +173,14 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 				if(!component.equals(" ")){
 					if(child.getName().equals(component)){
 						componentlevel = child;
-						
 						computeResult(child.getChildren());
 					}
-				}else{
+				}
+				else if(startAttributeCheckforDatapoint(child)){
+					componentlevel = child;
+					computeResult(child.getChildren());
+				}
+				else{
 					componentlevel = child;
 					computeResult(child.getChildren());
 					
@@ -203,6 +214,10 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 				}
 			}
 			else{
+				if(startAttributeCheckforDatapoint(child)){
+					list_comment.add(child.getName()+ "("+child.getJEVisClass().toString()+")");
+					computeResult(child.getChildren());
+				}
 				computeResult(child.getChildren());				
 			}
 		}
@@ -245,8 +260,9 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 						
 						organization = child;
 						computeResultNodeType(child.getChildren());					
-					}
-				}else{
+					}		
+				}
+				else{
 
 					organization = child;
 					computeResultNodeType(child.getChildren());
@@ -358,6 +374,54 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 				}*/
 			}
 		}
+	}
+	
+	private boolean startAttributeCheckforDatapoint(JEVisObject object) throws JEVisException{
+		for(JEVisAttribute attribute : object.getAttributes()){
+			if(checkAttributeforDataPoint(
+					attribute, attribute1, attributevalue1, operator1)||
+					checkAttributeforDataPoint(
+							attribute, attribute2, attributevalue2, operator2)||
+					checkAttributeforDataPoint(
+							attribute, attribute3, attributevalue3, operator3)||
+					checkAttributeforDataPoint(
+							attribute, attribute4, attributevalue4, operator4)){
+				return true;
+			}else{
+				return false;
+			}
+			
+		}
+		return false;
+	}
+	
+	private boolean checkAttributeforDataPoint(
+			JEVisAttribute attribute, String attributeName, String attributeValue, String operator)
+			throws JEVisException{
+		
+		if(attribute.getName().equals(attributeName)){
+			if(attribute.hasSample()){
+				if(attribute.getLatestSample().getValue().
+						toString().matches(".*" + attributeValue.trim() + ".*")
+						&& operator.equals("contains")){
+					
+					return true;
+				}
+				else if(attribute.getLatestSample().getValue().
+						toString().matches(attributeValue.trim())
+						&& operator.equals("equals")){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}else{
+				return false;		
+			}
+		}else{
+			return false;
+		}
+
 	}
 	
 	/*

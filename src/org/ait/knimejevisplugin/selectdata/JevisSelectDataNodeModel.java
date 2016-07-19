@@ -202,10 +202,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
 */  
    	private final SettingsModelBoolean m_enableNodeType = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableNodeType, false);
-/*
+   	/*  
    	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableAttributeSearch, false);
-  
+
    	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
    			JevisSelectDataNodeModel.attributeModelName, " ");
 */   	
@@ -292,23 +292,18 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	
         		searcher.searchforDataPoints();
         		
-        		if((m_attributeModelList1.getStringValue().equals(" "))){        			
-       /*
-        			|| (m_attributeModelList2.getStringValue().equals(" "))
-        			|| (m_attributeModelList3.getStringValue().equals(" "))
-        			|| (m_attributeModelList4.getStringValue().equals(" "))){
-       */
+    //    	
         			result.fillResultTable(buf, resultspec, searcher.list_projects, 
             				searcher.list_location,searcher.list_component,
             				searcher.list_datapoint, searcher.list_comment);
 
-        		}
-        		else{
+        		
+        	/*	else{
         			result.fillResultTable(buf, resultspec, searcher.list_projects, 
             				searcher.list_location,searcher.list_component,
             				searcher.list_attributes, searcher.list_comment);
         		}
-	
+	*/
     		}
     
     		else if(m_enableStructure.getBooleanValue()){
