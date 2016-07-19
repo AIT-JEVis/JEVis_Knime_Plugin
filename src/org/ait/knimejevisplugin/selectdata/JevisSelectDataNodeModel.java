@@ -70,7 +70,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
         settingsmodels.add(m_children);
         settingsmodels.add(m_component);
         settingsmodels.add(m_devicetype);
-//        settingsmodels.add(m_enableAttribute);
+        settingsmodels.add(m_enableAttribute);
 //        settingsmodels.add(m_enableDevice);
 //        settingsmodels.add(m_enableComponent);
 //        settingsmodels.add(m_enableLocation);
@@ -202,10 +202,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
 */  
    	private final SettingsModelBoolean m_enableNodeType = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableNodeType, false);
-   	/*  
+     
    	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableAttributeSearch, false);
-
+	/*
    	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
    			JevisSelectDataNodeModel.attributeModelName, " ");
 */   	
@@ -272,7 +272,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
 					m_location.getStringValue(), m_nodeType.getStringValue(),
 					m_devicetype.getStringValue(), m_component.getStringValue(),
 					(int) m_nodeId.getLongValue(), m_enableNodeType.getBooleanValue(),
-					//m_enableAttribute.getBooleanValue(),
+					m_enableAttribute.getBooleanValue(),
 					m_attributeModelList1.getStringValue(),
 					m_attributeModelList2.getStringValue(), 
 					m_attributeModelList3.getStringValue(),

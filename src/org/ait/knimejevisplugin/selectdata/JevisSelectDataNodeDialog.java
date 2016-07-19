@@ -122,10 +122,10 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    	private final SettingsModelString m_nodeType = new SettingsModelString(
    			DataBaseConfiguration.nodeType," ");
    	
-   	/*    	
+   	    	
    	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableAttributeSearch, false); 	
- 	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
+/* 	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
    			JevisSelectDataNodeModel.attributeModelName, " ");
 */
    	private final SettingsModelString m_attributeModelList1 = new SettingsModelString(
@@ -299,7 +299,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(new DialogComponentBoolean(m_enableNodeSearch, 
     			"enable Specific Node Search"));
     	addDialogComponent(new DialogComponentBoolean(m_enableNodeType, "Enable Nodetype"));
-//    	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Enable Attribute Search"));
+    	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Give me all Datapoints"));
     	//Searching for Attributes like project, location, nodeType, device and component
     	setHorizontalPlacement(true);
 /*    	addDialogComponent(new DialogComponentBoolean(m_enableProject, 

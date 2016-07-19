@@ -63,6 +63,7 @@ public class SearchForNodes {
 	JEVisObject building = null;
 	JEVisObject componentlevel = null;
 
+	String comment = " ";
 	
 	ArrayList<String> list_levels = new ArrayList<String>();
 	
@@ -70,7 +71,7 @@ public class SearchForNodes {
 public SearchForNodes(JEVisDataSourceSQL jevis, 
 		String project, String location, 
 		String nodeType, String devicetype, String component,
-			int nodeID, boolean enabledNodeType, //boolean enabledAttribute,
+			int nodeID, boolean enabledNodeType, boolean enabledAttribute,
 			String attribute1, String attribute2,
 			String attribute3, String attribute4, 
 			String operator1, String operator2,
@@ -87,7 +88,7 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 		this.component = component;
 		this.nodeID = nodeID;
 		this.enabledNodeType = enabledNodeType;
-//		this.enabledAttribute = enabledAttribute;
+		this.enabledAttribute = enabledAttribute;
 		this.attribute1 = attribute1;
 		this.attribute2 = attribute2;
 		this.attribute3 = attribute3;
@@ -130,17 +131,14 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 					DataBaseConfiguration.projectLevelName)){
 				System.out.println("Project:" + child.getName());
 				//checknodeLevelInformation(child, project, organization);
-				if(!project.equals(" ")){
+				if(!project.equals(" ")|| startAttributeCheckforDatapoint(child)){
 					if(child.getName().equals(project)){
 						organization = child;			
 						computeResult(child.getChildren());
 					}
 				}
-				else if(startAttributeCheckforDatapoint(child)){
-					organization = child;
-					computeResult(child.getChildren());
-				}
-				else{
+
+				else if(startAttributeCheckforDatapoint(child) || enabledAttribute){
 					organization = child;
 					computeResult(child.getChildren());					
 				}
@@ -151,17 +149,16 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 			//checknodeLevelInformation(child, location, building);
 				if(!location.equals(" ")){
 					if(child.getName().equals(location)){
-						building = child;
-						computeResult(child.getChildren());
+						
+							building = child;
+							computeResult(child.getChildren());
+						
 					}
 				}
-				else if(startAttributeCheckforDatapoint(child)){
-					building= child;
-					computeResult(child.getChildren());
-				}
-				else{
+				else if(startAttributeCheckforDatapoint(child) || enabledAttribute){ 
+					
 					building = child;
-					computeResult(child.getChildren());
+					computeResult(child.getChildren());	
 					
 				}
 				
@@ -170,17 +167,13 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 					DataBaseConfiguration.componentLevelName)){
 				System.out.println("Component:" + child.getName());
 				//checknodeLevelInformation(child, component, componentlevel);
-				if(!component.equals(" ")){
+				if(!component.equals(" ") || startAttributeCheckforDatapoint(child)){
 					if(child.getName().equals(component)){
 						componentlevel = child;
 						computeResult(child.getChildren());
 					}
 				}
-				else if(startAttributeCheckforDatapoint(child)){
-					componentlevel = child;
-					computeResult(child.getChildren());
-				}
-				else{
+				else if(startAttributeCheckforDatapoint(child) || enabledAttribute){
 					componentlevel = child;
 					computeResult(child.getChildren());
 					
@@ -189,38 +182,36 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 			else if(child.getJEVisClass()== jevis.getJEVisClass(
 					DataBaseConfiguration.deviceLevelName)){
 				System.out.println("Data:" + child.getName());
-				
-				if(!enabledAttribute){
-					if(!devicetype.equals(" ")){
-						if(child.getName().equals(devicetype)){
-							list_projects.add(organization);
-							list_datapoint.add(child);
-							list_location.add(building);
-							list_component.add(componentlevel);
-						}else{
-							System.out.println("No Datapoint found");
-						}
-					}else{
+				if(!devicetype.equals(" ")){
+					if(child.getName().equals(devicetype)){
 						list_projects.add(organization);
 						list_datapoint.add(child);
 						list_location.add(building);
 						list_component.add(componentlevel);
-					}	
-				}
-				else{
+						list_comment.add(comment);
+						comment = " ";
+					}else{
+						System.out.println("No Datapoint found");
+					}
+				}else{
 					list_projects.add(organization);
+					list_datapoint.add(child);
 					list_location.add(building);
 					list_component.add(componentlevel);
-				}
-			}
+					list_comment.add(comment);
+					comment = " ";
+				}	
+			}	
 			else{
 				if(startAttributeCheckforDatapoint(child)){
-					list_comment.add(child.getName()+ "("+child.getJEVisClass().toString()+")");
+					list_comment.add(child.getName()+ "("+child.getJEVisClass().
+							toString()+")");
 					computeResult(child.getChildren());
 				}
 				computeResult(child.getChildren());				
 			}
 		}
+		
 	}
 /*	
 	private void checknodeLevelInformation(JEVisObject child, String nodeName,
@@ -332,7 +323,7 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 	}
 */	
 	// search for Attributes in Nodes:
-	
+/*	
 	 protected void startAttributesCheck(JEVisObject child) throws JEVisException{
 		List<JEVisAttribute> attributes = child.getAttributes();
 		for(JEVisAttribute attribute : attributes){
@@ -371,11 +362,11 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 					list_attributes.add(child);
 					list_comment.add("No Sample in attribute");
 					
-				}*/
+				}
 			}
 		}
 	}
-	
+*/	
 	private boolean startAttributeCheckforDatapoint(JEVisObject object) throws JEVisException{
 		for(JEVisAttribute attribute : object.getAttributes()){
 			if(checkAttributeforDataPoint(
@@ -404,12 +395,13 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 				if(attribute.getLatestSample().getValue().
 						toString().matches(".*" + attributeValue.trim() + ".*")
 						&& operator.equals("contains")){
-					
+					System.out.println(" contain accessed.");
 					return true;
 				}
 				else if(attribute.getLatestSample().getValue().
 						toString().matches(attributeValue.trim())
 						&& operator.equals("equals")){
+					System.out.println("Equals accessed. ");
 					return true;
 				}
 				else{
