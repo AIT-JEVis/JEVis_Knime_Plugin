@@ -42,8 +42,14 @@ import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.workflow.Credentials;
+import org.knime.core.node.workflow.CredentialsProvider;
+import org.knime.core.node.workflow.CredentialsStore;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 
 import javafx.scene.control.DateCell;
+
 
 /**
  * This is the model implementation of JevisSelectData.
@@ -149,6 +155,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	public static String allChildren = "allChildren";
    	public static String siblings = "siblings";
    	
+   	
+	static Credentials credential ;
+	static Credentials credentialjevis; 
+   	
    	private JEVisDataSourceSQL jevis;
    	//Processing variables
 	private BufferedDataContainer buf;
@@ -191,7 +201,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	private final SettingsModelString m_component = new SettingsModelString(
    			DataBaseConfiguration.componentModelName," ");
    	
-/*   	private final SettingsModelBoolean m_enableProject = new SettingsModelBoolean(
+/*
+ *    	private final SettingsModelBoolean m_enableProject = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableProject, false);
    	private final SettingsModelBoolean m_enableLocation = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableLocation, false);   			
@@ -292,7 +303,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	
         		searcher.searchforDataPoints();
         		
-    //    	
+   	
         			result.fillResultTable(buf, resultspec, searcher.list_projects, 
             				searcher.list_location,searcher.list_component,
             				searcher.list_datapoint, searcher.list_comment);
@@ -341,7 +352,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
         return new BufferedDataTable[]{out};
     }
 
-    public void connectingtojevis(){
+    public void connectingtojevis() throws InvalidSettingsException{
     	
     	if(getAvailableFlowVariables().containsKey("host")
     			&& getAvailableFlowVariables().containsKey("port")
@@ -358,16 +369,19 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	}
     	
     	try{
+
     	//Connecting to Jevis with connection information
     	jevis = new JEVisDataSourceSQL(jhost.getStringValue(), jport.getStringValue(),
     			jSchema.getStringValue(), jUser.getStringValue(), jPW.getStringValue());
     	jevis.connect(jevUser.getStringValue(), jevPW.getStringValue());
     	
+
     	pushFlowVariableString("host", jhost.getStringValue());
     	pushFlowVariableString("port", jport.getStringValue());
     	pushFlowVariableString("sqlSchema", jSchema.getStringValue());
     	pushFlowVariableString("sqlUser", jUser.getStringValue());
     	pushFlowVariableString("sqlPW", jPW.getStringValue());
+    	
     	}catch(JEVisException e){
     		e.printStackTrace();
     		logger.error("Connection error! Check Jevis settings and try again!");
@@ -391,7 +405,18 @@ public class JevisSelectDataNodeModel extends NodeModel {
     			nodeIDSpec, nameSpec, projectTypeSpec, locationSpec, componentSpec);
 		return outputTableSpec;
     }
-    
+
+
+    private void credentials(){
+        //Test method for credentials
+    	credential = new Credentials(
+    			jUser.getStringValue(), jUser.getStringValue(), jPW.getStringValue());
+    	credentialjevis = new Credentials(
+    			jevUser.getStringValue(),jevUser.getStringValue(),jevPW.getStringValue());
+    	
+    	CredentialsProvider cp = getCredentialsProvider();
+	
+    }
     /**
      * {@inheritDoc}
      */

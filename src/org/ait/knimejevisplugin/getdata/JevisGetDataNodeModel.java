@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.swing.text.DateFormatter;
 
+import org.ait.knimejevisplugin.DataBaseConfiguration;
 import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisClass;
@@ -116,12 +117,13 @@ public class JevisGetDataNodeModel extends NodeModel {
 	
  	//Setting up variables for needed Processing
  	 
- 	 private JEVisDataSourceSQL jevis; 
-     private BufferedDataContainer buf;
-     private int counter = 0;
-     private String attributeName = "Value";
-     
-     private ArrayList<JEVisSample> list_timefilvalue = new ArrayList<JEVisSample>();
+ 	private JEVisDataSourceSQL jevis; 
+    private BufferedDataContainer buf;
+    private int counter = 0;
+    private String attributeName = "Value";
+    
+    private JEVisObject found; 
+    private ArrayList<JEVisSample> list_timefilvalue = new ArrayList<JEVisSample>();
     /**
      * Constructor for the node model.
      */
@@ -144,7 +146,6 @@ public class JevisGetDataNodeModel extends NodeModel {
         settingsmodels.add(m_startHour);
         settingsmodels.add(m_startSeconds);
     }
-
 
     
     //setting up the settingsmodel 
@@ -205,8 +206,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     		logger.info("ObjectName: " + jObject.getName());
     		
     		if(jObject.getAttribute(attributeName) != null){
-    			
-    			
+    			    			
     			if(!m_startDateMonth.getStringValue().matches("\\d\\d")){
     				m_startDateMonth.setStringValue("0"+ m_startDateMonth.getStringValue());
     			}
@@ -295,8 +295,23 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    		buf = exec.createDataContainer(result);
 	    		
 	    		//Pushing basic information of table into flow variables
+	    		logger.info("generarting MetaData");
 	    		pushFlowVariableString("sensorname", jObject.getParents().get(0).getName());
 	    		pushFlowVariableDouble("DataNodeID",jObject.getID());
+	    		pushFlowVariableDouble("ParentNodeID", jObject.getParents().get(0).getID());	    		
+	    		pushFlowVariableString("Project", getParent(
+	    				jObject, DataBaseConfiguration.projectLevelName).getName());
+	    		if(getParent(jObject, DataBaseConfiguration.locationLevelName).
+	    				getAttribute("Location").hasSample()){
+		    		pushFlowVariableString("Location", getParent(
+		    				jObject, DataBaseConfiguration.locationLevelName)
+		    				.getAttribute("Location").getLatestSample().getValueAsString());
+	    		}else{
+	    			pushFlowVariableString("Location", " ");
+	    		}
+	    	
+	    		pushFlowVariableString("Building", getParent(
+	    				jObject, DataBaseConfiguration.locationLevelName).getName());
 	    		//ParentNode ID
 	    		//Project, Location, Building,
 	    		
@@ -345,6 +360,28 @@ public class JevisGetDataNodeModel extends NodeModel {
     	}
     	
     }
+    
+    private JEVisObject getParent(JEVisObject input, String level) throws JEVisException{
+    	
+    	for(JEVisObject parent: input.getParents()){
+    		if(checkLevel(parent, level)){
+    			found = parent;
+    			return parent;
+    			
+    		}
+    		else{
+    			getParent(parent, level);
+    		}
+    	}
+    	return found;
+    }
+    
+	protected boolean checkLevel(JEVisObject object, String level) throws JEVisException{
+		if(object.getJEVisClass().equals(jevis.getJEVisClass(level))){
+			return true;
+		}
+		return false;
+	}
     
     private void fillingTable(JEVisObject my_Object, DataTableSpec result){
     	
@@ -460,8 +497,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     	
     	for(SettingsModel settingsmodel : settingsmodels){
     		settingsmodel.validateSettings(settings);
-    	}
-    	
+    	}    	
     }
     
     /**

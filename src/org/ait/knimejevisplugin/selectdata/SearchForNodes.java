@@ -160,8 +160,7 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 					building = child;
 					computeResult(child.getChildren());	
 					
-				}
-				
+				}				
 			}
 			else if(child.getJEVisClass()==jevis.getJEVisClass(
 					DataBaseConfiguration.componentLevelName)){

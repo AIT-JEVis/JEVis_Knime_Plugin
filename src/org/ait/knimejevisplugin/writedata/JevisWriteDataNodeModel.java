@@ -99,7 +99,6 @@ public class JevisWriteDataNodeModel extends NodeModel {
         settingsModels.add(m_newDataPoint);
         settingsModels.add(m_deleteDataPoint);
         
-        
        logger.setLevel(NodeLogger.LEVEL.INFO);
     }
 
@@ -130,6 +129,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
             			m_newDataPointClass.getStringValue());
             	JEVisObject obj = jevis.getObject(objID);
             	fetchingInformationFromInPut(table, writer, obj);
+            	
             	obj.commit();
         		if(obj.getAttribute("Value").hasSample()){
         			logger.info("New Object build!");
@@ -222,19 +222,19 @@ public class JevisWriteDataNodeModel extends NodeModel {
  	           	writer.addData(obj, date, value, unit, samples);
             
             }         	
-        }
-		
+        }	
 		obj.getAttribute("Value").addSamples(samples);
 		obj.commit();
   }
-    
-    
+        
+  private void fetchingMetaData(JEVisObject object){
+	  //methodStub no real Flows Currently Exist for putting into Nodes
+  }
     /**
      * {@inheritDoc}
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-
 
   	  for(SettingsModel model : settingsModels){
       	   model.saveSettingsTo(settings);
@@ -264,17 +264,10 @@ public class JevisWriteDataNodeModel extends NodeModel {
     @Override
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-            
-    	
+               	
   	  for(SettingsModel model : settingsModels){
       	   model.validateSettings(settings);
          }
-        // check if the settings could be applied to our model
-        // e.g. if the count is in a certain range (which is ensured by the
-        // SettingsModel).
-        // Do not actually set any values of any member variables.
-
-       
 
     }
     

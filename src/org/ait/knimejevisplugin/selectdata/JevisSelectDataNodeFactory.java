@@ -1,5 +1,7 @@
 package org.ait.knimejevisplugin.selectdata;
 
+import java.util.ArrayList;
+
 import org.ait.knimejevisplugin.DataBaseConfiguration;
 import org.jevis.api.JEVisException;
 import org.knime.core.node.NodeDialogPane;
@@ -55,6 +57,7 @@ public class JevisSelectDataNodeFactory
     @Override
     public NodeDialogPane createNodeDialogPane() {
         try {
+
 			return new JevisSelectDataNodeDialog();
 		} catch (JEVisException e) {
 			// TODO Auto-generated catch block

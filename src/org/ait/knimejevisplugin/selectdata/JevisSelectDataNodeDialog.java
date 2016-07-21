@@ -56,21 +56,23 @@ import javafx.scene.control.DialogPane;
  */
 public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 	
-	ArrayList<String> nodefilter = new ArrayList<String>();
-	ArrayList<String> devicetypes = new ArrayList<String>();
-	ArrayList<String> components = new ArrayList<String>();
+	final ArrayList<String> nodefilter = new ArrayList<String>();
+	final ArrayList<String> devicetypes = new ArrayList<String>();
+	final ArrayList<String> components = new ArrayList<String>();
 	ArrayList<String> nodetypes = new ArrayList<String>();
 	ArrayList<String> attributes = new ArrayList<String>();
-	ArrayList<String> projects = new ArrayList<String>();
-	ArrayList<String> locations = new ArrayList<String>();
+	final ArrayList<String> projects = new ArrayList<String>();
+	final ArrayList<String> locations = new ArrayList<String>();
 
 	ArrayList<String> operators = new ArrayList<String>();
 	
 	ArrayList<String> attributesfiltered = new ArrayList<String>();
 
+	Thread t;
+	
 	private static final Logger logger = LogManager.getLogger("SelectNdoeDialog");
 	
-	private JEVisDataSourceSQL jevis;
+	static JEVisDataSourceSQL jevis; 
 	
     private final SettingsModelString jhost = new SettingsModelString(
     		DataBaseConfiguration.hostModelName,
@@ -170,6 +172,28 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    			JevisSelectDataNodeModel.siblings, false);
    	private final SettingsModelBoolean m_allChildren = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.allChildren, false);
+   	/*
+	DialogComponentStringSelection diac_nodeType = new DialogComponentStringSelection(
+			m_nodeType, "NodeType", nodefilter);
+	
+	DialogComponentStringSelection diac_projects = 
+			new DialogComponentStringSelection(m_project, 
+			"Project", projects);
+	
+	DialogComponentStringSelection diac_location = new DialogComponentStringSelection(
+					m_location, "Location", locations);
+	
+	DialogComponentStringSelection diac_deviceType = new DialogComponentStringSelection(
+			m_devicetype, "Device", devicetypes);
+	
+	DialogComponentStringSelection diac_component = new DialogComponentStringSelection(
+			m_component, "Component", components);
+	
+   	
+   	
+   	
+   	
+   	
     /**
      * New pane for configuring the JevisSelectData node.
      * @throws JEVisException 
@@ -179,6 +203,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	JevisSelectDataNodeModel.logger.setLevel(NodeLogger.LEVEL.INFO);
     	JevisSelectDataNodeModel.logger.warn("Opening Configuration Window. "
     			+ "Please be patient it may take a moment.");
+    	
     	projects.add(" ");
 		nodefilter.add(" ");
 		devicetypes.add(" ");
@@ -186,11 +211,18 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		attributes.add(" ");
 		locations.add(" ");
         attributesfiltered.add(" ");
+       
+        /*diac_nodeType.replaceListItems(nodefilter, null);
+        diac_projects.replaceListItems(projects, null);
+        diac_location.replaceListItems(locations, null);
+        diac_component.replaceListItems(components, null);
+        diac_deviceType.replaceListItems(devicetypes, null);
+        */
         
         operators.add("contains");
         operators.add("equals");
         
-		
+	
     	DialogComponentStringSelection diac_nodeType = new DialogComponentStringSelection(
     			m_nodeType, "NodeType", nodefilter);
     	
@@ -248,24 +280,35 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 				diac_con.setText("Trying to connect!");
 		    	connectingtojevis();
 		    	try {
+		    		Thread t1 = new Thread(new Runnable(){
+
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							
+							getProjects(jevis, projects);
+				        	diac_projects.replaceListItems(projects, null);
+
+							getAttributes(jevis, attributesfiltered);
+							diac_attribute1.replaceListItems(attributesfiltered, null);
+							diac_attribute2.replaceListItems(attributesfiltered, null);
+							diac_attribute3.replaceListItems(attributesfiltered, null);
+							diac_attribute4.replaceListItems(attributesfiltered, null);
+							
+				        	getnodetypes(jevis, nodefilter);
+				        	diac_nodeType.replaceListItems(nodefilter, null);
+				        	getAttributes(jevis, attributes);
+				        	diac_con.setText("Connected!");
+						}
+		    			
+		    		});
 					if(jevis.isConnectionAlive()){
 						
-						projects.clear();
-						getProjects(jevis, projects);
-			        	diac_projects.replaceListItems(projects, null);
+						t1.start();
+//			        	diac_attribute.replaceListItems(attributes, null);
 						JevisSelectDataNodeModel.logger.warn("Connecting to Jevis. "
 								+ "May Take a while!");
-						getAttributes(jevis, attributesfiltered);
-						diac_attribute1.replaceListItems(attributesfiltered, null);
-						diac_attribute2.replaceListItems(attributesfiltered, null);
-						diac_attribute3.replaceListItems(attributesfiltered, null);
-						diac_attribute4.replaceListItems(attributesfiltered, null);
-						
-			        	getnodetypes(jevis, nodefilter);
-			        	diac_nodeType.replaceListItems(nodefilter, null);
-			        	getAttributes(jevis, attributes);
-//			        	diac_attribute.replaceListItems(attributes, null);
-			        	diac_con.setText("Connected!");
+
 
 					}
 				} catch (JEVisException e1) {
@@ -320,13 +363,32 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				//putting them into Button will be a faster solution but also feasable?
-	        	getdevicetypes(jevis, devicetypes);
-	        	diac_deviceType.replaceListItems(devicetypes, null);
-	        	getcomponents(jevis, components);
-	        	diac_component.replaceListItems(components, null);
-	        	getLocation(jevis, locations);
-	        	diac_location.replaceListItems(locations, null);
 	        	
+				try {
+					if(jevis.isConnectionAlive()){
+
+						Thread t = new Thread(new Runnable(){
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								getcomponents(JevisSelectDataNodeDialog.jevis, components);
+								getdevicetypes(JevisSelectDataNodeDialog.jevis, devicetypes);
+								getLocation(JevisSelectDataNodeDialog.jevis, locations);
+								diac_deviceType.replaceListItems(devicetypes, null);
+								diac_component.replaceListItems(components, null);	
+								diac_location.replaceListItems(locations, null);
+								
+							}						 
+						});
+						if(!t.isAlive()){
+							t.start();
+						}
+						//wait();
+					}
+				} catch (JEVisException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
     	setHorizontalPlacement(false);
@@ -448,7 +510,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	    	
     }
     
-    private void connectingtojevis(){
+    protected void connectingtojevis(){
     	
 	    try{
 		//Connecting to Jevis with connection information
@@ -571,5 +633,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     		e.printStackTrace();
     	}
     }
+
 }
 
