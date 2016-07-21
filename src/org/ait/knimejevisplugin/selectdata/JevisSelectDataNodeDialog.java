@@ -510,7 +510,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	    	
     }
     
-    protected void connectingtojevis(){
+    public void connectingtojevis(){
     	
 	    try{
 		//Connecting to Jevis with connection information
