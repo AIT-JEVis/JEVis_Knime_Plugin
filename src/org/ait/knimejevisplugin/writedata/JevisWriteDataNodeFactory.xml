@@ -3,31 +3,27 @@
     <name>JevisWriteData</name>
     
     <shortDescription>
-        
+        WriteDataNode
     </shortDescription>
     
     <fullDescription>
-        <intro>Insert long description here...</intro>
-        
-        
-        <option name="short name of first option (like in the dialog)">description of first option</option>
-        <option name="short name of second option (like in the dialog)">description of second option</option>
-        <!-- possibly more options that can also be grouped by tabs -->
-        <!--
-        <tab name="Standard Options">
-            <option name="short name of first option (like in the dialog)">description of first option</option>
-            <option name="short name of second option (like in the dialog)">description of second option</option>
-        </tab>
-        <tab name="Advanced Options">
-            <option name="short name of first advanced option (like in the dialog)">description of first advanced option</option>
-        </tab>
-        -->
+        <intro> Allows you to write data back into the Jevis Database. 
+        There are three options:
+         Update Datapoint adds the values from the input table.
+         New Datapoint will create a new Datapoint under the given NodeID.
+         Delete Data will allow you to remove all data in a datapoint. It won't delete the Datapoint itself just the data stored in it.    </intro>
+           
+        <option name="Select option">Choose an option </option>
+        <option name="JEVisNodeID">Enter the ID of the Datapoint.</option>
+        <option name="New DataPoint Name"> Enter the name of the new Datapoint.</option>
+        <option name="Select DataPointClass"> Enter the name of the DataPoint class. </option>
+         
     </fullDescription>
     
     <ports>
-        <inPort index="0" name="In-Port name">Description of first input port...</inPort>
+        <inPort index="0" name=" ">DataTable containing Timestamps in the first column and Values in the 2nd column. </inPort>
         <!-- possibly more input ports here-->
-        <outPort index="0" name="Out-Port name">Description of first output port...</outPort>
+        <!-- <outPort index="0" name="Out-Port name">Description of first output port...</outPort> -->
         <!-- possibly more output ports here-->
     </ports>    
     <views>

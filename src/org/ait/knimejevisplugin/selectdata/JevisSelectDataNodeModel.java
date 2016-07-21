@@ -61,7 +61,6 @@ public class JevisSelectDataNodeModel extends NodeModel {
     List<SettingsModel> settingsmodels = new ArrayList<SettingsModel>();
 	
 	/**
-     * Constructor for the node model.
      */
     protected JevisSelectDataNodeModel() {
     
@@ -302,13 +301,11 @@ public class JevisSelectDataNodeModel extends NodeModel {
     			buf = exec.createDataContainer(resultspec);
     	
         		searcher.searchforDataPoints();
-        		
-   	
+
         			result.fillResultTable(buf, resultspec, searcher.list_projects, 
             				searcher.list_location,searcher.list_component,
             				searcher.list_datapoint, searcher.list_comment);
-
-        		
+        			
         	/*	else{
         			result.fillResultTable(buf, resultspec, searcher.list_projects, 
             				searcher.list_location,searcher.list_component,
@@ -375,7 +372,6 @@ public class JevisSelectDataNodeModel extends NodeModel {
     			jSchema.getStringValue(), jUser.getStringValue(), jPW.getStringValue());
     	jevis.connect(jevUser.getStringValue(), jevPW.getStringValue());
     	
-
     	pushFlowVariableString("host", jhost.getStringValue());
     	pushFlowVariableString("port", jport.getStringValue());
     	pushFlowVariableString("sqlSchema", jSchema.getStringValue());
@@ -475,7 +471,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     protected void loadInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        // TODO: generated method stub
+        // no op
     }
     
     /**
@@ -485,7 +481,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     protected void saveInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        // TODO: generated method stub
+        // no op
     }
     
 }

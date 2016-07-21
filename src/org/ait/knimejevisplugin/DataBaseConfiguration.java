@@ -46,8 +46,7 @@ public class DataBaseConfiguration {
    	public static String jevisPWModelName = "JevisPassword";
    	public static String DEFAULT_jevisPW = "testpass01593";
 	
-	
-	
+   	//Methods
 	public static void fillLevel(){
 		levels.clear();
 		levels.add(projectLevelName);
@@ -55,13 +54,10 @@ public class DataBaseConfiguration {
 		levels.add(componentLevelName);
 		levels.add(deviceLevelName);
 	}
-	
-	
+		
 	/*Constructor*/
 	public DataBaseConfiguration() {
 		super();
 	}
-	
-	
-	
+
 }

@@ -3,25 +3,49 @@
     <name>JevisSelectData</name>
     
     <shortDescription>
-        
+        Node to connect and Search for data within jevis. 
     </shortDescription>
     
     <fullDescription>
-        <intro>Insert long description here...</intro>
+        <intro>This node creates a connector to an arbitrary JEVis Database and allows to search for data within the database. 
+        You will need to connect with your connection information to jevis. Afterwards the node allows to conduct different kinds of searches
+        which will enable you to select your data. In the Output table you will get the data you searched for in a convenient way so you can filter that data again as you like and also see at one glance 
+        the most important informations of the datapoint.
+        As long as you are disconnected from JEVis there are no further functions of any use. </intro>
         
         
-        <option name="short name of first option (like in the dialog)">description of first option</option>
-        <option name="short name of second option (like in the dialog)">description of second option</option>
-        <!-- possibly more options that can also be grouped by tabs -->
-        <!--
-        <tab name="Standard Options">
-            <option name="short name of first option (like in the dialog)">description of first option</option>
-            <option name="short name of second option (like in the dialog)">description of second option</option>
+        <tab name="Configure Connection ">
+            <option name="Hostaddress">Enter a valid host address for the JEVis database.</option>
+            <option name="Port"> Enter here the port for the JEVis database. </option>
+            <option name="SqlSchema"> Enter here the SQLschema for database connection. (This option is there because Jevis currently only allows a connection via SQL).</option>
+            <option name="SqlUser">Enter here the user of for the SQL database. (This option is there because Jevis currently only allows a connection via SQL)</option>
+            <option name="SqlPassword"> Enter here the the password of the SQL user. (This option is there because Jevis currently only allows a connection via SQL)</option>
+            <option name="JevisUser"> Enter here your user of the JEVis Database. </option>
+            <option name="JevisPassword"> Enter here the password of your JEVis Database user.</option>
+            <option name="Connect"> Press button when information is filled in completely and you want to connect to JEVis. </option>
         </tab>
-        <tab name="Advanced Options">
-            <option name="short name of first advanced option (like in the dialog)">description of first advanced option</option>
+        <tab name="Attribute and DataPoint Search">
+            <option name="Search for Datapoints"> If Enabled the search will focus on searching through the Levels. </option>
+            <option name="Search for NodeType"> If enabled the Search will focus on a given Nodetype and gives you specific nodetype. </option>
+            <option name="Override Attribute Filter"> if Enabled all datapoints will be in the output without any filtering after. </option>
+            <option name="Project"> Select the Project for the search.</option>
+            <option name="Location"> Select the Location for the search.</option>
+            <option name="Component"> Select the component for the search.</option>
+            <option name="Device"> Select the name of the Datapoint. </option>
+            
+            <option name="Search for Attributes"> Select one or more attributes to be searched for. Strings can be put in to filter also for specific Values. </option>
+            <option name="Search for Nodetype"> Select the nodetype when Nodetype search is selected. </option>
         </tab>
-        -->
+        <tab name="Structure Search">
+        	<option name="Enable Structure Search"> If enabled search after Structure will be done.</option>
+        	<option name="Node ID"> Enter the JEVis Node ID for Structure Search. </option>
+        	<option name="Parents"> If enabled the Parent of the given Node ID will be in the output. </option>
+        	<option name="Children"> If enabled the Children of the given Node ID will be in the output table. </option>
+        	<option name="Siblings"> If enabled the Siblings of the given Node ID will be found. </option>
+        	<option name="All Children"> If enabled all Children beneath the given Node ID will be found. </option> 
+        
+        </tab>
+
     </fullDescription>
     
     <ports>

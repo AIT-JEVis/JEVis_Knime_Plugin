@@ -3,15 +3,28 @@
     <name>JevisGetData</name>
     
     <shortDescription>
-        
+        Get data from a Datapoint from the Jevis DataBase into Knime. 
     </shortDescription>
     
     <fullDescription>
-        <intro>Insert long description here...</intro>
+        <intro> Fetching data from a given Datapoint. Use the Node ID of a datapoint and optional filter data after time. IMPORTANT: connection Information needed from JevisSelectDataNode. </intro>
         
+        <option name="Node ID"> Enter the Jevis Node ID of a datapoint.</option>
         
-        <option name="short name of first option (like in the dialog)">description of first option</option>
-        <option name="short name of second option (like in the dialog)">description of second option</option>
+        <option name="StartYear"> Enter the Start Year </option>
+        <option name="StartMonth"> Select the Start Month </option>
+        <option name="StartDay"> Select the Start Day </option>
+        <option name="StartHour"> Enter the Start Hour </option>
+        <option name="StartMinute"> Enter the Start Minute </option>
+        <option name="StartSeconds"> Enter the Start Second </option>
+        
+        <option name="EndYear"> Enter the End Year</option>
+        <option name="EndMonth"> Enter the End Month</option>
+        <option name="EndDay"> Select the End Day </option>
+        <option name="EndHour"> Enter the End Hour </option>
+        <option name="EndMinute"> Enter the End Minute </option>
+        <option name="EndSeconds"> Enter the End Second </option>
+                
         <!-- possibly more options that can also be grouped by tabs -->
         <!--
         <tab name="Standard Options">
@@ -25,9 +38,9 @@
     </fullDescription>
     
     <ports>
-        <inPort index="0" name="In-Port name">Description of first input port...</inPort>
+        <inPort index="0" name="In-Port name">Any DataTable </inPort>
         <!-- possibly more input ports here-->
-        <outPort index="0" name="Out-Port name">Description of first output port...</outPort>
+        <outPort index="0" name="Out-Port name">Table containing the values from the Datapoint. </outPort>
         <!-- possibly more output ports here-->
     </ports>    
     <views>

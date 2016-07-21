@@ -26,17 +26,16 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  */
 public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 
-	static String label_objID= "Put in JevisNodeID";
+	static String label_objID= "JevisNodeID";
 	static String label_update = "Update Datapoint";
 	
-	static String label_parentID = "Put in Parent NodeID";
+	static String label_parentID = "Parent NodeID";
+	static String label_newDataPointName = "New Datapoint Name";
 	static String label_newDataPoint = "New Datapoint";
 	static String label_newDataPointClass = "Select datapoint class:";
 	
-	
 	static String label_delete = "Delete DataPoint data";
-	
-	
+		
 	private final SettingsModelLong m_objID = new SettingsModelLong(
 			JevisWriteDataNodeModel.objID, 0);	
 	private final SettingsModelBoolean m_update = new SettingsModelBoolean(
@@ -48,11 +47,9 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 			JevisWriteDataNodeModel.objectName," ");
 	private final SettingsModelString m_newDataPointClass = new SettingsModelString(
 			JevisWriteDataNodeModel.newDataPointClass, "Data");
-	
-	
+
 	private final SettingsModelBoolean m_deleteDataPoint =
 			new SettingsModelBoolean(JevisWriteDataNodeModel.deleteDataPoint, false);
-
 	
     protected JevisWriteDataNodeDialog() {
         super();
@@ -64,7 +61,7 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
         closeCurrentGroup();
         createNewGroup("Put in Information:");
         addDialogComponent(new DialogComponentNumber(m_objID, label_objID, 0));
-        addDialogComponent(new DialogComponentString(m_objectName, label_newDataPoint));
+        addDialogComponent(new DialogComponentString(m_objectName, label_newDataPointName));
         addDialogComponent(new DialogComponentString(
         		m_newDataPointClass,label_newDataPointClass));
         m_update.addChangeListener(new ChangeListener() {

@@ -31,11 +31,12 @@ public class ResultTable {
 				"NodeID", LongCell.TYPE).createSpec();
 		DataColumnSpec deviceTypeSpec = new DataColumnSpecCreator(
 				DataBaseConfiguration.deviceModelName, StringCell.TYPE).createSpec();
-		DataColumnSpec componentTypeSpec = new DataColumnSpecCreator(
+		DataColumnSpec projectSpec = new DataColumnSpecCreator(
 				DataBaseConfiguration.projectModelName, StringCell.TYPE).createSpec();
 		DataColumnSpec locationSpec = new DataColumnSpecCreator(
 				DataBaseConfiguration.locationModelName, StringCell.TYPE).createSpec();
-		DataColumnSpec projectSpec = new DataColumnSpecCreator(
+		
+		DataColumnSpec componentSpec = new DataColumnSpecCreator(
 				DataBaseConfiguration.componentModelName, StringCell.TYPE).createSpec();
 		DataColumnSpec commentSpec = new DataColumnSpecCreator(
 				"Comment", StringCell.TYPE).createSpec();
@@ -44,8 +45,8 @@ public class ResultTable {
 		DataColumnSpec lastTSSpec = new DataColumnSpecCreator(
 				"Last Timestamp", DateAndTimeCell.TYPE).createSpec();
 	    	
-		DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, deviceTypeSpec, componentTypeSpec,
-				locationSpec, projectSpec, commentSpec, firstTsSpec, lastTSSpec);
+		DataTableSpec outputTableSpec = new DataTableSpec(nodeIDSpec, deviceTypeSpec, projectSpec,
+				locationSpec, componentSpec, commentSpec, firstTsSpec, lastTSSpec);
 	    	
 		return outputTableSpec;
 	    }

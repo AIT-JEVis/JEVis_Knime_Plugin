@@ -299,22 +299,29 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    		pushFlowVariableString("sensorname", jObject.getParents().get(0).getName());
 	    		pushFlowVariableDouble("DataNodeID",jObject.getID());
 	    		pushFlowVariableDouble("ParentNodeID", jObject.getParents().get(0).getID());	    		
-	    		pushFlowVariableString("Project", getParent(
+	    		pushFlowVariableString("project", getParent(
 	    				jObject, DataBaseConfiguration.projectLevelName).getName());
 	    		if(getParent(jObject, DataBaseConfiguration.locationLevelName).
 	    				getAttribute("Location").hasSample()){
-		    		pushFlowVariableString("Location", getParent(
+		    		pushFlowVariableString("location", getParent(
 		    				jObject, DataBaseConfiguration.locationLevelName)
 		    				.getAttribute("Location").getLatestSample().getValueAsString());
 	    		}else{
 	    			pushFlowVariableString("Location", " ");
 	    		}
-	    	
+	    		
+	    		for(JEVisAttribute att: jObject.getAttributes()){
+	    			if(att.hasSample()
+	    					&& (!att.getName().equals(
+	    							DataBaseConfiguration.valueAttributeName))){
+	    				pushFlowVariableString(att.getName(), att.getLatestSample().toString());	
+	    			}
+	    			
+	    		}
+	    			
 	    		pushFlowVariableString("Building", getParent(
 	    				jObject, DataBaseConfiguration.locationLevelName).getName());
-	    		//ParentNode ID
-	    		//Project, Location, Building,
-	    		
+	    
 					//filling Table with data
 	    			logger.info("Values found!");
 	    			fillingTable(jObject, result);
@@ -329,7 +336,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     	}
     	buf.close();
     	BufferedDataTable out = buf.getTable();
-        // TODO: Return a BufferedDataTable for each output port 
+     
     
         return new BufferedDataTable[]{out};
     }
@@ -401,7 +408,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 	            //logger.info("Working on Timestamp: "+ timestamp);                     
 	            //Filling the rows of the table
 	            GregorianCalendar cal = value.getTimestamp().toGregorianCalendar();
-	           //Put here the Greogrian Calendar
+	           
 	            
 	            DataCell[]cells = new DataCell[result.getNumColumns()];
 	            cells[0] = new DateAndTimeCell(cal.get(Calendar.YEAR), 
@@ -414,7 +421,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 	        }
 
 		} catch (JEVisException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}  
     }
@@ -425,7 +432,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 		try {
 			timestampString = value.getTimestamp();
 	        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
-	        String timestamp = formatter.print(timestampString);
+
 	        
 	        DateTime start_Time = formatter.parseDateTime(startTime);
 	        DateTime end_Time = formatter.parseDateTime(endTime);
@@ -507,17 +514,15 @@ public class JevisGetDataNodeModel extends NodeModel {
     protected void loadInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        // TODO: generated method stub
+        // no op
     }
     
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     protected void saveInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        // TODO: generated method stub
+        // no op
     }
-
+    
 }

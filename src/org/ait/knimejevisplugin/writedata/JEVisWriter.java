@@ -42,8 +42,6 @@ public class JEVisWriter {
 	
 	/*
 	 * Adding Samples to the given JEVisObject. 
-	 * 
-	 * 
 	 */
 	protected void addData(JEVisObject obj, DateTime date, Double value, 
 			String unit, List<JEVisSample> samples) throws JEVisException{
@@ -70,6 +68,5 @@ public class JEVisWriter {
     		JevisWriteDataNodeModel.logger.error("Samples still exist");
     	}
     }
-    
-    
+     
 }

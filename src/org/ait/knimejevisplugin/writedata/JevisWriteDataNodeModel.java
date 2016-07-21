@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisSample;
@@ -13,10 +14,12 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DoubleValue;
 import org.knime.core.data.StringValue;
+import org.knime.core.data.date.DateAndTimeValue;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
@@ -49,8 +52,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
 	static String newDataPoint = "NewDataPoint";
 	static String objectName = "ObjectName";
 	static String newDataPointClass = "newDataPointClass";
-	
-	
+		
 	List<SettingsModel> settingsModels = new ArrayList<SettingsModel>();
 	static String deleteDataPoint = "Delete DataPoint";
 
@@ -63,8 +65,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
 	 	
 	public static String jevisUser = "BerhnardM";
 	public static String jevisPW = "testpass01593"; 
-	 
-	 
+	  
 	private final SettingsModelLong m_objID = 
 			new SettingsModelLong(objID, 0);	
 	private final SettingsModelBoolean m_update = 
@@ -85,7 +86,6 @@ public class JevisWriteDataNodeModel extends NodeModel {
     static final NodeLogger logger = NodeLogger
             .getLogger(JevisWriteDataNodeModel.class);
         
-
     /**
      * Constructor for the node model.
      */
@@ -102,9 +102,6 @@ public class JevisWriteDataNodeModel extends NodeModel {
        logger.setLevel(NodeLogger.LEVEL.INFO);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
@@ -117,6 +114,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
         	if(m_update.getBooleanValue()){
             	JEVisObject obj = jevis.getObject(m_objID.getLongValue());
         		fetchingInformationFromInPut(table, writer, obj);
+        		fetchingMetaData(obj);
         		obj.commit();
         		if(obj.getAttribute("Value").hasSample()){
         			logger.info("Samples updated");
@@ -129,7 +127,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
             			m_newDataPointClass.getStringValue());
             	JEVisObject obj = jevis.getObject(objID);
             	fetchingInformationFromInPut(table, writer, obj);
-            	
+            	fetchingMetaData(obj);
             	obj.commit();
         		if(obj.getAttribute("Value").hasSample()){
         			logger.info("New Object build!");
@@ -140,16 +138,15 @@ public class JevisWriteDataNodeModel extends NodeModel {
         	}}
         	catch(Exception e){
         		e.printStackTrace();
-        		logger.error("Error while trying Operation");
-        		
+        		logger.error("Error while trying Operation");       		
         	}
     	}
     	}catch(JEVisException je){
     		je.printStackTrace();
     		logger.error("Connection to JEVis Lost");
     	}
-    	
-        	return new BufferedDataTable[]{};
+
+        return new BufferedDataTable[]{};
     }
 
     /**
@@ -168,14 +165,20 @@ public class JevisWriteDataNodeModel extends NodeModel {
     @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
             throws InvalidSettingsException {
-        
-        // TODO: check if user settings are available, fit to the incoming
-        // table structure, and the incoming types are feasible for the node
-        // to execute. If the node can execute in its current state return
-        // the spec of its output data table(s) (if you can, otherwise an array
-        // with null elements), or throw an exception with a useful user message
-
-        return new DataTableSpec[]{null};
+    	
+    		 DataColumnSpec c0 = inSpecs[0].getColumnSpec(0);
+    		 DataColumnSpec c1 = inSpecs[0].getColumnSpec(1);
+    		 
+    		 if(!c0.getType().isCompatible(DateAndTimeValue.class)){
+     	 		throw new InvalidSettingsException(
+        				"Invalid column type at first column"); 
+    		 }
+    		 if(!c1.getType().isCompatible(DoubleValue.class)){
+     	 		throw new InvalidSettingsException(
+        				"Invalid column type at second column"); 
+    		 }
+    	
+        return new DataTableSpec[]{};
     }
 
   public void connectingtojevis(){
@@ -227,8 +230,16 @@ public class JevisWriteDataNodeModel extends NodeModel {
 		obj.commit();
   }
         
-  private void fetchingMetaData(JEVisObject object){
-	  //methodStub no real Flows Currently Exist for putting into Nodes
+  private void fetchingMetaData(JEVisObject object) throws JEVisException{
+	  for(JEVisAttribute att: object.getAttributes()){
+		 
+		 List<JEVisSample> sampellist = new ArrayList<JEVisSample>();
+		 JEVisSample sample = att.buildSample(null, peekFlowVariableString(att.getName()));
+		 sampellist.add(sample);
+		 att.deleteAllSample();
+		 att.addSamples(sampellist);
+	  }
+	  
   }
     /**
      * {@inheritDoc}

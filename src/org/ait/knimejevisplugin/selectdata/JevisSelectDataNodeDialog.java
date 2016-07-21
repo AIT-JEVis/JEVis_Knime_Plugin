@@ -68,7 +68,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 	
 	ArrayList<String> attributesfiltered = new ArrayList<String>();
 
-	Thread t;
+	Thread t = new Thread();
 	
 	private static final Logger logger = LogManager.getLogger("SelectNdoeDialog");
 	
@@ -123,8 +123,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    			JevisSelectDataNodeModel.enableNodeType, false);
    	private final SettingsModelString m_nodeType = new SettingsModelString(
    			DataBaseConfiguration.nodeType," ");
-   	
-   	    	
+   	   	
    	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableAttributeSearch, false); 	
 /* 	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
@@ -156,8 +155,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    			JevisSelectDataNodeModel.attributeModelValue3, " ");
    	private final SettingsModelString m_attributeModelValue4 = new SettingsModelString(
    			JevisSelectDataNodeModel.attributeModelValue4, " ");
-   	
-   	
+   	   	
    	private final SettingsModelBoolean m_enableStructure = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableStructure, false);
    	
@@ -284,7 +282,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 
 						@Override
 						public void run() {
-							// TODO Auto-generated method stub
+						
 							
 							getProjects(jevis, projects);
 				        	diac_projects.replaceListItems(projects, null);
@@ -309,7 +307,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 						JevisSelectDataNodeModel.logger.warn("Connecting to Jevis. "
 								+ "May Take a while!");
 
-
 					}
 				} catch (JEVisException e1) {
 	
@@ -318,7 +315,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			}
 		});
     	
-
     	createNewGroup("Database Connection Settings");
     	setHorizontalPlacement(false);
     	addDialogComponent(new DialogComponentString(jhost, "Hostaddress"));
@@ -340,9 +336,9 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	createNewGroup("Select Search:");
     	setHorizontalPlacement(true);
     	addDialogComponent(new DialogComponentBoolean(m_enableNodeSearch, 
-    			"enable Specific Node Search"));
-    	addDialogComponent(new DialogComponentBoolean(m_enableNodeType, "Enable Nodetype"));
-    	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Give me all Datapoints"));
+    			"Search for Datapoints"));
+    	addDialogComponent(new DialogComponentBoolean(m_enableNodeType, "Search for JEVisClass objects"));
+    	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Override Attribute Filter."));
     	//Searching for Attributes like project, location, nodeType, device and component
     	setHorizontalPlacement(true);
 /*    	addDialogComponent(new DialogComponentBoolean(m_enableProject, 
@@ -366,27 +362,26 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 	        	
 				try {
 					if(jevis.isConnectionAlive()){
-
-						Thread t = new Thread(new Runnable(){
-							@Override
-							public void run() {
-								// TODO Auto-generated method stub
-								getcomponents(JevisSelectDataNodeDialog.jevis, components);
-								getdevicetypes(JevisSelectDataNodeDialog.jevis, devicetypes);
-								getLocation(JevisSelectDataNodeDialog.jevis, locations);
-								diac_deviceType.replaceListItems(devicetypes, null);
-								diac_component.replaceListItems(components, null);	
-								diac_location.replaceListItems(locations, null);
-								
-							}						 
-						});
 						if(!t.isAlive()){
+							t = new Thread(new Runnable(){
+								@Override
+								public void run() {
+									
+									getcomponents(JevisSelectDataNodeDialog.jevis, components);
+									getdevicetypes(JevisSelectDataNodeDialog.jevis, devicetypes);
+									getLocation(JevisSelectDataNodeDialog.jevis, locations);
+									diac_deviceType.replaceListItems(devicetypes, null);
+									diac_component.replaceListItems(components, null);	
+									diac_location.replaceListItems(locations, null);
+									
+								}						 
+							});
 							t.start();
 						}
 						//wait();
 					}
 				} catch (JEVisException e1) {
-					// TODO Auto-generated catch block
+					
 					e1.printStackTrace();
 				}
 			}
@@ -420,7 +415,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			}
 		});
 */
-    	addDialogComponent(diac_deviceType);
+    	addDialogComponent(diac_component);
     	//addDialogComponent(new DialogComponentString(m_searchDeviceType, " "));
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
@@ -433,9 +428,9 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			}
 		});
 */   	
-    	addDialogComponent(diac_component);
     	
-    	createNewGroup("Search for Attibutes and Values:");
+    	addDialogComponent(diac_deviceType);
+    	createNewGroup("Search for Attibutes:");
     	setHorizontalPlacement(true);
     	    	
 //    	addDialogComponent(diac_attribute);
@@ -477,8 +472,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(diac_nodeType);
     	
     	//createNewTab("Attribute Search");
-    	
-    	
+	
     	createNewTab("Structure Search");
     	createNewGroup("Search with structure");
     	setHorizontalPlacement(false);
@@ -517,7 +511,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		jevis = new JEVisDataSourceSQL(jhost.getStringValue(), jport.getStringValue(), jSchema.getStringValue(),
 				jUser.getStringValue(), jPW.getStringValue());
 		jevis.connect(jevUser.getStringValue(), jevPW.getStringValue());
-		
 		
 		}catch(JEVisException e){
 			e.printStackTrace();
@@ -592,7 +585,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     		e.printStackTrace();
     	}
     }
-    // TODO: Needing to improve on Perfomance
+
     public void getAttributes(JEVisDataSourceSQL jevis, ArrayList<String> attributes){
     	try{
     		if(jevis.isConnectionAlive()){

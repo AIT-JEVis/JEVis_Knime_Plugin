@@ -246,14 +246,12 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 					DataBaseConfiguration.projectLevelName)){
 				System.out.println("Project:" + child.getName());
 				if(!project.equals(" ")){
-					if(child.getName().equals(project)){
-						
+					if(child.getName().equals(project)){						
 						organization = child;
 						computeResultNodeType(child.getChildren());					
 					}		
 				}
 				else{
-
 					organization = child;
 					computeResultNodeType(child.getChildren());
 				}
@@ -412,7 +410,6 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 		}else{
 			return false;
 		}
-
 	}
 	
 	/*
