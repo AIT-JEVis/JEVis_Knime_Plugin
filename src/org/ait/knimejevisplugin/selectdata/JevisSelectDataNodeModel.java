@@ -276,7 +276,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	if(jevis.isConnectionAlive()){
     		logger.info("Connection Alive!");
     		
-    		ResultTable result = new ResultTable();
+    		ResultTable result = new ResultTable(m_enableStructure.getBooleanValue());
 			DataTableSpec resultspec = result.createOutputTableSpecforDatapoints();
 			SearchForNodes searcher = new SearchForNodes(jevis, m_project.getStringValue(),
 					m_location.getStringValue(), m_nodeType.getStringValue(),
@@ -313,7 +313,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
         		}
 	*/
     		}
-    
+    		
     		else if(m_enableStructure.getBooleanValue()){
     			buf = exec.createDataContainer(createOuputTableSpecforStructure());
     			DataTableSpec structureResult = createOuputTableSpecforStructure();
@@ -377,6 +377,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	pushFlowVariableString("sqlSchema", jSchema.getStringValue());
     	pushFlowVariableString("sqlUser", jUser.getStringValue());
     	pushFlowVariableString("sqlPW", jPW.getStringValue());
+    	pushFlowVariableString("JEVisUser", jevUser.getStringValue());
+    	pushFlowVariableString("JEVisPW", jevPW.getStringValue());
     	
     	}catch(JEVisException e){
     		e.printStackTrace();
@@ -391,7 +393,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     	DataColumnSpec nameSpec = new DataColumnSpecCreator(
     			"Name", StringCell.TYPE).createSpec();
     	DataColumnSpec projectTypeSpec = new DataColumnSpecCreator(
-    			DataBaseConfiguration.projectModelName, StringCell.TYPE).createSpec();
+    			"Type", StringCell.TYPE).createSpec();
     	DataColumnSpec locationSpec = new DataColumnSpecCreator(
     			DataBaseConfiguration.locationModelName, StringCell.TYPE).createSpec();
     	DataColumnSpec componentSpec = new DataColumnSpecCreator(
@@ -411,7 +413,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     			jevUser.getStringValue(),jevUser.getStringValue(),jevPW.getStringValue());
     	
     	CredentialsProvider cp = getCredentialsProvider();
-	
+    	
     }
     /**
      * {@inheritDoc}
@@ -428,7 +430,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
             throws InvalidSettingsException {
 
-        // TODO: generated method stub
+        // no op
         return new DataTableSpec[]{null};
     }
 

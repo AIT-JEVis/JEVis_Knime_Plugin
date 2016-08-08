@@ -106,14 +106,14 @@ public class JevisGetDataNodeModel extends NodeModel {
 	static final String endSecond = "endSecond";
 	
 	//Jevis Connection information
-	public static String host = "jevis3.ait.ac.at";
- 	public static String port = "3306";
- 	public static String sqlSchema = "jevis";
- 	public static String sqlUser = "jevis";
- 	public static String sqlPW = "vu5eS1ma";
+	public static String host = DataBaseConfiguration.DEFAULT_Host; //"jevis3.ait.ac.at";
+ 	public static String port = DataBaseConfiguration.DEFAULT_port; //"3306";
+ 	public static String sqlSchema =DataBaseConfiguration.DEFAULT_sqlShema; // "jevis";
+ 	public static String sqlUser = DataBaseConfiguration.DEFAULT_sqlUserName; //"jevis";
+ 	public static String sqlPW = DataBaseConfiguration.DEFAULT_sqlPW; //"vu5eS1ma";
  	
- 	public static String jevisUser = "BerhnardM";
- 	public static String jevisPW = "testpass01593";
+ 	public static String jevisUser = DataBaseConfiguration.DEFAULT_jevisUserName;// "BerhnardM";
+ 	public static String jevisPW = DataBaseConfiguration.DEFAULT_jevisPW; //"testpass01593";
 	
  	//Setting up variables for needed Processing
  	 
@@ -348,13 +348,17 @@ public class JevisGetDataNodeModel extends NodeModel {
     			&& getAvailableFlowVariables().containsKey("port")
     			&& getAvailableFlowVariables().containsKey("sqlSchema")
     			&& getAvailableFlowVariables().containsKey("sqlUser")
-    			&& getAvailableFlowVariables().containsKey("sqlPW")){
+    			&& getAvailableFlowVariables().containsKey("sqlPW")
+    			&& getAvailableFlowVariables().containsKey("JEVisUser")
+    			&& getAvailableFlowVariables().containsKey("JEVisPW")){
 	    	
 	    	host = peekFlowVariableString("host");
 	    	port = peekFlowVariableString("port");
 	    	sqlSchema = peekFlowVariableString("sqlSchema");
 	    	sqlUser = peekFlowVariableString("sqlUser");
 	    	sqlPW = peekFlowVariableString("sqlPW");
+	    	jevisUser = peekFlowVariableString("JEVisUser");
+	    	jevisPW = peekFlowVariableString("JEVisPW");
     	}
     	
     	try{

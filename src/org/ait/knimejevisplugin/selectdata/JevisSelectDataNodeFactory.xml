@@ -24,7 +24,7 @@
             <option name="JevisPassword"> Enter here the password of your JEVis Database user.</option>
             <option name="Connect"> Press button when information is filled in completely and you want to connect to JEVis. </option>
         </tab>
-        <tab name="Attribute and DataPoint Search">
+        <tab name="Attribute and Datapoint Search">
             <option name="Search for Datapoints"> If Enabled the search will focus on searching through the Levels. </option>
             <option name="Search for NodeType"> If enabled the Search will focus on a given Nodetype and gives you specific nodetype. </option>
             <option name="Override Attribute Filter"> if Enabled all datapoints will be in the output without any filtering after. </option>

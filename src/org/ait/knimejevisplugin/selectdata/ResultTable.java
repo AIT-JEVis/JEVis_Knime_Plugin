@@ -24,15 +24,28 @@ public class ResultTable {
 	
 	DataCell[] cells;
 	int counter;
+	boolean structure;
 	
+	public ResultTable(boolean structure){
+		this.structure = structure;
+	}
 	
 	protected DataTableSpec createOutputTableSpecforDatapoints(){
 		DataColumnSpec nodeIDSpec = new DataColumnSpecCreator(
 				"NodeID", LongCell.TYPE).createSpec();
 		DataColumnSpec deviceTypeSpec = new DataColumnSpecCreator(
 				DataBaseConfiguration.deviceModelName, StringCell.TYPE).createSpec();
-		DataColumnSpec projectSpec = new DataColumnSpecCreator(
-				DataBaseConfiguration.projectModelName, StringCell.TYPE).createSpec();
+		
+		DataColumnSpec projectSpec = null;
+		if(structure){
+			 projectSpec = new DataColumnSpecCreator(
+					"Type",StringCell.TYPE).createSpec();
+		}
+		else{
+			 projectSpec = new DataColumnSpecCreator(
+					DataBaseConfiguration.projectModelName, StringCell.TYPE).createSpec();
+		}
+		
 		DataColumnSpec locationSpec = new DataColumnSpecCreator(
 				DataBaseConfiguration.locationModelName, StringCell.TYPE).createSpec();
 		
