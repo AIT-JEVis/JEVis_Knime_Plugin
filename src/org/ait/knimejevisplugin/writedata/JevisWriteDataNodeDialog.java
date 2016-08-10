@@ -107,8 +107,7 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 					m_newDataPointClass.setEnabled(false);
 				}
 			}
-		});
-        
+		});    
     }
 }
 

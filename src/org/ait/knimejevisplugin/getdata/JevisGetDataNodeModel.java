@@ -311,9 +311,9 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    		}
 	    		
 	    		for(JEVisAttribute att: jObject.getAttributes()){
-	    			if(att.hasSample()
-	    					&& (!att.getName().equals(
-	    							DataBaseConfiguration.valueAttributeName))){
+	    			if(att.hasSample()){
+	    					//&& (!att.getName().equals(
+	    						//	DataBaseConfiguration.valueAttributeName))){
 	    				pushFlowVariableString(att.getName(), att.getLatestSample().toString());	
 	    			}
 	    			
@@ -341,7 +341,7 @@ public class JevisGetDataNodeModel extends NodeModel {
         return new BufferedDataTable[]{out};
     }
 
-    public void connectingtojevis(){
+    public void connectingtojevis() throws ClassNotFoundException{
     	
     	//getting Connection information from selection node if existing
     	if(getAvailableFlowVariables().containsKey("host")
@@ -363,6 +363,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     	
     	try{
     	//Connecting to Jevis with connection information
+    	Class.forName("com.mysql.jdbc.Driver");
     	jevis = new JEVisDataSourceSQL(host, port, sqlSchema, sqlUser, sqlPW);
     	jevis.connect(jevisUser, jevisPW);
     	}catch(JEVisException e){
@@ -416,7 +417,9 @@ public class JevisGetDataNodeModel extends NodeModel {
 	            
 	            DataCell[]cells = new DataCell[result.getNumColumns()];
 	            cells[0] = new DateAndTimeCell(cal.get(Calendar.YEAR), 
-	            		cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+	            		cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+	            		cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE),
+	            		cal.get(Calendar.SECOND));
 	            cells[1] = new DoubleCell(value.getValueAsDouble());
 	            cells[2] = new StringCell("");
 	            counter++;
