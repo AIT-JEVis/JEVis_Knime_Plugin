@@ -1,7 +1,6 @@
 package org.ait.knimejevisplugin.writedata;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.ait.knimejevisplugin.DataBaseConfiguration;

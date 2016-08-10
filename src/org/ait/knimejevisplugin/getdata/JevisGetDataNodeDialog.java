@@ -3,19 +3,13 @@ package org.ait.knimejevisplugin.getdata;
 import java.util.ArrayList;
 
 import org.jevis.api.JEVisException;
-import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
-import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
-import org.knime.core.node.defaultnodesettings.DialogComponentNumberEdit;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.node.port.PortObjectSpec;
 
 /**
  * <code>NodeDialog</code> for the "JevisGetData" Node.
@@ -41,13 +35,12 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
     protected JevisGetDataNodeDialog() throws JEVisException {
     	super();
     	
-    	
     	connectingtojevis();
     	addDialogComponent(new DialogComponentNumber(
     			new SettingsModelInteger(
     					JevisGetDataNodeModel.CFGKEY_nodeID, JevisGetDataNodeModel.nodeID),
     			"NodeID",
-    			494));
+    			0));
     	/*
     	addDialogComponent(new DialogComponentString(
     			new SettingsModelString(JevisGetDataNodeModel.startTime, "2016-01-20 00:00:00.0"),
@@ -111,7 +104,6 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(new DialogComponentString(new SettingsModelString(
         		JevisGetDataNodeModel.endSecond, "00"), "seconds"));
     }
-   
     
     private void connectingtojevis(){
     	    	
@@ -137,6 +129,6 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
 		return year;
     	
     }*/
-    
+
 }
 

@@ -1,12 +1,10 @@
 package org.ait.knimejevisplugin.selectdata;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.ait.knimejevisplugin.DataBaseConfiguration;
-import org.eclipse.ui.contexts.EnabledSubmission;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.knime.core.data.DataCell;

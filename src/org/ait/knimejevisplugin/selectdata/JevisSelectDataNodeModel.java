@@ -3,30 +3,15 @@ package org.ait.knimejevisplugin.selectdata;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.ait.knimejevisplugin.DataBaseConfiguration;
-import org.ait.knimejevisplugin.getdata.JevisGetDataNodeModel;
 import org.jevis.api.JEVisException;
-import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
-import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.date.DateAndTimeCell;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.data.def.DoubleCell;
-import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.data.def.TimestampCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -39,16 +24,10 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.workflow.Credentials;
 import org.knime.core.node.workflow.CredentialsProvider;
-import org.knime.core.node.workflow.CredentialsStore;
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.WorkflowManager;
-
-import javafx.scene.control.DateCell;
 
 
 /**
@@ -64,7 +43,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
      */
     protected JevisSelectDataNodeModel() {
     
-        // TODO: Specify the amount of input and output ports needed.
+
         super(0, 1);
         settingsmodels.add(jSchema);
         settingsmodels.add(jevPW);
@@ -403,7 +382,8 @@ public class JevisSelectDataNodeModel extends NodeModel {
 		return outputTableSpec;
     }
 
-
+     
+    // Testpurpose
     private void credentials(){
         //Test method for credentials
     	credential = new Credentials(
@@ -419,7 +399,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        // TODO: generated method stub
+    	// no op
     }
 
     /**

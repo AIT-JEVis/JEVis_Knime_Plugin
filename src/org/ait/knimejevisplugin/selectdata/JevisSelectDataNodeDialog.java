@@ -2,17 +2,12 @@ package org.ait.knimejevisplugin.selectdata;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.Clock;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.ait.knimejevisplugin.DataBaseConfiguration;
-import org.apache.commons.configuration.DatabaseConfiguration;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
@@ -20,13 +15,8 @@ import org.jevis.api.JEVisClass;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.sql.JEVisDataSourceSQL;
-import org.jevis.commons.cli.CommonCLIOptions.JEVis;
-import org.jscience.geography.coordinates.crs.ProjectedCRS;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
-import org.knime.core.node.defaultnodesettings.DialogComponent;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentButton;
 import org.knime.core.node.defaultnodesettings.DialogComponentLabel;
@@ -35,14 +25,8 @@ import org.knime.core.node.defaultnodesettings.DialogComponentPasswordField;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.node.port.PortObjectSpec;
-
-import com.sun.media.sound.ModelChannelMixer;
-
-import javafx.scene.control.DialogPane;
 
 /**
  * <code>NodeDialog</code> for the "JevisSelectData" Node.
@@ -391,7 +375,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
+				
 				try {
 					if(jevis.isConnectionAlive()){
 						if(!t.isAlive()){
@@ -424,7 +408,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
+	
 				try {
 					if(jevis.isConnectionAlive()){
 						if(!t.isAlive()){

@@ -99,7 +99,7 @@ public class JevisWriteDataNodeDialog extends DefaultNodeSettingsPane {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				// TODO Auto-generated method stub
+			
 				if(m_deleteDataPoint.getBooleanValue()){
 					m_update.setBooleanValue(!m_deleteDataPoint.getBooleanValue());
 					m_newDataPoint.setBooleanValue(!m_deleteDataPoint.getBooleanValue());

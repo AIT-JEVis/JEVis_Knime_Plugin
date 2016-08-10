@@ -3,7 +3,6 @@ package org.ait.knimejevisplugin.writedata;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -14,8 +13,6 @@ import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisSample;
 import org.jevis.api.sql.JEVisDataSourceSQL;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
@@ -96,7 +93,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
 	protected JevisWriteDataNodeModel() {
        
         super(1, 0);
-        //TODO: Add all SettingsModells to List! 
+        
         settingsModels.add(m_update);
         settingsModels.add(m_objID);
         settingsModels.add(m_newDataPoint);
@@ -112,41 +109,41 @@ public class JevisWriteDataNodeModel extends NodeModel {
             final ExecutionContext exec) throws Exception {
     	connectingtojevis();
     	try{
-    	if(jevis.isConnectionAlive()){
-        	BufferedDataTable table = inData[IN_PORT];
-        	JEVisWriter writer = new JEVisWriter(jevis);
-        	try{
-        	if(m_update.getBooleanValue()){
-            	JEVisObject obj = jevis.getObject(m_objID.getLongValue());
-        		fetchingInformationFromInPut(table, writer, obj);
-        		fetchingMetaData(obj);
-        		obj.commit();
-        		if(obj.getAttribute("Value").hasSample()){
-        			logger.info("Samples updated");
-        		}
-        	}
-        	if(m_newDataPoint.getBooleanValue()){
-        		
-            	long objID = writer.createNewDatapointUnderParent(
-            			m_objID.getLongValue(), m_objectName.getStringValue(), 
-            			m_newDataPointClass.getStringValue());
-            	JEVisObject obj = jevis.getObject(objID);
-            	fetchingInformationFromInPut(table, writer, obj);
-            	fetchingMetaData(obj);
-            	obj.commit();
-        		if(obj.getAttribute("Value").hasSample()){
-        			logger.info("New Object build!");
-        		}
-        	}
-        	if(m_deleteDataPoint.getBooleanValue()){
-        		writer.clearDataPointData(m_objID.getLongValue());
-        	}
+    		if(jevis.isConnectionAlive()){
+    			BufferedDataTable table = inData[IN_PORT];
+            	JEVisWriter writer = new JEVisWriter(jevis);
+            	try{
+            	if(m_update.getBooleanValue()){
+                	JEVisObject obj = jevis.getObject(m_objID.getLongValue());
+            		fetchingInformationFromInPut(table, writer, obj);
+            		fetchingMetaData(obj);
+            		obj.commit();
+            		if(obj.getAttribute("Value").hasSample()){
+            			logger.info("Samples updated");
+            		}
+            	}
+            	if(m_newDataPoint.getBooleanValue()){
+            		
+                	long objID = writer.createNewDatapointUnderParent(
+                			m_objID.getLongValue(), m_objectName.getStringValue(), 
+                			m_newDataPointClass.getStringValue());
+                	JEVisObject obj = jevis.getObject(objID);
+                	fetchingInformationFromInPut(table, writer, obj);
+                	fetchingMetaData(obj);
+                	obj.commit();
+            		if(obj.getAttribute("Value").hasSample()){
+            			logger.info("New Object build!");
+            		}
+            	}
+            	if(m_deleteDataPoint.getBooleanValue()){
+            		writer.clearDataPointData(m_objID.getLongValue());
+            	}
         	
-        	}catch(Exception e){
-        		e.printStackTrace();
-        		logger.error("Error while trying Operation");       		
-        	}
-    	}
+	        	}catch(Exception e){
+	        		e.printStackTrace();
+	        		logger.error("Error while trying Operation");       		
+	        	}
+    		}
     	}catch(JEVisException je){
     		je.printStackTrace();
     		logger.error("Connection to JEVis Lost");
@@ -160,18 +157,10 @@ public class JevisWriteDataNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        // TODO Code executed on reset.
+    
         // Models build during execute are cleared here.
         // Also data handled in load/saveInternals will be erased here.
-    	
-/*    	try {
-    		if(jevis.isConnectionAlive()){
-    			jevis.disconnect();
-    		}
-		} catch (JEVisException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+
     }
 
     /**
@@ -226,7 +215,6 @@ public class JevisWriteDataNodeModel extends NodeModel {
     		e.printStackTrace();
     		logger.error("Connection error! Check Jevis settings and try again!");
     	}
-    	
     }
   
   private void fetchingInformationFromInPut(BufferedDataTable table, JEVisWriter writer, JEVisObject obj) throws JEVisException{
@@ -237,11 +225,6 @@ public class JevisWriteDataNodeModel extends NodeModel {
             DataCell cell2 = row.getCell(2);
             if (!cell0.isMissing() && !cell1.isMissing() && !cell2.isMissing()) {
             	
-            	/*
-            	DateTimeFormatter mformatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
- 	           	String timestamp = ((StringValue)cell0).getStringValue();
- 	           	DateTime date = mformatter.parseDateTime(timestamp);
- 	           	*/
             	GregorianCalendar cal = new GregorianCalendar(((DateAndTimeValue)cell0).getYear(),((DateAndTimeValue)cell0).getMonth(),((DateAndTimeValue)cell0).getDayOfMonth(),((DateAndTimeValue)cell0).getHourOfDay(), ((DateAndTimeValue)cell0).getMinute(),((DateAndTimeValue)cell0).getSecond());
             	
  	           	DateTime date = new DateTime(cal.getTimeInMillis());
@@ -322,8 +305,8 @@ public class JevisWriteDataNodeModel extends NodeModel {
     protected void loadInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        
-        // TODO load internal data. 
+        // no op
+    
         // Everything handed to output ports is loaded automatically (data
         // returned by the execute method, models loaded in loadModelContent,
         // and user settings set through loadSettingsFrom - is all taken care 
@@ -340,7 +323,8 @@ public class JevisWriteDataNodeModel extends NodeModel {
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
        
-        // TODO save internal models. 
+    	// no op
+    	 
         // Everything written to output ports is saved automatically (data
         // returned by the execute method, models saved in the saveModelContent,
         // and user settings saved through saveSettingsTo - is all taken care 

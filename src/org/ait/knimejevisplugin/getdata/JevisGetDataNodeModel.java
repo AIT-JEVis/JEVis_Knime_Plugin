@@ -2,29 +2,18 @@ package org.ait.knimejevisplugin.getdata;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import javax.swing.text.DateFormatter;
-
 import org.ait.knimejevisplugin.DataBaseConfiguration;
-import org.apache.log4j.Logger;
 import org.jevis.api.JEVisAttribute;
-import org.jevis.api.JEVisClass;
-import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
-import org.jevis.api.JEVisRelationship;
 import org.jevis.api.JEVisSample;
-import org.jevis.api.JEVisType;
 import org.jevis.api.sql.JEVisDataSourceSQL;
 import org.joda.time.DateTime;
-import org.joda.time.Months;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.knime.core.data.DataCell;
@@ -32,12 +21,7 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.IntValue;
-import org.knime.core.data.LongValue;
-import org.knime.core.data.StringValue;
-import org.knime.core.data.container.RearrangeColumnsTable;
 import org.knime.core.data.date.DateAndTimeCell;
-import org.knime.core.data.date.DateAndTimeValue;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
@@ -55,7 +39,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
-import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 
@@ -75,12 +58,10 @@ public class JevisGetDataNodeModel extends NodeModel {
 	protected static final NodeLogger logger = NodeLogger
             .getLogger("GetDataLogger");
 	
-	private JEVisObject jObject;
-	
 	private List<SettingsModel> settingsmodels= new ArrayList<SettingsModel>();
 	
 	//Dialog information
-	static final int nodeID = 494;
+	static final int nodeID = 0;
 	static final String CFGKEY_nodeID = "Node ID";
 
 
@@ -190,7 +171,8 @@ public class JevisGetDataNodeModel extends NodeModel {
      * 
      * {@inheritDoc}
      */
-    @Override
+    @SuppressWarnings({ "static-access", "deprecation" })
+	@Override
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
     	
@@ -339,7 +321,6 @@ public class JevisGetDataNodeModel extends NodeModel {
     	buf.close();
     	BufferedDataTable out = buf.getTable();
      
-    
         return new BufferedDataTable[]{out};
     }
 
@@ -408,15 +389,9 @@ public class JevisGetDataNodeModel extends NodeModel {
 	        	filterDate(value);
 	        }
 	        for(JEVisSample value : list_timefilvalue){
-	        	
-//	            DateTime timestampString = value.getTimestamp();
-	            //DateTimeFormatter mformatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
-	            //String timestamp = mformatter.print(timestampString);
-	            //logger.info("Working on Timestamp: "+ timestamp);                     
+	        	                   
 	            //Filling the rows of the table
 	            GregorianCalendar cal = value.getTimestamp().toGregorianCalendar();
-	           
-	            
 	            DataCell[]cells = new DataCell[result.getNumColumns()];
 	            cells[0] = new DateAndTimeCell(cal.get(Calendar.YEAR), 
 	            		cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
@@ -439,10 +414,9 @@ public class JevisGetDataNodeModel extends NodeModel {
     	
     	DateTime timestampString;
 		try {
+
 			timestampString = value.getTimestamp();
 	        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
-
-	        
 	        DateTime start_Time = formatter.parseDateTime(startTime);
 	        DateTime end_Time = formatter.parseDateTime(endTime);
 		    if(start_Time.isBefore(timestampString) && end_Time.isAfter(timestampString)){
@@ -460,15 +434,10 @@ public class JevisGetDataNodeModel extends NodeModel {
      */
     @Override
     protected void reset() {
-        // TODO: generated method stub
+        
     	list_timefilvalue.clear();
     	counter = 0;
-    	/*try {
-			jevis.disconnect();
-		} catch (JEVisException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+
     }
 
     /**
