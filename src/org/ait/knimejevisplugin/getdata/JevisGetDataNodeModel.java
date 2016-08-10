@@ -118,7 +118,7 @@ public class JevisGetDataNodeModel extends NodeModel {
  	//Setting up variables for needed Processing
  	 
  	private JEVisDataSourceSQL jevis; 
-    private BufferedDataContainer buf;
+   // private BufferedDataContainer buf;
     private int counter = 0;
     private String attributeName = "Value";
     
@@ -198,6 +198,8 @@ public class JevisGetDataNodeModel extends NodeModel {
     	logger.setLevel(NodeLogger.LEVEL.INFO);
     	logger.info("JevisDataInformation");
     	DataTableSpec result = new DataTableSpec();
+    	
+    	BufferedDataContainer buf;
     	buf= exec.createDataContainer(result);
     	connectingtojevis();
     	if(jevis.isConnectionAlive()){
@@ -311,9 +313,9 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    		}
 	    		
 	    		for(JEVisAttribute att: jObject.getAttributes()){
-	    			if(att.hasSample()
-	    					&& (!att.getName().equals(
-	    							DataBaseConfiguration.valueAttributeName))){
+	    			if(att.hasSample()){
+	    					//&& (!att.getName().equals(
+	    						//	DataBaseConfiguration.valueAttributeName))){
 	    				pushFlowVariableString(att.getName(), att.getLatestSample().toString());	
 	    			}
 	    			
@@ -324,13 +326,13 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    
 					//filling Table with data
 	    			logger.info("Values found!");
-	    			fillingTable(jObject, result);
+	    			fillingTable(jObject, result, buf);
 	    			exec.checkCanceled();  			
     		}else{
     			logger.error("Check NodeID! NodeID don't has an attribute called Value! "
     					+ " Or node doesn't exist.");    			
     		}
-    		    		
+    		 		
     	}else{
     		logger.error("Jevis connection error!");
     	}
@@ -341,7 +343,7 @@ public class JevisGetDataNodeModel extends NodeModel {
         return new BufferedDataTable[]{out};
     }
 
-    public void connectingtojevis(){
+    public void connectingtojevis() throws ClassNotFoundException{
     	
     	//getting Connection information from selection node if existing
     	if(getAvailableFlowVariables().containsKey("host")
@@ -363,6 +365,7 @@ public class JevisGetDataNodeModel extends NodeModel {
     	
     	try{
     	//Connecting to Jevis with connection information
+    	Class.forName("com.mysql.jdbc.Driver");
     	jevis = new JEVisDataSourceSQL(host, port, sqlSchema, sqlUser, sqlPW);
     	jevis.connect(jevisUser, jevisPW);
     	}catch(JEVisException e){
@@ -394,7 +397,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 		return false;
 	}
     
-    private void fillingTable(JEVisObject my_Object, DataTableSpec result){
+    private void fillingTable(JEVisObject my_Object, DataTableSpec result, BufferedDataContainer buf){
     	
         List<JEVisSample> valueList;
 		try {
@@ -416,7 +419,9 @@ public class JevisGetDataNodeModel extends NodeModel {
 	            
 	            DataCell[]cells = new DataCell[result.getNumColumns()];
 	            cells[0] = new DateAndTimeCell(cal.get(Calendar.YEAR), 
-	            		cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+	            		cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+	            		cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE),
+	            		cal.get(Calendar.SECOND));
 	            cells[1] = new DoubleCell(value.getValueAsDouble());
 	            cells[2] = new StringCell("");
 	            counter++;
@@ -456,6 +461,14 @@ public class JevisGetDataNodeModel extends NodeModel {
     @Override
     protected void reset() {
         // TODO: generated method stub
+    	list_timefilvalue.clear();
+    	counter = 0;
+    	/*try {
+			jevis.disconnect();
+		} catch (JEVisException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
     }
 
     /**

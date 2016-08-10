@@ -370,10 +370,10 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 									
 									getLocation(JevisSelectDataNodeDialog.jevis, locations);
 									diac_location.replaceListItems(locations, null);
-									getcomponents(JevisSelectDataNodeDialog.jevis, components);
-									diac_component.replaceListItems(components, null);
-									getdevicetypes(JevisSelectDataNodeDialog.jevis, devicetypes);
-									diac_deviceType.replaceListItems(devicetypes, null);
+								//	getcomponents(JevisSelectDataNodeDialog.jevis, components);
+								//	diac_component.replaceListItems(components, null);
+								//	getdevicetypes(JevisSelectDataNodeDialog.jevis, devicetypes);
+								//	diac_deviceType.replaceListItems(devicetypes, null);
 	
 								}						 
 							});
@@ -402,8 +402,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 								
 									getcomponents(JevisSelectDataNodeDialog.jevis, components);
 									diac_component.replaceListItems(components, null);
-									getdevicetypes(JevisSelectDataNodeDialog.jevis, devicetypes);
-									diac_deviceType.replaceListItems(devicetypes, null);
+									//getdevicetypes(JevisSelectDataNodeDialog.jevis, devicetypes);
+									//diac_deviceType.replaceListItems(devicetypes, null);
 
 								}						 
 							});

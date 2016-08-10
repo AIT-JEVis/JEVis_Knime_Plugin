@@ -342,7 +342,6 @@ public class JevisSelectDataNodeModel extends NodeModel {
     			logger.warn("Warning no Search selected.");
     		}
     	}
-
     	buf.close();
     	BufferedDataTable out = buf.getTable();
 

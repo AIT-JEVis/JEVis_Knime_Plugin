@@ -3,8 +3,11 @@ package org.ait.knimejevisplugin.writedata;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.ait.knimejevisplugin.DataBaseConfiguration;
 import org.jevis.api.JEVisAttribute;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
@@ -57,14 +60,14 @@ public class JevisWriteDataNodeModel extends NodeModel {
 	static String deleteDataPoint = "Delete DataPoint";
 
 	//Jevis Connection Information
-	public static String host = "jevis3.ait.ac.at";
-	public static String port = "3306";
-	public static String sqlSchema = "jevis";
-	public static String sqlUser = "jevis";
-	public static String sqlPW = "vu5eS1ma";
+	public static String host = DataBaseConfiguration.DEFAULT_Host;// "jevis3.ait.ac.at";
+	public static String port = DataBaseConfiguration.DEFAULT_port;//"3306";
+	public static String sqlSchema = DataBaseConfiguration.DEFAULT_sqlShema;// "jevis";
+	public static String sqlUser = DataBaseConfiguration.DEFAULT_sqlUserName;// "jevis";
+	public static String sqlPW =  DataBaseConfiguration.DEFAULT_sqlPW;//"vu5eS1ma";
 	 	
-	public static String jevisUser = "BerhnardM";
-	public static String jevisPW = "testpass01593"; 
+	public static String jevisUser = DataBaseConfiguration.DEFAULT_jevisUserName;// "BerhnardM";
+	public static String jevisPW = DataBaseConfiguration.DEFAULT_jevisPW;//"testpass01593"; 
 	  
 	private final SettingsModelLong m_objID = 
 			new SettingsModelLong(objID, 0);	
@@ -89,7 +92,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
     /**
      * Constructor for the node model.
      */
-    @SuppressWarnings({ "static-access", "deprecation" })
+    @SuppressWarnings({"static-access", "deprecation" })
 	protected JevisWriteDataNodeModel() {
        
         super(1, 0);
@@ -98,6 +101,8 @@ public class JevisWriteDataNodeModel extends NodeModel {
         settingsModels.add(m_objID);
         settingsModels.add(m_newDataPoint);
         settingsModels.add(m_deleteDataPoint);
+        settingsModels.add(m_objectName);
+        settingsModels.add(m_newDataPointClass);
         
        logger.setLevel(NodeLogger.LEVEL.INFO);
     }
@@ -135,8 +140,9 @@ public class JevisWriteDataNodeModel extends NodeModel {
         	}
         	if(m_deleteDataPoint.getBooleanValue()){
         		writer.clearDataPointData(m_objID.getLongValue());
-        	}}
-        	catch(Exception e){
+        	}
+        	
+        	}catch(Exception e){
         		e.printStackTrace();
         		logger.error("Error while trying Operation");       		
         	}
@@ -145,7 +151,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
     		je.printStackTrace();
     		logger.error("Connection to JEVis Lost");
     	}
-
+    	
         return new BufferedDataTable[]{};
     }
 
@@ -157,6 +163,15 @@ public class JevisWriteDataNodeModel extends NodeModel {
         // TODO Code executed on reset.
         // Models build during execute are cleared here.
         // Also data handled in load/saveInternals will be erased here.
+    	
+/*    	try {
+    		if(jevis.isConnectionAlive()){
+    			jevis.disconnect();
+    		}
+		} catch (JEVisException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
     }
 
     /**
@@ -181,24 +196,30 @@ public class JevisWriteDataNodeModel extends NodeModel {
         return new DataTableSpec[]{};
     }
 
-  public void connectingtojevis(){
+  public void connectingtojevis() throws ClassNotFoundException{
     	
     	//getting Connection information from selection node if existing
     	if(getAvailableFlowVariables().containsKey("host")
     			&& getAvailableFlowVariables().containsKey("port")
     			&& getAvailableFlowVariables().containsKey("sqlSchema")
     			&& getAvailableFlowVariables().containsKey("sqlUser")
-    			&& getAvailableFlowVariables().containsKey("sqlPW")){
+    			&& getAvailableFlowVariables().containsKey("sqlPW")
+    			&& getAvailableFlowVariables().containsKey("JEVisUser")
+    			&& getAvailableFlowVariables().containsKey("JEVisPW")){
 	    	
 	    	host = peekFlowVariableString("host");
 	    	port = peekFlowVariableString("port");
 	    	sqlSchema = peekFlowVariableString("sqlSchema");
 	    	sqlUser = peekFlowVariableString("sqlUser");
 	    	sqlPW = peekFlowVariableString("sqlPW");
+	    	
+	    	jevisUser = peekFlowVariableString("JEVisUser");
+	    	jevisPW = peekFlowVariableString("JEVisPW");
     	}
     	
     	try{
     	//Connecting to Jevis with connection information
+    	Class.forName("com.mysql.jdbc.Driver");	
     	jevis = new JEVisDataSourceSQL(host, port, sqlSchema, sqlUser, sqlPW);
     	jevis.connect(jevisUser, jevisPW);
     	}catch(JEVisException e){
@@ -215,29 +236,42 @@ public class JevisWriteDataNodeModel extends NodeModel {
             DataCell cell1 = row.getCell(1);
             DataCell cell2 = row.getCell(2);
             if (!cell0.isMissing() && !cell1.isMissing() && !cell2.isMissing()) {
-            		
+            	
+            	/*
             	DateTimeFormatter mformatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.s");
  	           	String timestamp = ((StringValue)cell0).getStringValue();
  	           	DateTime date = mformatter.parseDateTime(timestamp);
+ 	           	*/
+            	GregorianCalendar cal = new GregorianCalendar(((DateAndTimeValue)cell0).getYear(),((DateAndTimeValue)cell0).getMonth(),((DateAndTimeValue)cell0).getDayOfMonth(),((DateAndTimeValue)cell0).getHourOfDay(), ((DateAndTimeValue)cell0).getMinute(),((DateAndTimeValue)cell0).getSecond());
+            	
+ 	           	DateTime date = new DateTime(cal.getTimeInMillis());
+ 	           	
  	           	double value = ((DoubleValue) cell1).getDoubleValue();
  	           	String unit = ((StringValue) cell2).getStringValue();
- 	           	logger.info(timestamp + " "+ value + " "+ unit);
+ 	           	logger.info(" "+ value + " "+ unit);
  	           	writer.addData(obj, date, value, unit, samples);
             
             }         	
-        }	
+        }
+		try{
 		obj.getAttribute("Value").addSamples(samples);
 		obj.commit();
+		}catch(JEVisException e){
+			logger.error("Inserting Data failed.");
+
+		}		
   }
         
   private void fetchingMetaData(JEVisObject object) throws JEVisException{
 	  for(JEVisAttribute att: object.getAttributes()){
 		 
-		 List<JEVisSample> sampellist = new ArrayList<JEVisSample>();
-		 JEVisSample sample = att.buildSample(null, peekFlowVariableString(att.getName()));
-		 sampellist.add(sample);
-		 att.deleteAllSample();
-		 att.addSamples(sampellist);
+		 if(!att.getName().equals(DataBaseConfiguration.valueAttributeName)){
+			 List<JEVisSample> sampellist = new ArrayList<JEVisSample>();
+			 JEVisSample sample = att.buildSample(null, peekFlowVariableString(att.getName()));
+			 sampellist.add(sample);
+			 att.deleteAllSample();
+			 att.addSamples(sampellist);
+		 }
 	  }
 	  
   }
@@ -250,7 +284,6 @@ public class JevisWriteDataNodeModel extends NodeModel {
   	  for(SettingsModel model : settingsModels){
       	   model.saveSettingsTo(settings);
          }
-       
     }
 
     /**
