@@ -49,18 +49,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
         settingsmodels.add(jevPW);
         settingsmodels.add(jUser);
         settingsmodels.add(jevUser);
-//      settingsmodels.add(m_AttributeSearch);
         settingsmodels.add(m_allChildren);
         settingsmodels.add(m_children);
         settingsmodels.add(m_component);
         settingsmodels.add(m_devicetype);
         settingsmodels.add(m_enableAttribute);
-//        settingsmodels.add(m_enableDevice);
-//        settingsmodels.add(m_enableComponent);
-//        settingsmodels.add(m_enableLocation);
         settingsmodels.add(m_enableNodeSearch);
         settingsmodels.add(m_enableNodeType);
-//        settingsmodels.add(m_enableProject);
         settingsmodels.add(m_enableStructure);
         settingsmodels.add(m_nodeId);
         settingsmodels.add(m_nodeType);
@@ -179,25 +174,14 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	private final SettingsModelString m_component = new SettingsModelString(
    			DataBaseConfiguration.componentModelName," ");
    	
-/*
- *    	private final SettingsModelBoolean m_enableProject = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableProject, false);
-   	private final SettingsModelBoolean m_enableLocation = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableLocation, false);   			
- 	private final SettingsModelBoolean m_enableComponent = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableComponent, false);
-   	private final SettingsModelBoolean m_enableDevice = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableDevice, false);
-*/  
+
+  
    	private final SettingsModelBoolean m_enableNodeType = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableNodeType, false);
      
    	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableAttributeSearch, false);
-	/*
-   	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
-   			JevisSelectDataNodeModel.attributeModelName, " ");
-*/   	
+ 	
    	private final SettingsModelString m_attributeModelList1 = new SettingsModelString(
    			JevisSelectDataNodeModel.attributeModelList1, " ");
    	private final SettingsModelString m_attributeModelList2 = new SettingsModelString(
@@ -284,13 +268,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
         			result.fillResultTable(buf, resultspec, searcher.list_projects, 
             				searcher.list_location,searcher.list_component,
             				searcher.list_datapoint, searcher.list_comment);
-        			
-        	/*	else{
-        			result.fillResultTable(buf, resultspec, searcher.list_projects, 
-            				searcher.list_location,searcher.list_component,
-            				searcher.list_attributes, searcher.list_comment);
-        		}
-	*/
+        		
     		}
     		
     		else if(m_enableStructure.getBooleanValue()){
@@ -383,7 +361,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     }
 
      
-    // Testpurpose
+    /* Testmethod for credentials currently not supported 
     private void credentials(){
         //Test method for credentials
     	credential = new Credentials(

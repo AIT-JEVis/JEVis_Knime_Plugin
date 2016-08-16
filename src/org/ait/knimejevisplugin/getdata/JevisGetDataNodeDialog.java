@@ -41,15 +41,6 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
     					JevisGetDataNodeModel.CFGKEY_nodeID, JevisGetDataNodeModel.nodeID),
     			"NodeID",
     			0));
-    	/*
-    	addDialogComponent(new DialogComponentString(
-    			new SettingsModelString(JevisGetDataNodeModel.startTime, "2016-01-20 00:00:00.0"),
-    			"Put in the first Date (\"yyyy-mm-dd\")"));
-    	
-    	addDialogComponent(new DialogComponentString(
-    			new SettingsModelString(JevisGetDataNodeModel.endTime, "2016-01-22 00:00:00.0"),
-    			"Put in the last Date (\"yyyy-mm-dd hh:mm:ss.s\")"));
-    	*/	   	
     	createNewGroup("Start Date:");
     	setHorizontalPlacement(true);
 	    addDialogComponent(new DialogComponentString(
@@ -120,16 +111,6 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
     	}
     	
     }
-    /*
-    private int getfirstDate(){
-    	
-    	int year= 2016; 
-    	JEVisObject jObject = jevis.getObject((long) JevisGetDataNodeModel.m_nodeID.getIntValue());
-    	
-    	
-		return year;
-    	
-    }*/
 
 }
 

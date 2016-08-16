@@ -121,16 +121,11 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 		
 		for(JEVisObject child : children){			
 			
-/*			if(enabledAttribute){
-				startAttributesCheck(child);
-			}
-*/			
-			//startAttributesCheck(child);
 			
 			if(child.getJEVisClass() == jevis.getJEVisClass(
 					DataBaseConfiguration.projectLevelName)){
 				System.out.println("Project:" + child.getName());
-				//checknodeLevelInformation(child, project, organization);
+				
 				if(!project.equals(" ")|| startAttributeCheckforDatapoint(child)){
 					if(child.getName().equals(project)){
 						organization = child;			
@@ -146,7 +141,7 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 			else if(child.getJEVisClass().equals(jevis.getJEVisClass(
 					DataBaseConfiguration.locationLevelName))){
 				System.out.println("Location:" + child.getName());
-			//checknodeLevelInformation(child, location, building);
+	
 				if(!location.equals(" ")){
 					if(child.getName().equals(location)){
 						
@@ -165,7 +160,7 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 			else if(child.getJEVisClass()==jevis.getJEVisClass(
 					DataBaseConfiguration.componentLevelName)){
 				System.out.println("Component:" + child.getName());
-				//checknodeLevelInformation(child, component, componentlevel);
+				
 				if(!component.equals(" ") || startAttributeCheckforDatapoint(child)){
 					if(child.getName().equals(component)){
 						componentlevel = child;
@@ -212,22 +207,7 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 		}
 		
 	}
-/*	
-	private void checknodeLevelInformation(JEVisObject child, String nodeName,
-			JEVisObject informationObject) throws JEVisException{
-		if(!nodeName.equals(" ")){
-			if(child.getName().equals(nodeName)){
-				informationObject = child;
-				
-				computeResult(child.getChildren());
-			}
-		}else{
-			informationObject = child;
-			computeResult(child.getChildren());
-			
-		}
-	}
-	*/
+
 /*
  * Search for a specific Nodetype and filtering after Project, Location, or Component	
  */
@@ -303,67 +283,7 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 	/*
 	 * Main Search function for information
 	 */
-/*	private List<JEVisObject> findParents(JEVisObject jObject, List<JEVisObject> list)
- *  throws JEVisException{
 
-		list= jObject.getParents();
-		for(JEVisObject listObject : list){			
-			if(listObject.getJEVisClass().equals(jevis.getJEVisClass(
-					DataBaseConfiguration.projectLevelName))){
-				return list;
-			}
-			else{
-				findParents(listObject,list);
-			}
-		}
-		return list;
-	}
-*/	
-	// search for Attributes in Nodes:
-/*	
-	 protected void startAttributesCheck(JEVisObject child) throws JEVisException{
-		List<JEVisAttribute> attributes = child.getAttributes();
-		for(JEVisAttribute attribute : attributes){
-			checkAttribute(child, attribute, attributevalue1, attribute1, operator1);
-			checkAttribute(child, attribute, attributevalue2, attribute2, operator2);
-			checkAttribute(child, attribute, attributevalue3, attribute3, operator3);
-			checkAttribute(child, attribute, attributevalue4, attribute4, operator4);
-		}
-	}
-	
-	private void checkAttribute(JEVisObject child,
-			JEVisAttribute attribute, String attributevalue, String attributeName,
-			String operator) 
-					throws JEVisException{
-		
-		if(attribute.getName().equals(attributeName)){
-			if(attribute.hasSample()){
-				
-				if((!list_attributes.contains(child)) && 
-						attribute.getLatestSample().getValue().toString().
-						matches(".*"+attributevalue.trim()+ ".*")
-						&& operator.equals("contains") ){
-					list_attributes.add(child);
-					list_comment.add(attribute.getLatestSample().getValueAsString());
-				}
-				if((!list_attributes.contains(child)) && 
-						attribute.getLatestSample().getValue().toString()
-						.equals(attributevalue.trim()) && operator.equals("equals")){
-					list_attributes.add(child);
-					list_comment.add(attribute.getLatestSample().getValueAsString());
-				}
-			}
-			else{
-				/*
-				if(!list_attributes.contains(child)){	
-					list_attributes.add(child);
-					list_comment.add("No Sample in attribute");
-					
-				}
-			}
-		}
-	}
-*/	
 	private boolean startAttributeCheckforDatapoint(JEVisObject object) throws JEVisException{
 		for(JEVisAttribute attribute : object.getAttributes()){
 			if(checkAttributeforDataPoint(

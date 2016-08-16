@@ -30,25 +30,25 @@ public class DataBaseConfiguration {
 	/* Setting up JEVisDefaultConnection*/
 	
 	public static  String hostModelName = "Hostaddress";
-	public static  String DEFAULT_Host=""; //"jevis3.ait.ac.at";
+	public static  String DEFAULT_Host=""; 
 	
 	public static String portModelName = "Port";
-	public static String DEFAULT_port ="";//"3306";
+	public static String DEFAULT_port ="";
 	
 	public static String sqlSchemaModelName = "Schema";
-	public static String DEFAULT_sqlShema = "";// "jevis";
+	public static String DEFAULT_sqlShema = "";
 	
    	public static String sqlUserModelName = "User";
-   	public static String DEFAULT_sqlUserName ="";// "jevis";
+   	public static String DEFAULT_sqlUserName ="";
    	
    	public static String sqlPWModelName = "Password";
-   	public static String DEFAULT_sqlPW ="";// "vu5eS1ma";
+   	public static String DEFAULT_sqlPW ="";
    	
    	public static String jevisUserModelName = "JevisUser";
-   	public static String DEFAULT_jevisUserName = "";//"BerhnardM";
+   	public static String DEFAULT_jevisUserName = "";
    	
    	public static String jevisPWModelName = "JevisPassword";
-   	public static String DEFAULT_jevisPW ="";// "testpass01593";
+   	public static String DEFAULT_jevisPW ="";
 	
    	//Methods
 	public static void fillLevel(){

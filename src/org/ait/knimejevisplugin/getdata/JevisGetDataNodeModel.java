@@ -87,14 +87,14 @@ public class JevisGetDataNodeModel extends NodeModel {
 	static final String endSecond = "endSecond";
 	
 	//Jevis Connection information
-	public static String host = DataBaseConfiguration.DEFAULT_Host; //"jevis3.ait.ac.at";
- 	public static String port = DataBaseConfiguration.DEFAULT_port; //"3306";
- 	public static String sqlSchema =DataBaseConfiguration.DEFAULT_sqlShema; // "jevis";
- 	public static String sqlUser = DataBaseConfiguration.DEFAULT_sqlUserName; //"jevis";
- 	public static String sqlPW = DataBaseConfiguration.DEFAULT_sqlPW; //"vu5eS1ma";
+	public static String host = DataBaseConfiguration.DEFAULT_Host; 
+ 	public static String port = DataBaseConfiguration.DEFAULT_port; 
+ 	public static String sqlSchema =DataBaseConfiguration.DEFAULT_sqlShema; 
+ 	public static String sqlUser = DataBaseConfiguration.DEFAULT_sqlUserName;
+ 	public static String sqlPW = DataBaseConfiguration.DEFAULT_sqlPW;
  	
- 	public static String jevisUser = DataBaseConfiguration.DEFAULT_jevisUserName;// "BerhnardM";
- 	public static String jevisPW = DataBaseConfiguration.DEFAULT_jevisPW; //"testpass01593";
+ 	public static String jevisUser = DataBaseConfiguration.DEFAULT_jevisUserName;
+ 	public static String jevisPW = DataBaseConfiguration.DEFAULT_jevisPW; 
 	
  	//Setting up variables for needed Processing
  	 
@@ -133,11 +133,6 @@ public class JevisGetDataNodeModel extends NodeModel {
     private final SettingsModelInteger m_nodeID = new SettingsModelInteger(
     		JevisGetDataNodeModel.CFGKEY_nodeID, JevisGetDataNodeModel.nodeID);
     
-    //private final SettingsModelString m_startTime = new SettingsModelString(
-    //		JevisGetDataNodeModel.startTime, "2016-01-20 00:00:00.0");
-    
-    //private final SettingsModelString m_endTime = new SettingsModelString(
-    //		JevisGetDataNodeModel.endTime, "2016-01-22 00:00:00.0");
     private final SettingsModelString m_startDate = new SettingsModelString(
     		JevisGetDataNodeModel.startDate, "2016-01-20");
     private final SettingsModelString m_endDate = new SettingsModelString(
@@ -296,8 +291,7 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    		
 	    		for(JEVisAttribute att: jObject.getAttributes()){
 	    			if(att.hasSample()){
-	    					//&& (!att.getName().equals(
-	    						//	DataBaseConfiguration.valueAttributeName))){
+	    				
 	    				pushFlowVariableString(att.getName(), att.getLatestSample().toString());	
 	    			}
 	    			
@@ -448,16 +442,6 @@ public class JevisGetDataNodeModel extends NodeModel {
     @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
             throws InvalidSettingsException {
-    	/*
-    	for(int i = 0; i< inSpecs[IN_PORT].getNumColumns(); i++){
-    		DataColumnSpec c = inSpecs[IN_PORT].getColumnSpec(i);
-    		if(i == 0){
-        		if(!c.getType().isCompatible(LongValue.class)){
-        	 		throw new InvalidSettingsException(
-            				"Invalid column type at first column"); 
-        		}
-    		}
-    	}*/
     	
     	if(getAvailableFlowVariables().containsKey("host")
     			&& getAvailableFlowVariables().containsKey("port")

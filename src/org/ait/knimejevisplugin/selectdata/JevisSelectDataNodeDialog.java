@@ -93,16 +93,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    			DataBaseConfiguration.deviceModelName," ");
    	private final SettingsModelString m_component = new SettingsModelString(
    			DataBaseConfiguration.componentModelName," ");
-/*   	
-   	private final SettingsModelBoolean m_enableProject = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableProject, false);
-   	private final SettingsModelBoolean m_enableLocation = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableLocation, false);
-   	private final SettingsModelBoolean m_enableComponent = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableComponent, false);
-   	private final SettingsModelBoolean m_enableDevice = new SettingsModelBoolean(
-   			JevisSelectDataNodeModel.enableDevice, false);
-*/  	
    	
    	private final SettingsModelBoolean m_enableNodeType = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableNodeType, false);
@@ -111,9 +101,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    	   	
    	private final SettingsModelBoolean m_enableAttribute = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableAttributeSearch, false); 	
-/* 	private final SettingsModelString m_AttributeSearch = new SettingsModelString(
-   			JevisSelectDataNodeModel.attributeModelName, " ");
-*/
+
    	private final SettingsModelString m_attributeModelList1 = new SettingsModelString(
    			JevisSelectDataNodeModel.attributeModelList1, " ");
    	private final SettingsModelString m_attributeModelList2 = new SettingsModelString(
@@ -155,27 +143,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
    			JevisSelectDataNodeModel.siblings, false);
    	private final SettingsModelBoolean m_allChildren = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.allChildren, false);
-   	/*
-	DialogComponentStringSelection diac_nodeType = new DialogComponentStringSelection(
-			m_nodeType, "NodeType", nodefilter);
-	
-	DialogComponentStringSelection diac_projects = 
-			new DialogComponentStringSelection(m_project, 
-			"Project", projects);
-	
-	DialogComponentStringSelection diac_location = new DialogComponentStringSelection(
-					m_location, "Location", locations);
-	
-	DialogComponentStringSelection diac_deviceType = new DialogComponentStringSelection(
-			m_devicetype, "Device", devicetypes);
-	
-	DialogComponentStringSelection diac_component = new DialogComponentStringSelection(
-			m_component, "Component", components);
-	
-   	
-   	
-   	
-   	
    	
     /**
      * New pane for configuring the JevisSelectData node.
@@ -194,13 +161,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		attributes.add(" ");
 		locations.add(" ");
         attributesfiltered.add(" ");
-       
-        /*diac_nodeType.replaceListItems(nodefilter, null);
-        diac_projects.replaceListItems(projects, null);
-        diac_location.replaceListItems(locations, null);
-        diac_component.replaceListItems(components, null);
-        diac_deviceType.replaceListItems(devicetypes, null);
-        */
         
         operators.add("contains");
         operators.add("equals");
@@ -223,9 +183,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     			m_component, "Component", components);
     	
     	
-    /*	DialogComponentStringSelection diac_attribute = new DialogComponentStringSelection(
-    			m_AttributeSearch, "Select available Attribute", attributes);
-    */	
     	DialogComponentStringSelection diac_attribute1 = new DialogComponentStringSelection(
     			m_attributeModelList1, " ", attributesfiltered);
     	DialogComponentStringSelection diac_attribute2 = new DialogComponentStringSelection(
@@ -288,9 +245,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 					if(jevis.isConnectionAlive()){
 						
 						t1.start();
-//			        	diac_attribute.replaceListItems(attributes, null);
-						JevisSelectDataNodeModel.logger.warn("Connecting to Jevis. "
-								+ "May Take a while!");
+//			  
+
 
 					}
 				} catch (JEVisException e1) {
@@ -326,24 +282,14 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Override Attribute Filter."));
     	//Searching for Attributes like project, location, nodeType, device and component
     	setHorizontalPlacement(true);
-/*    	addDialogComponent(new DialogComponentBoolean(m_enableProject, 
-    			"enable Project search:"));
-    	m_enableProject.addChangeListener(new ChangeListener() {
-			
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				
-				m_project.setEnabled(m_enableProject.getBooleanValue());
-			}
-		});
-*/    	
+
     	createNewGroup("Filter for Levels in Database. ");
     	addDialogComponent(diac_projects);
     	m_project.addChangeListener(new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				//putting them into Button will be a faster solution but also feasable?
+
 	        	
 				try {
 					if(jevis.isConnectionAlive()){
@@ -364,7 +310,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 							});
 							t.start();
 						}
-						//wait();
+						
 					}
 				} catch (JEVisException e1) {
 					
@@ -397,7 +343,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 						else{
 							System.out.println("Blocked");
 						}
-						//wait();
+						
 					}
 				} catch (JEVisException e1) {
 					
@@ -428,7 +374,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 						else{
 							System.out.println("Blocked");
 						}
-						//wait();
+						
 					}
 				} catch (JEVisException e1) {
 					
@@ -438,52 +384,23 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		});
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
-/*    	addDialogComponent(new DialogComponentBoolean(m_enableLocation, 
-    			"enable location search:"));
-    	m_enableLocation.addChangeListener(new ChangeListener() {
-			
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				
-				m_location.setEnabled(m_enableLocation.getBooleanValue());
-			}
-		});
-*/    	
+
     	addDialogComponent(diac_location);
 
-    	//addDialogComponent(new DialogComponentString(m_searchNodeType," "));
+
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
-/*		addDialogComponent(new DialogComponentBoolean(
-    			m_enableDevice, "Enable Device Search"));
-    	m_enableDevice.addChangeListener(new ChangeListener() {
-			
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				
-				m_devicetype.setEnabled(m_enableDevice.getBooleanValue());
-			}
-		});
-*/
     	addDialogComponent(diac_component);
-    	//addDialogComponent(new DialogComponentString(m_searchDeviceType, " "));
+
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
-/*    	addDialogComponent(new DialogComponentBoolean(m_enableComponent, "Enable Component Search"));
-    	m_enableComponent.addChangeListener(new ChangeListener() {
-			
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				m_component.setEnabled(m_enableComponent.getBooleanValue());
-			}
-		});
-*/   	
+
     	
     	addDialogComponent(diac_deviceType);
     	createNewGroup("Search for Attibutes:");
     	setHorizontalPlacement(true);
     	    	
-//    	addDialogComponent(diac_attribute);
+
     	
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
@@ -521,7 +438,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		});
     	addDialogComponent(diac_nodeType);
     	
-    	//createNewTab("Attribute Search");
 	
     	createNewTab("Structure Search");
     	createNewGroup("Search with structure");
@@ -585,6 +501,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	devicetypes.add(" ");
     	try{
     		if(jevis.isConnectionAlive()){
+    			//filling device type string selection list:
     			long id = 0;
     			for(JEVisObject obj : jevis.getObjects(jevis.getJEVisClass(DataBaseConfiguration.projectLevelName),true)){
     				if(m_location.getStringValue().equals(" ")){
@@ -609,24 +526,9 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
        				fillList(parent, DataBaseConfiguration.deviceLevelName,devicetypes);
 
     			}
-    			//filling device type string selection list:
-    /*			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
-    					DataBaseConfiguration.deviceLevelName), true).size();i++){
-    				if(!devicetypes.contains(jevis.getObjects(
-    						jevis.getJEVisClass(DataBaseConfiguration.deviceLevelName), true).get(i).getName())){
-    					if(getParent(jevis.getObjects(jevis.getJEVisClass(
-								DataBaseConfiguration.deviceLevelName), true).
-						get(i)).getName().equals(m_component.getStringValue())){
-        					devicetypes.add(jevis.getObjects(jevis.getJEVisClass(DataBaseConfiguration.deviceLevelName), true).
-        							get(i).getName());
-    					}
-    					else if(m_component.getStringValue().equals(" ") || m_component.getStringValue().isEmpty()){
-          					devicetypes.add(jevis.getObjects(jevis.getJEVisClass(DataBaseConfiguration.deviceLevelName), true).
-        							get(i).getName());
-    					}
-    				}
-    			}
-    */		}
+    			
+   
+		}
     	}catch(JEVisException e){
     		e.printStackTrace();
     	}
@@ -634,7 +536,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     
     
     private void fillList(JEVisObject parent, String level, ArrayList<String> list) throws JEVisException{
-    	JEVisObject object= null;
     	for(JEVisObject obj: parent.getChildren()){
 			if(!DataBaseConfiguration.checkLevel(
 					obj,level, jevis)){
@@ -673,27 +574,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 
     			}
     			
-    			
-    			
-    			
-    			/*
-    			
-    			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
-    					DataBaseConfiguration.componentLevelName), true).size();i++){
-    				if(!components.contains(jevis.getObjects(
-    						jevis.getJEVisClass(DataBaseConfiguration.componentLevelName), true).get(i).getName())){
-       					if(getParent(jevis.getObjects(jevis.getJEVisClass(
-								DataBaseConfiguration.componentLevelName), true).
-						get(i)).getName().equals(m_location.getStringValue())){
-        					components.add(jevis.getObjects(jevis.getJEVisClass(DataBaseConfiguration.componentLevelName), true).
-        							get(i).getName());
-       					}
-       					else if(m_location.getStringValue().equals(" ") || m_location.getStringValue().isEmpty()){
-        					components.add(jevis.getObjects(jevis.getJEVisClass(DataBaseConfiguration.componentLevelName), true).
-        							get(i).getName());
-       					}
-    				}
-    			}*/
     		}
     	}catch(JEVisException e){
     		e.printStackTrace();
@@ -722,34 +602,12 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 
     			}
     			
-    			
-    			/*
-    			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
-    					DataBaseConfiguration.locationLevelName), true).size();i++){
-    				if(!locations.contains(jevis.getObjects(
-    						jevis.getJEVisClass(
-    								DataBaseConfiguration.locationLevelName), true)
-    						.get(i).getName()))
-    						/*&& jevis.getObjects(jevis.getJEVisClass(
-    								DataBaseConfiguration.locationLevelName),true)
-    						.get(i).getParents().get(0).getName()
-    						.equals(m_project.getStringValue())){
-    					
-    					if(getParent(jevis.getObjects(jevis.getJEVisClass(
-    									DataBaseConfiguration.locationLevelName), true).
-    							get(i)).getName().equals(m_project.getStringValue())){
-    						locations.add(jevis.getObjects(jevis.getJEVisClass(
-									DataBaseConfiguration.locationLevelName), true).
-							get(i).getName());
-    					}
-    				}
-    			}*/
     		}
     	}catch(JEVisException e){
     		e.printStackTrace();
     	}
     }
-    
+    /*Method not used:
     private JEVisObject getParent(JEVisObject inobj) throws JEVisException{
     	JEVisObject object= null;
     	for(JEVisObject obj: inobj.getParents()){
@@ -767,7 +625,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     		}
     	}
     	return object;
-    }
+    }*/
 
     public void getAttributes(JEVisDataSourceSQL jevis, ArrayList<String> attributes){
     	try{

@@ -57,14 +57,14 @@ public class JevisWriteDataNodeModel extends NodeModel {
 	static String deleteDataPoint = "Delete DataPoint";
 
 	//Jevis Connection Information
-	public static String host = DataBaseConfiguration.DEFAULT_Host;// "jevis3.ait.ac.at";
-	public static String port = DataBaseConfiguration.DEFAULT_port;//"3306";
-	public static String sqlSchema = DataBaseConfiguration.DEFAULT_sqlShema;// "jevis";
-	public static String sqlUser = DataBaseConfiguration.DEFAULT_sqlUserName;// "jevis";
-	public static String sqlPW =  DataBaseConfiguration.DEFAULT_sqlPW;//"vu5eS1ma";
+	public static String host = DataBaseConfiguration.DEFAULT_Host;
+	public static String port = DataBaseConfiguration.DEFAULT_port;
+	public static String sqlSchema = DataBaseConfiguration.DEFAULT_sqlShema;
+	public static String sqlUser = DataBaseConfiguration.DEFAULT_sqlUserName;
+	public static String sqlPW =  DataBaseConfiguration.DEFAULT_sqlPW;
 	 	
-	public static String jevisUser = DataBaseConfiguration.DEFAULT_jevisUserName;// "BerhnardM";
-	public static String jevisPW = DataBaseConfiguration.DEFAULT_jevisPW;//"testpass01593"; 
+	public static String jevisUser = DataBaseConfiguration.DEFAULT_jevisUserName;
+	public static String jevisPW = DataBaseConfiguration.DEFAULT_jevisPW; 
 	  
 	private final SettingsModelLong m_objID = 
 			new SettingsModelLong(objID, 0);	
@@ -158,6 +158,8 @@ public class JevisWriteDataNodeModel extends NodeModel {
     @Override
     protected void reset() {
     
+    	//no op
+    	
         // Models build during execute are cleared here.
         // Also data handled in load/saveInternals will be erased here.
 
