@@ -14,6 +14,7 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.date.DateAndTimeCell;
 import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataContainer;
@@ -30,7 +31,7 @@ public class ResultTable {
 	
 	protected DataTableSpec createOutputTableSpecforDatapoints(){
 		DataColumnSpec nodeIDSpec = new DataColumnSpecCreator(
-				"NodeID", LongCell.TYPE).createSpec();
+				"NodeID", IntCell.TYPE).createSpec();
 		DataColumnSpec deviceTypeSpec = new DataColumnSpecCreator(
 				DataBaseConfiguration.deviceModelName, StringCell.TYPE).createSpec();
 		
@@ -69,7 +70,7 @@ public class ResultTable {
 		cells = new DataCell[spec.getNumColumns()];
 
 		for(int i= 0; i< list_datapoint.size();i++ ){
-			cells[0] = new LongCell(list_datapoint.get(i).getID());
+			cells[0] = new IntCell(list_datapoint.get(i).getID().intValue());
 	        cells[1] = new StringCell(list_datapoint.get(i).getName());
 	        try{
 	        	cells[2] = new StringCell(list_projects.get(i).getName());

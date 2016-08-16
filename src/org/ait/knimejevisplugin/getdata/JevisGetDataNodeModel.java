@@ -276,8 +276,8 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    		//Pushing basic information of table into flow variables
 	    		logger.info("generarting MetaData");
 	    		pushFlowVariableString("sensorname", jObject.getParents().get(0).getName());
-	    		pushFlowVariableDouble("DataNodeID",jObject.getID());
-	    		pushFlowVariableDouble("ParentNodeID", jObject.getParents().get(0).getID());	    		
+	    		pushFlowVariableInt("DataNodeID",jObject.getID().intValue());
+	    		pushFlowVariableInt("ParentNodeID", jObject.getParents().get(0).getID().intValue());	    		
 	    		pushFlowVariableString("project", getParent(
 	    				jObject, DataBaseConfiguration.projectLevelName).getName());
 	    		if(getParent(jObject, DataBaseConfiguration.locationLevelName).
@@ -342,9 +342,6 @@ public class JevisGetDataNodeModel extends NodeModel {
     	//Connecting to Jevis with connection information
     	jevis = new JEVisDataSourceSQL(host, port, sqlSchema, sqlUser, sqlPW);
     	jevis.connect(jevisUser, jevisPW);
-    	while(!jevis.isConnectionAlive()){
-    		wait(500);
-    	}
     	}catch(JEVisException e){
     		e.printStackTrace();
     		logger.error("Connection error! Check Jevis settings and try again!");

@@ -3,6 +3,8 @@ package org.ait.knimejevisplugin.selectdata;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -162,6 +164,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		locations.add(" ");
         attributesfiltered.add(" ");
         
+        
         operators.add("contains");
         operators.add("equals");
         
@@ -245,9 +248,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 					if(jevis.isConnectionAlive()){
 						
 						t1.start();
-//			  
-
-
 					}
 				} catch (JEVisException e1) {
 	
@@ -279,10 +279,34 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(new DialogComponentBoolean(m_enableNodeSearch, 
     			"Search for Datapoints"));
     	addDialogComponent(new DialogComponentBoolean(m_enableNodeType, "Search for JEVisClass objects"));
-    	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Override Attribute Filter."));
+    	addDialogComponent(new DialogComponentBoolean(m_enableAttribute, "Diasable Attribute Filter."));
     	//Searching for Attributes like project, location, nodeType, device and component
     	setHorizontalPlacement(true);
-
+    	m_enableNodeSearch.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				
+				m_enableStructure.setBooleanValue(false);
+				m_enableNodeType.setBooleanValue(false);
+				if(m_attributeModelList1.getStringValue().equals(" ")
+						&& m_attributeModelList2.getStringValue().equals(" ")
+						&& m_attributeModelList3.getStringValue().equals(" ")
+						&& m_attributeModelList4.getStringValue().equals(" ")){
+					
+					m_enableAttribute.setBooleanValue(true);
+				}
+				else{
+					m_enableAttribute.setBooleanValue(false);
+				}
+				if(!m_enableNodeSearch.getBooleanValue()){
+					m_enableAttribute.setBooleanValue(false);
+				}
+				
+			}
+		});
+    	
+    	
     	createNewGroup("Filter for Levels in Database. ");
     	addDialogComponent(diac_projects);
     	m_project.addChangeListener(new ChangeListener() {
@@ -387,7 +411,40 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 
     	addDialogComponent(diac_location);
 
-
+    	m_attributeModelList1.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				
+				m_enableAttribute.setBooleanValue(false);
+					
+			}
+		});
+    	m_attributeModelList2.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				m_enableAttribute.setBooleanValue(false);
+				
+			}
+		});
+    	m_attributeModelList3.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				m_enableAttribute.setBooleanValue(false);
+				
+			}
+		});
+    	m_attributeModelList4.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				m_enableAttribute.setBooleanValue(false);
+				
+			}
+		});
+    	
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
     	addDialogComponent(diac_component);
@@ -399,8 +456,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(diac_deviceType);
     	createNewGroup("Search for Attibutes:");
     	setHorizontalPlacement(true);
-    	    	
-
     	
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
@@ -431,8 +486,9 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				
+				m_enableNodeSearch.setBooleanValue(false);
 				m_nodeType.setEnabled(m_enableNodeType.getBooleanValue());
+				m_enableStructure.setBooleanValue(false);
 				
 			}
 		});
@@ -448,7 +504,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				
+				m_enableNodeSearch.setBooleanValue(false);
 				m_nodeId.setEnabled(m_enableStructure.getBooleanValue());
 				m_parents.setEnabled(m_enableStructure.getBooleanValue());
 				m_children.setEnabled(m_enableStructure.getBooleanValue());
@@ -491,6 +547,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
         			nodefilter.add(jevis.getJEVisClasses().get(i).getName());
     			}
     		}
+    		Collections.sort(nodefilter);
+    	
     	}catch(JEVisException e){
     		e.printStackTrace();
     	}
