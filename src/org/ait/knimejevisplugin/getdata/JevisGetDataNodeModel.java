@@ -324,7 +324,7 @@ public class JevisGetDataNodeModel extends NodeModel {
         return new BufferedDataTable[]{out};
     }
 
-    public void connectingtojevis() throws ClassNotFoundException{
+    public void connectingtojevis() throws ClassNotFoundException, InterruptedException{
     	
     	//getting Connection information from selection node if existing
     	if(getAvailableFlowVariables().containsKey("host")
@@ -346,9 +346,11 @@ public class JevisGetDataNodeModel extends NodeModel {
     	
     	try{
     	//Connecting to Jevis with connection information
-    	Class.forName("com.mysql.jdbc.Driver");
     	jevis = new JEVisDataSourceSQL(host, port, sqlSchema, sqlUser, sqlPW);
     	jevis.connect(jevisUser, jevisPW);
+    	while(!jevis.isConnectionAlive()){
+    		wait(500);
+    	}
     	}catch(JEVisException e){
     		e.printStackTrace();
     		logger.error("Connection error! Check Jevis settings and try again!");
@@ -456,6 +458,23 @@ public class JevisGetDataNodeModel extends NodeModel {
         		}
     		}
     	}*/
+    	
+    	if(getAvailableFlowVariables().containsKey("host")
+    			&& getAvailableFlowVariables().containsKey("port")
+    			&& getAvailableFlowVariables().containsKey("sqlSchema")
+    			&& getAvailableFlowVariables().containsKey("sqlUser")
+    			&& getAvailableFlowVariables().containsKey("sqlPW")
+    			&& getAvailableFlowVariables().containsKey("JEVisUser")
+    			&& getAvailableFlowVariables().containsKey("JEVisPW")){
+	    	
+	    	JevisGetDataNodeModel.host = peekFlowVariableString("host");
+	    	JevisGetDataNodeModel.port = peekFlowVariableString("port");
+	    	JevisGetDataNodeModel.sqlSchema = peekFlowVariableString("sqlSchema");
+	    	JevisGetDataNodeModel.sqlUser = peekFlowVariableString("sqlUser");
+	    	JevisGetDataNodeModel.sqlPW = peekFlowVariableString("sqlPW");
+	    	JevisGetDataNodeModel.jevisUser = peekFlowVariableString("JEVisUser");
+	    	JevisGetDataNodeModel.jevisPW = peekFlowVariableString("JEVisPW");
+    	}
     	
         return new DataTableSpec[]{null};
     }

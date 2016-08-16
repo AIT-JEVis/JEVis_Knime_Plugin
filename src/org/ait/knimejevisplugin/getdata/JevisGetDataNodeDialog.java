@@ -108,6 +108,7 @@ public class JevisGetDataNodeDialog extends DefaultNodeSettingsPane {
     private void connectingtojevis(){
     	    	
     	try{
+
     	//Connecting to Jevis with connection information
     	jevis = new JEVisDataSourceSQL(JevisGetDataNodeModel.host, JevisGetDataNodeModel.port,
     			JevisGetDataNodeModel.sqlSchema, JevisGetDataNodeModel.sqlUser, 

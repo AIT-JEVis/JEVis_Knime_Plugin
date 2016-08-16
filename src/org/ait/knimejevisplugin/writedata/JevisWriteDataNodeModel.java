@@ -101,7 +101,7 @@ public class JevisWriteDataNodeModel extends NodeModel {
         settingsModels.add(m_objectName);
         settingsModels.add(m_newDataPointClass);
         
-       logger.setLevel(NodeLogger.LEVEL.INFO);
+       logger.setLevel(NodeLogger.LEVEL.ALL);
     }
 
     @Override
@@ -170,6 +170,8 @@ public class JevisWriteDataNodeModel extends NodeModel {
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
             throws InvalidSettingsException {
     	
+    	if(inSpecs.length > 0 ){
+
     		 DataColumnSpec c0 = inSpecs[0].getColumnSpec(0);
     		 DataColumnSpec c1 = inSpecs[0].getColumnSpec(1);
     		 
@@ -181,8 +183,9 @@ public class JevisWriteDataNodeModel extends NodeModel {
      	 		throw new InvalidSettingsException(
         				"Invalid column type at second column"); 
     		 }
+    	}
     	
-        return new DataTableSpec[]{};
+        return new DataTableSpec[0];
     }
 
   public void connectingtojevis() throws ClassNotFoundException{
