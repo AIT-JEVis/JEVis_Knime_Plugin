@@ -8,10 +8,10 @@
     
     <fullDescription>
         <intro>This node creates a connector to an arbitrary JEVis Database and allows to search for data within the database. 
-        You will need to connect with your connection information to jevis. Afterwards the node allows to conduct different kinds of searches
+        You will need to connect with your connection information to jevis. Afterwards the node allows to conduct different kinds of searches. Searches are Datapoint Search with and without attributes, Nodetype Search and Structural Search. Only one tpye of search can be selected. 
         which will enable you to select your data. In the Output table you will get the data you searched for in a convenient way so you can filter that data again as you like and also see at one glance 
-        the most important informations of the datapoint.
-        As long as you are disconnected from JEVis there are no further functions of any use. </intro>
+        the most important informations of the datapoint. 
+        As long as you are disconnected from JEVis there are no further functions of any use.  </intro>
         
         
         <tab name="Configure Connection ">

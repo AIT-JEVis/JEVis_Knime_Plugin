@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JevisGetData-Node extension for KNIME Workbench
 Bundle-SymbolicName: org.ait.knime.getdata; singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.3
 Bundle-ClassPath: jevisgetdata.jar,
  lib/JECommons-3.0.jar,
  lib/jeapi-3.0.1.jar,
