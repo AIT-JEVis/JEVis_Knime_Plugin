@@ -460,6 +460,23 @@ public class JevisGetDataNodeModel extends NodeModel {
 	    	JevisGetDataNodeModel.jevisPW = peekFlowVariableString("JEVisPW");
     	}
     	
+    	if(getAvailableFlowVariables().containsKey("host")
+    			&& getAvailableFlowVariables().containsKey("port")
+    			&& getAvailableFlowVariables().containsKey("sqlSchema")
+    			&& getAvailableFlowVariables().containsKey("sqlUser")
+    			&& getAvailableFlowVariables().containsKey("sqlPW")
+    			&& getAvailableFlowVariables().containsKey("JEVisUser")
+    			&& getAvailableFlowVariables().containsKey("JEVisPW")){
+	    	
+	    	JevisGetDataNodeModel.host = peekFlowVariableString("host");
+	    	JevisGetDataNodeModel.port = peekFlowVariableString("port");
+	    	JevisGetDataNodeModel.sqlSchema = peekFlowVariableString("sqlSchema");
+	    	JevisGetDataNodeModel.sqlUser = peekFlowVariableString("sqlUser");
+	    	JevisGetDataNodeModel.sqlPW = peekFlowVariableString("sqlPW");
+	    	JevisGetDataNodeModel.jevisUser = peekFlowVariableString("JEVisUser");
+	    	JevisGetDataNodeModel.jevisPW = peekFlowVariableString("JEVisPW");
+    	}
+    	
         return new DataTableSpec[]{null};
     }
 
