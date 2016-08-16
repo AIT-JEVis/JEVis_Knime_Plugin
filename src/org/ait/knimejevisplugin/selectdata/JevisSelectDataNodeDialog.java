@@ -352,12 +352,13 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 								@Override
 								public void run() {
 									
+									
 									getLocation(JevisSelectDataNodeDialog.jevis, locations);
 									diac_location.replaceListItems(locations, null);
 								//	getcomponents(JevisSelectDataNodeDialog.jevis, components);
 								//	diac_component.replaceListItems(components, null);
-								//	getdevicetypes(JevisSelectDataNodeDialog.jevis, devicetypes);
-								//	diac_deviceType.replaceListItems(devicetypes, null);
+									getdevicetypes(JevisSelectDataNodeDialog.jevis, devicetypes);
+									diac_deviceType.replaceListItems(devicetypes, null);
 	
 								}						 
 							});
@@ -584,8 +585,32 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	devicetypes.add(" ");
     	try{
     		if(jevis.isConnectionAlive()){
+    			long id = 0;
+    			for(JEVisObject obj : jevis.getObjects(jevis.getJEVisClass(DataBaseConfiguration.projectLevelName),true)){
+    				if(m_location.getStringValue().equals(" ")){
+        				if(obj.getName().equals(m_project.getStringValue())){
+        					id= obj.getID();
+        					break;
+        				}
+    				}
+    				else{
+    					
+    					if(obj.getName().equals(m_location.getStringValue())){
+    						id=obj.getID();
+    						break;
+    					}
+    				}    				
+    			}
+    			if(id==0){
+    				logger.info("No Parent Selected");
+    			}else{
+    				JEVisObject parent = jevis.getObject(id);
+    				
+       				fillList(parent, DataBaseConfiguration.deviceLevelName,devicetypes);
+
+    			}
     			//filling device type string selection list:
-    			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
+    /*			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
     					DataBaseConfiguration.deviceLevelName), true).size();i++){
     				if(!devicetypes.contains(jevis.getObjects(
     						jevis.getJEVisClass(DataBaseConfiguration.deviceLevelName), true).get(i).getName())){
@@ -601,10 +626,29 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     					}
     				}
     			}
-    		}
+    */		}
     	}catch(JEVisException e){
     		e.printStackTrace();
     	}
+    }
+    
+    
+    private void fillList(JEVisObject parent, String level, ArrayList<String> list) throws JEVisException{
+    	JEVisObject object= null;
+    	for(JEVisObject obj: parent.getChildren()){
+			if(!DataBaseConfiguration.checkLevel(
+					obj,level, jevis)){
+				fillList(obj,level, list);
+			}
+			else{
+				if(!list.contains(obj.getName())){
+					list.add(obj.getName());
+				}
+
+				
+			}
+		}
+
     }
     
     public void getcomponents(JEVisDataSourceSQL jevis, ArrayList<String> components){
@@ -612,6 +656,28 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	components.add(" ");
     	try{
     		if(jevis.isConnectionAlive()){
+    			
+    			long id = 0;
+    			for(JEVisObject obj : jevis.getObjects(jevis.getJEVisClass(DataBaseConfiguration.projectLevelName),true)){
+    				if(obj.getName().equals(m_location.getStringValue())){
+    					id= obj.getID();
+    					break;
+    				}
+    			}
+    			if(id==0){
+    				logger.info("No Parent Selected");
+    			}else{
+    				JEVisObject parent = jevis.getObject(id);
+    				
+    				fillList(parent, DataBaseConfiguration.componentLevelName,components);
+
+    			}
+    			
+    			
+    			
+    			
+    			/*
+    			
     			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
     					DataBaseConfiguration.componentLevelName), true).size();i++){
     				if(!components.contains(jevis.getObjects(
@@ -627,7 +693,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
         							get(i).getName());
        					}
     				}
-    			}
+    			}*/
     		}
     	}catch(JEVisException e){
     		e.printStackTrace();
@@ -639,6 +705,25 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	locations.add(" ");
     	try{
     		if(jevis.isConnectionAlive()){
+    			
+    			long id = 0;
+    			for(JEVisObject obj : jevis.getObjects(jevis.getJEVisClass(DataBaseConfiguration.projectLevelName),true)){
+    				if(obj.getName().equals(m_project.getStringValue())){
+    					id= obj.getID();
+    					break;
+    				}
+    			}
+    			if(id==0){
+    				logger.info("No Parent Selected");
+    			}else{
+    				JEVisObject parent = jevis.getObject(id);
+    				
+       				fillList(parent, DataBaseConfiguration.locationLevelName, locations);
+
+    			}
+    			
+    			
+    			/*
     			for(int i=0; i<jevis.getObjects(jevis.getJEVisClass(
     					DataBaseConfiguration.locationLevelName), true).size();i++){
     				if(!locations.contains(jevis.getObjects(
@@ -648,7 +733,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     						/*&& jevis.getObjects(jevis.getJEVisClass(
     								DataBaseConfiguration.locationLevelName),true)
     						.get(i).getParents().get(0).getName()
-    						.equals(m_project.getStringValue()))*/{
+    						.equals(m_project.getStringValue())){
     					
     					if(getParent(jevis.getObjects(jevis.getJEVisClass(
     									DataBaseConfiguration.locationLevelName), true).
@@ -657,10 +742,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 									DataBaseConfiguration.locationLevelName), true).
 							get(i).getName());
     					}
-    					
-    
     				}
-    			}
+    			}*/
     		}
     	}catch(JEVisException e){
     		e.printStackTrace();
@@ -670,8 +753,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     private JEVisObject getParent(JEVisObject inobj) throws JEVisException{
     	JEVisObject object= null;
     	for(JEVisObject obj: inobj.getParents()){
-    		if(obj.getJEVisClass().getName().equals(DataBaseConfiguration.locationLevelName)){
-    			
+    		if(obj.getJEVisClass().getName().equals(DataBaseConfiguration.locationLevelName)){		
     			return obj;
     		}
     		else if(obj.getJEVisClass().getName().equals(DataBaseConfiguration.componentLevelName)){
@@ -684,7 +766,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     			object = getParent(obj);
     		}
     	}
-    	
     	return object;
     }
 
@@ -720,7 +801,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     					projects.add(jevis.getObjects(jevis.getJEVisClass(
     							DataBaseConfiguration.projectLevelName), true).
     							get(i).getName());
-    
+    					
     				}
     			}
     		}

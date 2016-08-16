@@ -3,6 +3,10 @@ package org.ait.knimejevisplugin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jevis.api.JEVisException;
+import org.jevis.api.JEVisObject;
+import org.jevis.api.sql.JEVisDataSourceSQL;
+
 public class DataBaseConfiguration {
 	
 	/* Setting the DatabaseParameters and Node SettingsNames*/
@@ -54,7 +58,14 @@ public class DataBaseConfiguration {
 		levels.add(componentLevelName);
 		levels.add(deviceLevelName);
 	}
-		
+	
+	public static boolean checkLevel(JEVisObject object, String level, JEVisDataSourceSQL jevis) throws JEVisException{
+		if(object.getJEVisClass().equals(jevis.getJEVisClass(level))){
+			return true;
+		}
+		return false;
+	}
+	
 	/*Constructor*/
 	public DataBaseConfiguration() {
 		super();

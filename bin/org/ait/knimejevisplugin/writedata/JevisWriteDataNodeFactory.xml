@@ -11,7 +11,7 @@
         There are three options:
          Update Datapoint adds the values from the input table.
          New Datapoint will create a new Datapoint under the given NodeID.
-         Delete Data will allow you to remove all data in a datapoint. It won't delete the Datapoint itself just the data stored in it.    </intro>
+         Delete Data will allow you to remove all data in a datapoint. It won't delete the Datapoint itself just the data stored in it. The Node is checking the Input table for compatibility to JEVis. The first Columns has to be of type Timestamp and the second Column has to be of type Double.   </intro>
            
         <option name="Select option">Choose an option </option>
         <option name="JEVisNodeID">Enter the ID of the Datapoint.</option>
