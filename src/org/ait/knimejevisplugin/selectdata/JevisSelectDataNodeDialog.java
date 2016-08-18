@@ -167,7 +167,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
         
         operators.add("contains");
         operators.add("equals");
-        
 	
     	DialogComponentStringSelection diac_nodeType = new DialogComponentStringSelection(
     			m_nodeType, "NodeType", nodefilter);
@@ -184,7 +183,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	
     	DialogComponentStringSelection diac_component = new DialogComponentStringSelection(
     			m_component, "Component", components);
-    	
     	
     	DialogComponentStringSelection diac_attribute1 = new DialogComponentStringSelection(
     			m_attributeModelList1, " ", attributesfiltered);
@@ -227,8 +225,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 
 						@Override
 						public void run() {
-						
-							
+											
 							getProjects(jevis, projects);
 				        	diac_projects.replaceListItems(projects, null);
 
@@ -306,15 +303,13 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 			}
 		});
     	
-    	
     	createNewGroup("Filter for Levels in Database. ");
     	addDialogComponent(diac_projects);
     	m_project.addChangeListener(new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-
-	        	
+				
 				try {
 					if(jevis.isConnectionAlive()){
 						if(!t.isAlive()){
@@ -336,8 +331,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 						}
 					logger.debug(t.getState());	
 					}
-				} catch (JEVisException e1) {
-					
+				} catch (JEVisException e1) {					
 					e1.printStackTrace();
 				}
 			}
@@ -349,9 +343,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 				
 				try {
 					if(jevis.isConnectionAlive()){
-						if(!t.isAlive()){
-							
-							t = new Thread(new Runnable(){
+						
+							Thread t2 = new Thread(new Runnable(){
 								@Override
 								public void run() {
 								
@@ -362,12 +355,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 
 								}						 
 							});
-							t.start();
-						}
-						else{
-							System.out.println("Blocked");
-						}
-						
+							t2.start();						
 					}
 				} catch (JEVisException e1) {
 					
@@ -452,7 +440,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	setHorizontalPlacement(false);
     	setHorizontalPlacement(true);
 
-    	
     	addDialogComponent(diac_deviceType);
     	createNewGroup("Search for Attibutes:");
     	setHorizontalPlacement(true);
@@ -494,7 +481,6 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 		});
     	addDialogComponent(diac_nodeType);
     	
-	
     	createNewTab("Structure Search");
     	createNewGroup("Search with structure");
     	setHorizontalPlacement(false);
@@ -522,8 +508,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     	addDialogComponent(new DialogComponentBoolean(m_allChildren, "AllChildren"));
     	closeCurrentGroup();
     	
-    	addDialogComponent(new DialogComponentLabel("Search!"));
-    	    	
+    	addDialogComponent(new DialogComponentLabel("Search!"));	    	
     }
     
     public void connectingtojevis(){
@@ -579,19 +564,14 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     			if(id==0){
     				logger.info("No Parent Selected");
     			}else{
-    				JEVisObject parent = jevis.getObject(id);
-    				
+    				JEVisObject parent = jevis.getObject(id);    				
        				fillList(parent, DataBaseConfiguration.deviceLevelName,devicetypes);
-
     			}
-    			
-   
 		}
     	}catch(JEVisException e){
     		e.printStackTrace();
     	}
-    }
-    
+    }    
     
     private void fillList(JEVisObject parent, String level, ArrayList<String> list) throws JEVisException{
     	for(JEVisObject obj: parent.getChildren()){
@@ -603,11 +583,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
 				if(!list.contains(obj.getName())){
 					list.add(obj.getName());
 				}
-
-				
 			}
 		}
-
     }
     
     public void getcomponents(JEVisDataSourceSQL jevis, ArrayList<String> components){
@@ -617,7 +594,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     		if(jevis.isConnectionAlive()){
     			logger.trace("getcomponents entered.");
     			long id = 0;
-    			for(JEVisObject obj : jevis.getObjects(jevis.getJEVisClass(DataBaseConfiguration.projectLevelName),true)){
+    			for(JEVisObject obj : jevis.getObjects(jevis.getJEVisClass(DataBaseConfiguration.locationLevelName),true)){
 					logger.debug(obj.getName() + " compares to "+ m_location.getStringValue());
     				if(obj.getName().equals(m_location.getStringValue())){
     					id= obj.getID();
@@ -628,11 +605,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     				logger.info("No Parent Selected");
     			}else{
     				JEVisObject parent = jevis.getObject(id);
-    				
     				fillList(parent, DataBaseConfiguration.componentLevelName,components);
-
     			}
-    			
     		}
     	}catch(JEVisException e){
     		e.printStackTrace();
@@ -656,11 +630,8 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     				logger.info("No Parent Selected");
     			}else{
     				JEVisObject parent = jevis.getObject(id);
-    				
        				fillList(parent, DataBaseConfiguration.locationLevelName, locations);
-
     			}
-    			
     		}
     	}catch(JEVisException e){
     		e.printStackTrace();
@@ -702,6 +673,7 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     				}
     			}  			
     		}
+    		logger.debug("Attributes Filled.");
     	}catch(JEVisException e){
     		e.printStackTrace();
     	}
@@ -717,15 +689,13 @@ public class JevisSelectDataNodeDialog extends DefaultNodeSettingsPane {
     						get(i).getName())){
     					projects.add(jevis.getObjects(jevis.getJEVisClass(
     							DataBaseConfiguration.projectLevelName), true).
-    							get(i).getName());
-    					
+    							get(i).getName());		
     				}
     			}
     		}
+    		logger.debug("Projects filled.");
     	}catch(JEVisException e){
     		e.printStackTrace();
     	}
     }
-
 }
-

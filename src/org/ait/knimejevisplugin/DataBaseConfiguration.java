@@ -19,7 +19,7 @@ public class DataBaseConfiguration {
 	public static String componentModelName = "Component";
 	public static String componentLevelName = "Device"; //The name of the component JEVisclass.
 	
-	public static String deviceModelName = "Devicetype";
+	public static String deviceModelName = "Datapoint";
 	public static String deviceLevelName = "Data"; //the name of the Datapoint JEVisClass.
 	
 	public static String valueAttributeName = "Value";

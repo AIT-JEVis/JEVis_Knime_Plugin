@@ -174,8 +174,6 @@ public class JevisSelectDataNodeModel extends NodeModel {
    	private final SettingsModelString m_component = new SettingsModelString(
    			DataBaseConfiguration.componentModelName," ");
    	
-
-  
    	private final SettingsModelBoolean m_enableNodeType = new SettingsModelBoolean(
    			JevisSelectDataNodeModel.enableNodeType, false);
      
@@ -233,7 +231,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
             final ExecutionContext exec) throws Exception {
     	
     	NodeLogger.setLevel(NodeLogger.LEVEL.INFO);
-    	
+    	logger.debug("Started Execute!");
     	connectingtojevis();
     	   	
     	if(jevis.isConnectionAlive()){
@@ -259,10 +257,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
 					m_attributeModelValue3.getStringValue(),
 					m_attributeModelValue4.getStringValue(), 
 					resultspec);
-			
+			logger.debug(" Finished Creating ResultTable, DataTableSpec and SearchFor Nodes classes.");
     		if(m_enableNodeSearch.getBooleanValue() ){ 
     			buf = exec.createDataContainer(resultspec);
-    	
+    			logger.debug("Started Datapoint Search.");
         		searcher.searchforDataPoints();
 
         			result.fillResultTable(buf, resultspec, searcher.list_projects, 
@@ -272,6 +270,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		}
     		
     		else if(m_enableStructure.getBooleanValue()){
+    			logger.debug("Structure Search started.");
     			buf = exec.createDataContainer(createOuputTableSpecforStructure());
     			DataTableSpec structureResult = createOuputTableSpecforStructure();
     			SearchForStructure structuresearcher = new SearchForStructure(
@@ -297,6 +296,10 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		else{
     			buf = exec.createDataContainer(resultspec);
     			logger.warn("Warning no Search selected.");
+    			logger.debug("Datapoint Search: " + m_enableNodeSearch.getBooleanValue() + " "
+    					+"\nStructureSearch: "+ m_enableStructure.getBooleanValue()+ 
+    					"\nNodetype Search: "+ m_enableNodeType.getBooleanValue() + 
+    					"\nAttributes Disabled: "+ m_enableAttribute.getBooleanValue());
     		}
     	}
     	buf.close();
@@ -340,7 +343,7 @@ public class JevisSelectDataNodeModel extends NodeModel {
     		e.printStackTrace();
     		logger.error("Connection error! Check Jevis settings and try again!");
     	}
-    } 
+    }
 
     private DataTableSpec createOuputTableSpecforStructure(){
     	

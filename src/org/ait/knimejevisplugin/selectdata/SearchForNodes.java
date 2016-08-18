@@ -121,7 +121,6 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 		
 		for(JEVisObject child : children){			
 			
-			
 			if(child.getJEVisClass() == jevis.getJEVisClass(
 					DataBaseConfiguration.projectLevelName)){
 				System.out.println("Project:" + child.getName());
@@ -204,8 +203,7 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 				}
 				computeResult(child.getChildren());				
 			}
-		}
-		
+		}	
 	}
 
 /*
@@ -312,13 +310,13 @@ public SearchForNodes(JEVisDataSourceSQL jevis,
 				if(attribute.getLatestSample().getValue().
 						toString().matches(".*" + attributeValue.trim() + ".*")
 						&& operator.equals("contains")){
-					System.out.println(" contain accessed.");
+					JevisSelectDataNodeModel.logger.debug(" Contain accessed.");
 					return true;
 				}
 				else if(attribute.getLatestSample().getValue().
 						toString().matches(attributeValue.trim())
 						&& operator.equals("equals")){
-					System.out.println("Equals accessed. ");
+					JevisSelectDataNodeModel.logger.debug("Equals accessed. ");
 					return true;
 				}
 				else{
