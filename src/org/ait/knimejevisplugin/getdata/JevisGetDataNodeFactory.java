@@ -27,7 +27,7 @@ public class JevisGetDataNodeFactory
      */
     @Override
     public int getNrNodeViews() {
-        return 1;
+        return 0;
     }
 
     /**

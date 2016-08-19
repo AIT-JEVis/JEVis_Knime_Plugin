@@ -31,7 +31,7 @@ public class JevisSelectDataNodeFactory
      */
     @Override
     public int getNrNodeViews() {
-        return 1;
+        return 0;
     }
 
     /**
@@ -57,8 +57,10 @@ public class JevisSelectDataNodeFactory
     @Override
     public NodeDialogPane createNodeDialogPane() {
         try {
-
-			return new JevisSelectDataNodeDialog();
+        	
+        	JevisSelectDataNodeDialog dialog = new JevisSelectDataNodeDialog();
+        	//dialog.initializeData();
+			return dialog;
 		} catch (JEVisException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

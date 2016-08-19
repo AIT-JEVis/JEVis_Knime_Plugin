@@ -411,8 +411,13 @@ public class JevisSelectDataNodeModel extends NodeModel {
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         for(SettingsModel settingsmodel : settingsmodels){
+        	
 	    	 settingsmodel.loadSettingsFrom(settings);
+	    	 m_project.loadSettingsFrom(settings);
+	    	 
 	     }
+        
+        
     }
 
     /**
